@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Choose Maximum Player</p>
+    <p>Registration</p>
   </div>
 </template>
 
