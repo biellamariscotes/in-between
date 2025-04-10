@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Choose Maximum Player</p>
+    <p>Not Found Page View</p>
   </div>
 </template>
 
