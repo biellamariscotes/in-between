@@ -1,0 +1,16 @@
+@font-face {
+  font-family: 'Grand Casino';
+  src: url('../fonts/grand-casino/Grand-Casino.otf');
+}
+
+@font-face {
+  font-family: 'Lostar';
+  src: url('../fonts/lostar/Lostar.ttf');
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Grand Casino', 'Lostar';
+}
