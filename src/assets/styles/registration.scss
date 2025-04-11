@@ -1,0 +1,20 @@
+.landing-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: -30%;
+
+  width: 160%;
+  height: 140%;
+  background-image: url('../img/landing-assets/BG-Menu.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.1;
+  z-index: 50;
+}

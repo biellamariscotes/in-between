@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <p>Registration</p>
+  <div class="landing-container landing-gradient">
+    <div class="overlay" />
   </div>
 </template>
 
