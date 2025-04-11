@@ -1,7 +1,5 @@
 <template>
-  <div class="landing-container landing-gradient">
-    <div class="overlay" />
-  </div>
+  <div>sa das</div>
 </template>
 
 <script setup lang="ts"></script>
