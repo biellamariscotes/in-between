@@ -6,8 +6,4 @@
 import { RouterView } from 'vue-router'
 </script>
 
-<style scoped>
-.custom {
-  color: red;
-}
-</style>
+<style scoped></style>
