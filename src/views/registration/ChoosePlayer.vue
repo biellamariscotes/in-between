@@ -1,6 +1,8 @@
 <template>
   <div>
     <p>Choose Maximum Player</p>
+    <h1>registration to ya</h1>
+
   </div>
 </template>
 
