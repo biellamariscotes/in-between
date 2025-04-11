@@ -1,36 +1,51 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import RegistrationView from '@/views/RegistrationView.vue'
-import GameZoneView from '@/views/GameZoneView.vue'
-import NotFoundPageView from '@/views/NotFoundPageView.vue'
-import LandingPageView from '@/views/LandingPageView.vue'
+import RegistrationLayout from '@/layout/RegistrationLayout.vue'
+import GameLayout from '@/layout/GameLayout.vue'
+import NotFoundPageView from '@/views/empty/NotFoundPageView.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'landing-page',
-    component: LandingPageView,
-  },
-  {
-    path: '/home',
-    name: 'home',
-    component: HomeView,
-  },
-  {
-    path: '/registration',
-    name: 'registration',
-    component: RegistrationView,
+    component: RegistrationLayout,
+    children: [
+      {
+        path: '/',
+        name: 'landing-page',
+        component: () => import('@/views/LandingPageView.vue'),
+        meta: { title: 'In-Between', style: 'landing.scss', requireGuest: true },
+      },
+      {
+        path: '/choose-player',
+        name: 'choose-player',
+        component: () => import('@/views/registration/ChoosePlayerView.vue'),
+        meta: { title: 'Choose Player', style: 'choosePlayer.scss', requireGuest: true },
+      },
+      {
+        path: '/registration',
+        name: 'registration',
+        component: () => import('@/views/registration/RegistrationView.vue'),
+        meta: { title: 'Register Player', style: 'registration.scss', requireGuest: true },
+      },
+    ],
   },
   {
     path: '/game-zone',
-    name: 'game-zone',
-    component: GameZoneView,
+    component: GameLayout,
+    children: [
+      {
+        path: '/game-zone',
+        name: 'game-zone',
+        component: () => import('@/views/in-game/GameZoneView.vue'),
+        meta: { title: 'In-Between', style: 'gameZone.scss', requireGuest: true },
+      },
+    ],
   },
+  // Add a catch-all route for undefined paths
   {
-    // Catch all route for 404 page
-    path: '/:pathMatch(.*)',
-    name: 'NotFound',
+    path: '/:pathMatch(.*)*', // Catch-all route
+    name: 'not-found',
     component: NotFoundPageView,
+    meta: { title: 'Not Found' },
   },
 ]
 

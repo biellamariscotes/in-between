@@ -6,4 +6,8 @@
 
 <script setup lang="ts"></script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+p {
+  color: red;
+}
+</style>
