@@ -1,7 +1,7 @@
 <template>
   <div>
-    <p>Choose Maximu m Player</p>
-    <h1>registartion to ya</h1>
+    <p>Choose Maximum Player</p>
+    <h1>registration to ya</h1>
 
   </div>
 </template>
