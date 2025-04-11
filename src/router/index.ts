@@ -3,10 +3,16 @@ import HomeView from '../views/HomeView.vue'
 import RegistrationView from '@/views/RegistrationView.vue'
 import GameZoneView from '@/views/GameZoneView.vue'
 import NotFoundPageView from '@/views/NotFoundPageView.vue'
+import LandingPageView from '@/views/LandingPageView.vue'
 
 const routes = [
   {
     path: '/',
+    name: 'landing-page',
+    component: LandingPageView,
+  },
+  {
+    path: '/home',
     name: 'home',
     component: HomeView,
   },
