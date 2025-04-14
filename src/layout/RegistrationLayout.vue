@@ -56,6 +56,7 @@ onUnmounted(() => {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  padding: 2rem 2.5rem;
 }
 
 .overlay {

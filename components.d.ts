@@ -8,6 +8,13 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Button: typeof import('./src/components/Button.vue')['default']
+    ElForm: typeof import('element-plus/es')['ElForm']
+    ElFormItem: typeof import('element-plus/es')['ElFormItem']
+    ElInput: typeof import('element-plus/es')['ElInput']
+    Input: typeof import('./src/components/Input.vue')['default']
+    InputLabel: typeof import('./src/components/Input-Label.vue')['default']
+    Inputs: typeof import('./src/components/Inputs.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
