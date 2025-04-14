@@ -20,7 +20,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-
 import img3 from '@/assets/img/landing-assets/3.png'
 import img4 from '@/assets/img/landing-assets/4.png'
 import img5 from '@/assets/img/landing-assets/5.png'
@@ -47,13 +46,3 @@ function getImagePath(num: number): string {
   return imageMap[num as PlayerNumber]
 }
 </script>
-
-<style scoped>
-button {
-  font-family: 'Grand-Casino' !important;
-  font-size: 28px;
-  color: white;
-  margin-bottom: 30px;
-  text-shadow: 0 0 4px #000;
-}
-</style>

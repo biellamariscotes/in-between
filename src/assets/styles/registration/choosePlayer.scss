@@ -9,12 +9,23 @@
 .modal {
   position: relative;
   background: rgba(255, 255, 255, 0.1);
-  padding: 10%;
+  padding: 5%;
   border-radius: 20px;
-  max-width: 1250px;
+  width: 100%;
+  min-width: 300px;
+  max-width: 1600px;
+  margin: 0 auto;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   text-align: center;
   z-index: 20;
+  max-height: 90vh;
+
+  @media (max-width: 768px) {
+    .modal {
+      width: 90%;
+      padding: 7%;
+    }
+  }
 }
 
 .title {
@@ -27,10 +38,12 @@
 
 .number-grid {
   display: grid;
+
   grid-template-columns: repeat(3, 1fr);
-  gap: 50px;
+  gap: 20px;
   justify-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
+  padding: 10px;
 }
 
 .number-button {
@@ -40,21 +53,11 @@
 }
 
 .number-button img {
-  width: 100%;
-  height: 100%;
+  width: 95%;
+  height: 70%;
   object-fit: contain;
+  margin: auto;
 }
-
-// .number-button span {
-//   position: absolute;
-//   top: 50%;
-//   left: 50%;
-//   transform: translate(-50%, -50%);
-//   font-size: 36px;
-//   font-weight: bold;
-//   color: #fffbd3;
-//   text-shadow: 2px 2px 5px #000;
-// }
 
 .number-button.selected {
   transform: scale(1.1);
@@ -62,17 +65,19 @@
 }
 
 .confirm-btn {
-  padding: 10px 30px;
+  padding: 10px 50px;
   font-size: 16px;
   border: none;
-  border-radius: 10px;
+  border-radius: 6px;
   background-color: rgba(255, 255, 255, 0.6);
   color: #c55794;
   cursor: pointer;
   font-weight: bold;
   transition: all 0.3s ease;
   width: 40%;
-  font-family: Lostar;
+  min-width: 300px;
+  max-width: 300px;
+  height: 50px;
 }
 
 .confirm-btn:disabled {
