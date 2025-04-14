@@ -18,7 +18,11 @@ const routes = [
         path: '/choose-player',
         name: 'choose-player',
         component: () => import('@/views/registration/ChoosePlayerView.vue'),
-        meta: { title: 'Choose Player', style: 'choosePlayer.scss', requireGuest: true },
+        meta: {
+          title: 'Choose Player',
+          style: 'registration/choosePlayer.scss',
+          requireGuest: true,
+        },
       },
       {
         path: '/registration',

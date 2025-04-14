@@ -62,13 +62,12 @@ onUnmounted(() => {
   position: absolute;
   top: 0;
   left: -30%;
-
   width: 160%;
   height: 140%;
   background-image: url('../assets/img/landing-assets/BG-Menu.png');
   background-size: cover;
   background-position: center;
   opacity: 0.1;
-  z-index: 50;
+  z-index: 0;
 }
 </style>
