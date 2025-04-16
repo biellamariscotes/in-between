@@ -69,7 +69,7 @@ onUnmounted(() => {
   background-image: url('../assets/img/landing-assets/BG-Menu.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.1;
+  opacity: 0.07;
   z-index: 50;
 }
 </style>
