@@ -10,7 +10,6 @@
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-
   width: 578px;
   height: 603.46px;
 }
@@ -47,16 +46,4 @@
   z-index: 90;
 }
 
-.overlay {
-  position: absolute;
-  top: 0;
-  left: -30%;
 
-  width: 160%;
-  height: 140%;
-  background-image: url('../img/landing-assets/BG-Menu.png');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.1;
-  z-index: 50;
-}

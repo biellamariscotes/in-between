@@ -1,11 +1,49 @@
 <template>
-  <div>
-    <p>Choose Maximum Player</p>
-    <h1>registration to ya</h1>
-
+  <div class="overlaychooseplayer">
+    <div class="modal">
+      <h2 class="title">CHOOSE NUMBER<br />OF PLAYERS</h2>
+      <div class="number-grid">
+        <div
+          v-for="num in [3, 4, 5, 6]"
+          :key="num"
+          class="number-button"
+          :class="{ selected: playerStore.playerCount === num }"
+          @click="selectPlayer(num)"
+        >
+          <img :src="getImagePath(num)" />
+        </div>
+      </div>
+      <button class="confirm-btn" :disabled="!playerStore.playerCount">CONFIRM</button>
+    </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { usePlayerStore } from '@/stores/ChoosePlayerStore'
 
-<style lang="css" scoped></style>
+import img3 from '@/assets/img/landing-assets/3.png'
+import img4 from '@/assets/img/landing-assets/4.png'
+import img5 from '@/assets/img/landing-assets/5.png'
+import img6 from '@/assets/img/landing-assets/6.png'
+
+const playerStore = usePlayerStore()
+// playerStore.playerCount = null
+// localStorage.removeItem('playerCount')
+
+type PlayerNumber = 3 | 4 | 5 | 6
+const imageMap: Record<PlayerNumber, string> = {
+  3: img3,
+  4: img4,
+  5: img5,
+  6: img6,
+}
+
+function selectPlayer(num: number) {
+  playerStore.setPlayerCount(num)
+  console.log('you select ', playerStore.playerCount)
+}
+
+function getImagePath(num: number): string {
+  return imageMap[num as PlayerNumber]
+}
+</script>
