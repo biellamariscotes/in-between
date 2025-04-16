@@ -2,7 +2,7 @@
 <template>
   <el-form
     ref="ruleFormRef"
-    :model="registrationForm"
+    :model="dynamicInputFields"
     :rules="rules"
     label-width="auto"
     class="demo-ruleForm"
@@ -11,43 +11,13 @@
     status-icon
     @submit.prevent="onSubmit"
   >
-    <div class="item-wrapper">
+    <div v-for="(field, index) in dynamicInputFields" :key="index" class="item-wrapper">
       <el-form-item label="Name:" prop="name">
-        <el-input size="small" v-model="registrationForm.name" />
+        <el-input size="small" v-model="field.name" />
       </el-form-item>
 
       <el-form-item label="Credits:" prop="credits">
-        <el-input size="small" v-model.number="registrationForm.credits" />
-      </el-form-item>
-    </div>
-
-    <div class="item-wrapper">
-      <el-form-item label="Name:" prop="name">
-        <el-input size="small" v-model="registrationForm.name" />
-      </el-form-item>
-
-      <el-form-item label="Credits:" prop="credits">
-        <el-input size="small" v-model.number="registrationForm.credits" />
-      </el-form-item>
-    </div>
-
-    <div class="item-wrapper">
-      <el-form-item label="Name:" prop="name">
-        <el-input size="small" v-model="registrationForm.name" />
-      </el-form-item>
-
-      <el-form-item label="Credits:" prop="credits">
-        <el-input size="small" v-model.number="registrationForm.credits" />
-      </el-form-item>
-    </div>
-
-    <div class="item-wrapper">
-      <el-form-item label="Name:" prop="name">
-        <el-input size="small" v-model="registrationForm.name" />
-      </el-form-item>
-
-      <el-form-item label="Credits:" prop="credits">
-        <el-input size="small" v-model.number="registrationForm.credits" />
+        <el-input size="small" v-model.number="field.credits" />
       </el-form-item>
     </div>
 
@@ -58,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import type { ComponentSize, FormInstance, FormProps } from 'element-plus'
 // import Button from '@/components/Button.vue'
 import type { Player } from '@/interface/player'
@@ -70,15 +40,22 @@ const formSize = ref<ComponentSize>('default')
 const ruleFormRef = ref<FormInstance>()
 const playerRegistration = usePlayerRegistration()
 
-const registrationForm = reactive<Player>({
-  name: '',
-  credits: null,
-})
+// Initialize dynamicInputFields as an array
+const dynamicInputFields = ref<Player[]>(Array(6).fill({ name: '', credits: null }))
+
+// const registrationForm = reactive<Player>({
+//   name: '',
+//   credits: null,
+// })
 
 const resetForm = () => {
-  registrationForm.name = ''
-  registrationForm.credits = null
+  dynamicInputFields.value = dynamicInputFields.value.map(() => ({ name: '', credits: null }))
 }
+
+// const resetForm = () => {
+//   registrationForm.name = ''
+//   registrationForm.credits = null
+// }
 
 const onSubmit = async () => {
   try {
@@ -86,7 +63,7 @@ const onSubmit = async () => {
     if (isValid) {
       playerRegistration.registerPlayer({
         id: Math.floor(Math.random() * 10000),
-        ...registrationForm,
+        ...dynamicInputFields,
       })
       resetForm()
     }
