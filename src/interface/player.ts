@@ -1,7 +1,7 @@
 export interface Player {
-  id: string
-  name: string
-  credit: number
+  id?: string | number
+  name?: string
+  credits?: number | null
 }
 
 

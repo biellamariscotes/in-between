@@ -56,6 +56,7 @@ onUnmounted(() => {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  padding: 2rem 2.5rem;
 }
 
 .overlay {
@@ -67,7 +68,7 @@ onUnmounted(() => {
   background-image: url('../assets/img/landing-assets/BG-Menu.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.1;
-  z-index: 0;
+  opacity: 0.07;
+  z-index: 50;
 }
 </style>
