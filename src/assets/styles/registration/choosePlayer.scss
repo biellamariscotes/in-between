@@ -1,25 +1,21 @@
-.overlaychooseplayer {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: space-around;
-}
-
 .modal {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   padding: 5%;
   width: 100%;
   min-width: 300px;
   max-width: 1600px;
   text-align: center;
-  z-index: 20;
+  z-index: 100;
   max-height: 100vh;
+}
 
-  @media (max-width: 768px) {
-    .modal {
-      width: 90%;
-      padding: 7%;
-    }
+@media (max-width: 768px) {
+  .modal {
+    width: 90%;
+    padding: 7%;
   }
 }
 
@@ -35,18 +31,22 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   justify-items: center;
-  margin-bottom: 15px;
+  width: 60%;
+  margin: 0 auto;
 }
 
 .number-button {
   position: relative;
   cursor: pointer;
   transition: transform 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .number-button img {
-  width: 75%;
-  height: 85%;
+  width: 80%;
+  height: 75%;
   object-fit: contain;
 }
 
@@ -59,23 +59,24 @@
   filter: drop-shadow(0 0 10px #ffd700);
 }
 
-.confirm-btn {
-  padding: 10px 50px;
-  font-size: 16px;
-  border: none;
-  border-radius: 6px;
-  background-color: rgba(255, 255, 255, 0.6);
-  color: #c55794;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  width: 40%;
-  min-width: 300px;
+// .confirm-btn {
+//   padding: 10px 50px;
+//   font-size: 16px;
+//   border: none;
+//   border-radius: 6px;
+//   background-color: rgba(255, 255, 255, 0.6);
+//   color: #c55794;
+//   cursor: pointer;
+//   font-weight: bold;
+//   transition: all 0.3s ease;
+//   width: 40%;
+//   min-width: 300px;
 
-  height: 50px;
-}
+//   height: 50px;
+// }
 
-.confirm-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+// .confirm-btn:disabled {
+//   opacity: 0.5;
+//   cursor: not-allowed;
+// }
+
