@@ -3,21 +3,30 @@
   <el-form
     ref="ruleFormRef"
     :model="dynamicInputFields"
-    :rules="rules"
+    :rules="useRegistrationRule"
     label-width="auto"
     class="demo-ruleForm"
     :label-position="labelPosition"
     :size="formSize"
     status-icon
+    validate-on-rule-change="true"
     @submit.prevent="onSubmit"
   >
     <div v-for="(field, index) in dynamicInputFields" :key="index" class="item-wrapper">
-      <el-form-item label="Name:" prop="name">
-        <el-input size="small" v-model="field.name" />
+      <el-form-item
+        :label="'Name:'"
+        :prop="'[' + index + '].name'"
+        :rules="useRegistrationRule.name"
+      >
+        <el-input size="small" v-model="dynamicInputFields[index].name" />
       </el-form-item>
 
-      <el-form-item label="Credits:" prop="credits">
-        <el-input size="small" v-model.number="field.credits" />
+      <el-form-item
+        :label="'Credits:'"
+        :prop="'[' + index + '].credits'"
+        :rules="useRegistrationRule.credits"
+      >
+        <el-input size="small" v-model.number="dynamicInputFields[index].credits" />
       </el-form-item>
     </div>
 
@@ -30,9 +39,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { ComponentSize, FormInstance, FormProps } from 'element-plus'
-// import Button from '@/components/Button.vue'
 import type { Player } from '@/interface/player'
-import { rules } from '@/constants'
+import { useRegistrationRule } from '@/composables/rules/useRegistrationRule'
 import { usePlayerRegistration } from '@/stores/player'
 
 const labelPosition = ref<FormProps['labelPosition']>('left')
@@ -41,29 +49,35 @@ const ruleFormRef = ref<FormInstance>()
 const playerRegistration = usePlayerRegistration()
 
 // Initialize dynamicInputFields as an array
-const dynamicInputFields = ref<Player[]>(Array(6).fill({ name: '', credits: null }))
-
-// const registrationForm = reactive<Player>({
-//   name: '',
-//   credits: null,
-// })
+const dynamicInputFields = ref<Player[]>(
+  Array.from({ length: 6 }, () => ({ name: '', credits: null })),
+)
 
 const resetForm = () => {
   dynamicInputFields.value = dynamicInputFields.value.map(() => ({ name: '', credits: null }))
 }
 
-// const resetForm = () => {
-//   registrationForm.name = ''
-//   registrationForm.credits = null
-// }
-
 const onSubmit = async () => {
   try {
     const isValid = await ruleFormRef.value?.validate()
     if (isValid) {
-      playerRegistration.registerPlayer({
-        id: Math.floor(Math.random() * 10000),
-        ...dynamicInputFields,
+      // Filter out empty entries
+      const validPlayers = dynamicInputFields.value.filter(
+        (player) => player.name && player.credits,
+      )
+
+      const playersData = JSON.stringify(validPlayers)
+
+      // Save to local storage
+      localStorage.setItem('players', playersData)
+
+      // Register each valid player individually
+      validPlayers.forEach((player) => {
+        playerRegistration.registerPlayer({
+          id: Math.floor(Math.random() * 10000),
+          name: player.name,
+          credits: player.credits,
+        })
       })
       resetForm()
     }
@@ -93,7 +107,7 @@ const onSubmit = async () => {
   padding: 1rem 1.5rem;
   background-color: white;
   border-radius: 15px;
-  height: 140px;
+  height: 160px;
   width: 450px;
   max-width: 450px;
 }

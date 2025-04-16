@@ -22,7 +22,7 @@ export const usePlayerRegistration = defineStore('playerRegistrationStore', {
       players.unshift(player)
 
       // Save the updated array back to localStorage
-      localStorage.setItem('player', JSON.stringify(players))
+      localStorage.setItem('players', JSON.stringify(players))
 
       // Update the local state
       this.players = players
