@@ -2,10 +2,9 @@
   <div class="overlaychooseplayer">
     <div class="modal">
       <h2 class="title">CHOOSE NUMBER<br />OF PLAYERS</h2>
-      <h3>{{ playerStore.playerCount }}</h3>
       <div class="number-grid">
         <div
-          v-for="num in [3, 4, 5, 6, 7, 8]"
+          v-for="num in [3, 4, 5, 6]"
           :key="num"
           class="number-button"
           :class="{ selected: playerStore.playerCount === num }"
@@ -26,21 +25,17 @@ import img3 from '@/assets/img/landing-assets/3.png'
 import img4 from '@/assets/img/landing-assets/4.png'
 import img5 from '@/assets/img/landing-assets/5.png'
 import img6 from '@/assets/img/landing-assets/6.png'
-import img7 from '@/assets/img/landing-assets/7.png'
-import img8 from '@/assets/img/landing-assets/8.png'
 
 const playerStore = usePlayerStore()
 // playerStore.playerCount = null
 // localStorage.removeItem('playerCount')
 
-type PlayerNumber = 3 | 4 | 5 | 6 | 7 | 8
+type PlayerNumber = 3 | 4 | 5 | 6
 const imageMap: Record<PlayerNumber, string> = {
   3: img3,
   4: img4,
   5: img5,
   6: img6,
-  7: img7,
-  8: img8,
 }
 
 function selectPlayer(num: number) {
