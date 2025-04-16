@@ -20,7 +20,7 @@ const routes = [
         component: () => import('@/views/registration/ChoosePlayer.vue'),
         meta: {
           title: 'Choose Player',
-          style: 'registration/choosePlayer.scss',
+          style: 'registration/choose-player.scss',
           requireGuest: true,
         },
       },
