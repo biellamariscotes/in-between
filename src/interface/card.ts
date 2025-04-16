@@ -3,4 +3,5 @@ export interface Card {
   rank?: string
   id?: string
   file_name?: string
+  order?: number
 }
