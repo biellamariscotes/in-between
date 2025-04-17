@@ -12,6 +12,7 @@
   transform: translate(-50%, -50%);
   width: 578px;
   height: 603.46px;
+  z-index: 10;
 }
 
 .logo {
@@ -34,6 +35,7 @@
   height: 80px;
   margin: 0 auto;
   cursor: pointer;
+  z-index: 999;
 }
 
 .cards {
@@ -43,7 +45,5 @@
   left: 0;
 
   width: 419.94px;
-  z-index: 90;
+  z-index: 10;
 }
-
-

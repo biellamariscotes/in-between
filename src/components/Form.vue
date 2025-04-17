@@ -12,7 +12,11 @@
     validate-on-rule-change="true"
     @submit.prevent="onSubmit"
   >
-    <div v-for="(field, index) in dynamicInputFields" :key="index" class="item-wrapper">
+    <div
+      v-for="(field, index) in dynamicInputFields"
+      :key="index"
+      :class="['item-wrapper', isLastInOddArray(index) ? 'center-item' : '']"
+    >
       <el-form-item
         :label="'Name:'"
         :prop="'[' + index + '].name'"
@@ -42,20 +46,22 @@ import type { ComponentSize, FormInstance, FormProps } from 'element-plus'
 import type { Player } from '@/interface/player'
 import { useRegistrationRule } from '@/composables/rules/useRegistrationRule'
 import { usePlayerRegistration } from '@/stores/player'
+import { useRouter } from 'vue-router'
 
 const labelPosition = ref<FormProps['labelPosition']>('left')
 const formSize = ref<ComponentSize>('default')
 const ruleFormRef = ref<FormInstance>()
 const playerRegistration = usePlayerRegistration()
+const router = useRouter()
+
+const numberOfPlayers = localStorage.getItem('playerCount')
+
+console.log('Number of Players', numberOfPlayers)
 
 // Initialize dynamicInputFields as an array
 const dynamicInputFields = ref<Player[]>(
-  Array.from({ length: 6 }, () => ({ name: '', credits: null })),
+  Array.from({ length: numberOfPlayers }, () => ({ name: '', credits: null })),
 )
-
-const resetForm = () => {
-  dynamicInputFields.value = dynamicInputFields.value.map(() => ({ name: '', credits: null }))
-}
 
 const onSubmit = async () => {
   try {
@@ -66,10 +72,8 @@ const onSubmit = async () => {
         (player) => player.name && player.credits,
       )
 
-      const playersData = JSON.stringify(validPlayers)
-
-      // Save to local storage
-      localStorage.setItem('players', playersData)
+      // Clear existing players first
+      playerRegistration.clearPlayers()
 
       // Register each valid player individually
       validPlayers.forEach((player) => {
@@ -79,11 +83,19 @@ const onSubmit = async () => {
           credits: player.credits,
         })
       })
-      resetForm()
+      // Reset the form fields
+      ruleFormRef.value?.resetFields()
+
+      // Go to GameZone
+      router.push('/game-zone')
     }
   } catch (error) {
     console.error('Error during form submission:', error)
   }
+}
+
+const isLastInOddArray = (index: number): boolean => {
+  return dynamicInputFields.value.length % 2 !== 0 && index === dynamicInputFields.value.length - 1
 }
 </script>
 
@@ -110,6 +122,12 @@ const onSubmit = async () => {
   height: 160px;
   width: 450px;
   max-width: 450px;
+}
+
+/* Add this new CSS class for the centered last item */
+.center-item {
+  grid-column: 1 / -1;
+  justify-self: center;
 }
 
 ::v-deep .el-form-item.is-error .el-input__wrapper {
