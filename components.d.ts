@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    BackCard: typeof import('./src/components/Back-Card.vue')['default']
     Button: typeof import('./src/components/Button.vue')['default']
     Carousel: typeof import('./src/components/Carousel.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
