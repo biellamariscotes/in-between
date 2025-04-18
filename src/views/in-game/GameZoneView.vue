@@ -45,7 +45,21 @@
           >
             <div class="arrow-animation"></div>
           </div>
-          <h1 class="border">{{ activePlayers[position - 1] ? `Player ${position}` : 'Empty' }}</h1>
+          <h1 style="font-size: 20px">
+            {{ activePlayers[position - 1] ? `Player ${position}` : 'Empty' }}
+          </h1>
+          <h1 style="font-size: 20px">P 500</h1>
+          <div
+            :class="[
+              'cards-container',
+              {
+                'cards-left': position === 5,
+                'cards-right': position === 6,
+              },
+            ]"
+          >
+            <el-image v-for="cardIndex in 3" :key="cardIndex" :src="BackCard" style="" />
+          </div>
         </div>
       </div>
       <div class="pot-amount">
@@ -61,6 +75,7 @@
     <div class="settings-container">
       <h1 style="color: white">Gear Icon</h1>
     </div>
+    <div></div>
   </div>
 </template>
 
@@ -68,6 +83,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import GameBackground from '@/assets/img/game-zone/play-background.png'
 import GameTable from '@/assets/img/game-zone/Game-Table.svg'
+import BackCard from '@/assets/img/back-card.png'
 
 // Player configuration
 const playerCount = ref(6) // Change this to set the number of players (1-6)
@@ -300,6 +316,9 @@ onMounted(() => {
   position: relative;
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .turn-indicator {
@@ -325,6 +344,44 @@ onMounted(() => {
     pulse 1s infinite alternate,
     bounce 1.5s infinite;
   filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
+}
+
+/* Card styling */
+.cards-container {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  margin-top: 5px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  bottom: 5px;
+}
+
+.back-card {
+  margin: 0 -5px; /* Overlap cards slightly */
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5));
+  transition: transform 0.2s ease;
+}
+
+.back-card:hover {
+  transform: translateY(-5px);
+  z-index: 5;
+}
+
+/* Special orientation for player 5 (left side) */
+.cards-left {
+  flex-direction: row-reverse;
+  left: -40px;
+  bottom: 50%;
+  transform: rotate(90deg);
+}
+
+/* Special orientation for player 6 (right side) */
+.cards-right {
+  right: -40px;
+  bottom: 50%;
+  transform: rotate(-90deg);
 }
 
 @keyframes pulse {
