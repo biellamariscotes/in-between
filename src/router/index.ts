@@ -42,6 +42,12 @@ const routes = [
         component: () => import('@/views/in-game/GameZoneView.vue'),
         meta: { title: 'In-Between', style: 'gameZone.scss', requireGuest: true },
       },
+      {
+        path: '/test-zone',
+        name: 'test-zone',
+        component: () => import('@/views/in-game/TestZoneView.vue'),
+        meta: { title: 'Test-In-Between', requireGuest: true },
+      },
     ],
   },
   // Add a catch-all route for undefined paths
