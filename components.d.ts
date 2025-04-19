@@ -22,6 +22,8 @@ declare module 'vue' {
     Input: typeof import('./src/components/Input.vue')['default']
     InputLabel: typeof import('./src/components/Input-Label.vue')['default']
     Inputs: typeof import('./src/components/Inputs.vue')['default']
+    PlayerHand: typeof import('./src/components/PlayerHand.vue')['default']
+    PlayingCard: typeof import('./src/components/PlayingCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
