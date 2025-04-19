@@ -34,28 +34,34 @@
           },
         ]"
       >
-        <div :class="[
+        <div
+          :class="[
             'player-indicator-container',
             { 'player-info-left': position === 6 },
             { 'player-info-right': position === 5 },
-            { 'player-info-reverse': position === 3 || position === 4 }
-          ]">
+            { 'player-info-reverse': position === 3 || position === 4 },
+          ]"
+        >
           <div
             v-if="activePlayers[position - 1] && currentPlayerIndex === position - 1"
             class="turn-indicator"
           >
-            <div :class="[
-              'arrow-animation', 
-              { 'arrow-bottom': position === 3 || position === 4 },
-              { 'arrow-left': position === 6 },
-              { 'arrow-right': position === 5 }
-            ]"></div>
+            <div
+              :class="[
+                'arrow-animation',
+                { 'arrow-bottom': position === 3 || position === 4 },
+                { 'arrow-left': position === 6 },
+                { 'arrow-right': position === 5 },
+              ]"
+            ></div>
           </div>
-          <div :class="[
+          <div
+            :class="[
               'player-info',
               { 'info-left': position === 6 },
-              { 'info-right': position === 5 }
-            ]">
+              { 'info-right': position === 5 },
+            ]"
+          >
             <h1 class="player-name">
               {{ activePlayers[position - 1] ? `Player ${position}` : 'Empty' }}
             </h1>
@@ -83,21 +89,59 @@
     </div>
     <div></div>
   </div>
+
+  <div>
+    <h2 v-if="orderedPlayers.length">Player Order</h2>
+    <ul>
+      <li v-for="player in orderedPlayers" :key="player.id">
+        {{ player.order }}. {{ player.name }}
+      </li>
+    </ul>
+
+    <button @click="handleRandomize">Randomize Players</button>
+    <button @click="resetPlayerOrder">Reset Order</button>
+
+    <div v-if="currentTurnPlayer">
+      <p>Current Turn: {{ turn }}</p>
+      <p>Current Player: {{ currentTurnPlayer.name }}</p>
+      <button @click="goToNextTurn">Next Turn</button>
+    </div>
+  </div>
+  <pre>{{ JSON.stringify(orderedPlayers, null, 2) }}</pre>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import GameTable from '@/assets/img/game-zone/Game-Table.svg'
-import PlayerHand from '@/components/PlayerHand.vue'
+import { usePlayerRandomizer } from '@/composables/usePlayerRandomizer'
+
+const { randomizePlayers, getCurrentPlayer, resetPlayerOrder, orderedPlayers } =
+  usePlayerRandomizer()
+
+// Reactive state
+const turn = ref(1)
+
+// Computed current player
+const currentTurnPlayer = computed(() => getCurrentPlayer(turn.value))
+
+// Methods
+const handleRandomize = () => {
+  const randomized = randomizePlayers()
+  console.log('🎯 Ordered Players after randomize:', randomized)
+}
+
+const goToNextTurn = () => {
+  turn.value++
+}
 
 // Sample player cards
 const playerCards = ref([
   ['h10', 'sking', 'dqueen'], // Player 1
-  ['c7', 'd8', 'h2'],        // Player 2
-  ['sjack', 'c3', 'd1'],     // Player 3
-  ['h5', 'd6', 's9'],        // Player 4
-  ['h8', 'c9', 'hking'],     // Player 5
-  ['d3', 's5', 'c2']         // Player 6
+  ['c7', 'd8', 'h2'], // Player 2
+  ['sjack', 'c3', 'd1'], // Player 3
+  ['h5', 'd6', 's9'], // Player 4
+  ['h8', 'c9', 'hking'], // Player 5
+  ['d3', 's5', 'c2'], // Player 6
 ])
 
 // Player configuration
@@ -172,335 +216,3 @@ onMounted(() => {
   }, 3000) // Change player every 3 seconds
 })
 </script>
-
-<style lang="css" scoped>
-.game-zone-container {
-  width: 100%;
-  height: 100vh;
-  background-image: url('@/assets/img/game-zone/play-background.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.settings-container {
-  width: 5%;
-  height: 8%;
-  position: absolute;
-  bottom: 7%;
-  right: 7%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  border: 2px solid white;
-  pointer-events: none;
-}
-.timer-container {
-  width: 13%;
-  height: 13%;
-  position: absolute;
-  top: 7%;
-  right: 7%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  border: 2px solid white;
-  pointer-events: none;
-}
-.actions-container {
-  width: 40%;
-  height: 18%;
-  position: absolute;
-  bottom: 7%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  border: 2px solid white;
-  pointer-events: none;
-}
-.game-zone {
-  width: 10%;
-  height: 80%;
-  position: absolute;
-  left: 7%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  border: 2px solid white;
-  pointer-events: none;
-}
-.turn-container {
-  width: 40%;
-  height: 10%;
-  position: absolute;
-  top: 3%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  border: 2px solid white;
-  pointer-events: none;
-}
-.table-container {
-  width: 45%;
-  height: 42%;
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  pointer-events: none;
-  top: 26%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-.player-1 {
-  position: absolute;
-  bottom: 0;
-  left: 25%;
-  width: 20%;
-}
-.player-2 {
-  position: absolute;
-  bottom: 0;
-  right: 25%;
-  width: 20%;
-}
-.player-3 {
-  position: absolute;
-  top: 0;
-  left: 25%;
-  width: 20%;
-}
-.player-4 {
-  position: absolute;
-  top: 0;
-  right: 25%;
-  width: 20%;
-}
-.player-5 {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 15%;
-  height: 35%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.player-6 {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 15%;
-  height: 35%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.pot-amount {
-  position: absolute;
-  width: 20%;
-  height: 30%;
-}
-.border {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid white;
-  margin: 0;
-  position: relative;
-}
-.active-player {
-  background-color: rgba(255, 215, 0, 0.3);
-  transition: background-color 0.3s ease;
-}
-.inactive-spot {
-  background-color: rgba(30, 30, 30, 0.5);
-  opacity: 0.6;
-}
-.player-indicator-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.player-info-reverse {
-  flex-direction: column-reverse;
-}
-
-.player-info-left {
-  flex-direction: row;
-  width: 100%;
-  height: 100%;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.player-info-right {
-  flex-direction: row-reverse;
-  width: 100%;
-  height: 100%;
-  justify-content: space-around;
-  align-items: center;
-}
-
-/* Update styles for player 5 and 6 cards display */
-.player-5 .player-hand, .player-6 .player-hand {
-  width: 55%; /* Reduced to better fit when rotated */
-  height: 100%;
-  margin: 0;
-  align-items: center;
-}
-
-/* Container adjustments for side players */
-.player-5 .player-indicator-container, 
-.player-6 .player-indicator-container {
-  justify-content: center;
-}
-
-/* Remove conflicting transform styles from GameZoneView that would override PlayerHand component rotations */
-.player-5 .card-wrapper,
-.player-6 .card-wrapper {
-  margin: 0 5px;
-  transform: none;
-}
-
-.player-5 .player-card:hover, 
-.player-6 .player-card:hover {
-  transform: none; /* Let the PlayerHand component handle hover effects */
-}
-
-/* Add styling for the center card */
-.center-card {
-  transform: scale(1.5);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-}
-
-/* Remove old card container styles that are now handled by PlayerHand */
-.cards-container, .cards-left, .cards-right, .back-card {
-  display: none;
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 0.7;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-}
-
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes bounce-reverse {
-  0%,
-  100% {
-    transform: translateY(0) rotate(180deg);
-  }
-  50% {
-    transform: translateY(10px) rotate(180deg);
-  }
-}
-
-@keyframes bounce-left {
-  0%,
-  100% {
-    transform: translateX(0) rotate(270deg);
-  }
-  50% {
-    transform: translateX(10px) rotate(270deg);
-  }
-}
-
-@keyframes bounce-right {
-  0%,
-  100% {
-    transform: translateX(0) rotate(90deg);
-  }
-  50% {
-    transform: translateX(-10px) rotate(90deg);
-  }
-}
-
-/* Update the horizontal player containers to properly show cards */
-.player-5 .player-hand, .player-6 .player-hand {
-  width: 100%;
-  height: 100%;
-  margin-top: 0;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Adjust spacing for rotated cards in players 5 and 6 */
-.player-5 .card-wrapper, .player-6 .card-wrapper {
-  margin: 0 5px;
-}
-
-/* Remove conflicting transformations that might interfere with rotation */
-.player-5 .player-card:hover, .player-6 .player-card:hover {
-  transform: translateY(-3px) rotate(0);
-}
-
-/* Remove duplicate styles that conflict */
-.arrow-animation {
-  position: absolute;
-  top: -20px;
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-top: 20px solid gold;
-  animation: 
-    pulse 1s infinite alternate,
-    bounce 1.5s infinite;
-  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
-  /* Reset any transform to avoid conflicts */
-  transform: none;
-}
-
-/* Player text styling */
-.player-name, .player-points {
-  color: white;
-  font-size: 12px;
-  margin: 2px 0;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-.player-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 10;
-}
-
-/* Make pot text smaller and white */
-.pot-amount h1 {
-  color: white;
-  font-size: 14px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-</style>

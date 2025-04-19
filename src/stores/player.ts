@@ -33,5 +33,10 @@ export const usePlayerRegistration = defineStore('playerRegistrationStore', {
       this.players = []
       localStorage.removeItem('players')
     },
+
+    loadPlayersFromStorage() {
+      const existingData = localStorage.getItem('players')
+      this.players = existingData ? JSON.parse(existingData) : []
+    },
   },
 })

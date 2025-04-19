@@ -40,7 +40,7 @@ const routes = [
         path: '/game-zone',
         name: 'game-zone',
         component: () => import('@/views/in-game/GameZoneView.vue'),
-        meta: { title: 'In-Between', style: 'gameZone.scss', requireGuest: true },
+        meta: { title: 'In-Between', style: 'game-zone/game-zone.scss', requireGuest: true },
       },
       {
         path: '/test-zone',
