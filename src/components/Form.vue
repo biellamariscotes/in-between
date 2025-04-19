@@ -9,7 +9,6 @@
     :label-position="labelPosition"
     :size="formSize"
     status-icon
-    validate-on-rule-change="true"
     @submit.prevent="onSubmit"
   >
     <div
@@ -54,9 +53,7 @@ const ruleFormRef = ref<FormInstance>()
 const playerRegistration = usePlayerRegistration()
 const router = useRouter()
 
-const numberOfPlayers = localStorage.getItem('playerCount')
-
-console.log('Number of Players', numberOfPlayers)
+const numberOfPlayers = Number(localStorage.getItem('playerCount')) || 0
 
 // Initialize dynamicInputFields as an array
 const dynamicInputFields = ref<Player[]>(
@@ -124,17 +121,16 @@ const isLastInOddArray = (index: number): boolean => {
   max-width: 450px;
 }
 
-/* Add this new CSS class for the centered last item */
 .center-item {
   grid-column: 1 / -1;
   justify-self: center;
 }
 
-::v-deep .el-form-item.is-error .el-input__wrapper {
+:deep(.el-form-item.is-error .el-input__wrapper) {
   box-shadow: none;
 }
 
-::v-deep .el-form-item__label {
+:deep(.el-form-item__label) {
   font-weight: 500;
   letter-spacing: 1.2px;
   font-size: 1.1125em;
@@ -142,24 +138,25 @@ const isLastInOddArray = (index: number): boolean => {
   color: black;
 }
 
-::v-deep .el-input {
+:deep(.el-input) {
   max-width: 250px;
   width: 250px;
   border: none !important;
 }
 
-::v-deep .el-form-item__label-wrap {
+:deep(.el-form-item__label-wrap) {
   display: block;
 }
 
-::v-deep
+:deep(
   .el-form-item.is-required:not(.is-no-asterisk).asterisk-left
-  > .el-form-item__label-wrap
-  > .el-form-item__label:before {
+    > .el-form-item__label-wrap
+    > .el-form-item__label:before
+) {
   content: '' !important;
 }
 
-::v-deep .el-input__wrapper {
+:deep(.el-input__wrapper) {
   padding: 0.2rem 0.5rem;
   border-bottom: 1px solid black;
   background: transparent;
@@ -167,7 +164,7 @@ const isLastInOddArray = (index: number): boolean => {
   border-radius: 0;
 }
 
-::v-deep .el-input__inner {
+:deep(.el-input__inner) {
   font-size: 1em;
   font-weight: 500;
   text-transform: uppercase;
