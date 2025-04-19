@@ -94,7 +94,7 @@
     <h2 v-if="orderedPlayers.length">Player Order</h2>
     <ul>
       <li v-for="player in orderedPlayers" :key="player.id">
-        {{ player.order }}. {{ player.name }}
+        {{ player.randomizedPosition }}. {{ player.name }}
       </li>
     </ul>
 
