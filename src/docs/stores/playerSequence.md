@@ -1,4 +1,4 @@
-# `usePlayerOrderStore`
+# `playerSequenceStore`
 
 Manages player turn order with randomization, turn progression, and localStorage persistence.
 

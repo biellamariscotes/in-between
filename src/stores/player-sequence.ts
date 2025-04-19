@@ -1,6 +1,6 @@
 /**
  * Handles player turn randomization and progression.
- * Documentation: src/docs/stores/playerOrderStore.md
+ * Documentation: src/docs/stores/playerSequence.md
  */
 
 import type { Player } from '@/interface/player'
