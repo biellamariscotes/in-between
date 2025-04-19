@@ -1,10 +1,10 @@
 import { reactive } from 'vue'
-import type { FormRules, RuleItem } from 'element-plus'
+import type { FormRules, FormItemRule } from 'element-plus'
 
 // This makes TypeScript understand the validator function
 type ValidatorCallback = (error?: Error) => void
-type ValidatorRule = RuleItem & {
-  validator?: (rule: any, value: any, callback: ValidatorCallback) => void
+type ValidatorRule = FormItemRule & {
+  validator?: (rule: FormItemRule, value: number, callback: ValidatorCallback) => void
 }
 
 export const useRegistrationRule = reactive<FormRules>({
@@ -16,7 +16,7 @@ export const useRegistrationRule = reactive<FormRules>({
     { required: true, message: 'Please input Credit Score', trigger: 'change' },
     { type: 'number', message: 'Credit must be a number' },
     {
-      validator: (rule: any, value: any, callback: ValidatorCallback) => {
+      validator: (rule: FormItemRule, value: number, callback: ValidatorCallback) => {
         if (value === null || value < 100) {
           callback(new Error('Credit should be 100 and above'))
         } else {
