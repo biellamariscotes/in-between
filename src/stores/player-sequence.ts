@@ -1,15 +1,29 @@
+/**
+ * Handles player turn randomization and progression.
+ * Documentation: src/docs/stores/playerOrderStore.md
+ */
+
 import type { Player } from '@/interface/player'
 import { defineStore } from 'pinia'
 import { usePlayerRegistration } from './player'
 
 export const usePlayerOrderStore = defineStore('playerOrderStore', {
+  // ─────────────────────────────
+  // STATES
+  // ─────────────────────────────
   state: () => ({
     orderedPlayerIds: [] as (string | number)[],
     isOrdered: false,
     currentTurnIndex: 0,
   }),
 
+  // ─────────────────────────────
+  // GETTERS
+  // ─────────────────────────────
   getters: {
+    /**
+     * Get ordered list of Player objects based on randomized order.
+     */
     orderedPlayers(): Player[] {
       const playerStore = usePlayerRegistration()
 
@@ -18,6 +32,9 @@ export const usePlayerOrderStore = defineStore('playerOrderStore', {
         .filter(Boolean) as Player[]
     },
 
+    /**
+     * Get the current player whose turn it is.
+     */
     currentPlayer(): Player | undefined {
       if (!this.isOrdered || this.orderedPlayerIds.length === 0) return undefined
 
@@ -27,7 +44,14 @@ export const usePlayerOrderStore = defineStore('playerOrderStore', {
     },
   },
 
+  // ─────────────────────────────
+  // ACTIONS
+  // ─────────────────────────────
   actions: {
+    /**
+     * Randomizes player order using Fisher-Yates algorithm,
+     * assigns randomizedPosition, and sets the first player's turn.
+     */
     randomizeOrder() {
       const playerStore = usePlayerRegistration()
 
@@ -45,19 +69,17 @@ export const usePlayerOrderStore = defineStore('playerOrderStore', {
         return
       }
 
-      // Reset player turns
       this._resetAllPlayerTurns()
 
-      // Create a copy for shuffling
       const playersCopy = [...playerStore.players]
 
-      // Fisher-Yates Shuffle
+      // 🎲 Fisher-Yates Shuffle
       for (let i = playersCopy.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
         ;[playersCopy[i], playersCopy[j]] = [playersCopy[j], playersCopy[i]]
       }
 
-      // Update positions
+      // Assign randomizedPosition
       playersCopy.forEach((player, index) => {
         const originalIndex = playerStore.players.findIndex((p) => p.id === player.id)
         if (originalIndex !== -1) {
@@ -71,25 +93,23 @@ export const usePlayerOrderStore = defineStore('playerOrderStore', {
         }
       })
 
-      // Store ordered IDs
       this.orderedPlayerIds = playersCopy.map((p) => p.id as string | number)
       this.isOrdered = true
       this.currentTurnIndex = 0
 
-      // Set first player's turn
       this._setPlayerTurn(this.orderedPlayerIds[0], true)
-
-      // Save state
       this._saveToLocalStorage()
 
       console.log('✅ Shuffled Players with randomizedPositions assigned and saved to localStorage')
     },
 
+    /**
+     * Resets the player order and all related data.
+     */
     resetOrder() {
       console.log('🧹 Resetting player order')
       const playerStore = usePlayerRegistration()
 
-      // Reset randomizedPosition and isTurn on all players
       playerStore.players.forEach((player, index) => {
         playerStore.players[index] = {
           ...player,
@@ -98,39 +118,37 @@ export const usePlayerOrderStore = defineStore('playerOrderStore', {
         }
       })
 
-      // Reset store state
       this.orderedPlayerIds = []
       this.isOrdered = false
       this.currentTurnIndex = 0
 
-      // Save state
       this._saveToLocalStorage()
-
-      // Save player data to localStorage
       localStorage.setItem('players', JSON.stringify(playerStore.players))
     },
 
+    /**
+     * Advances the turn to the next player in the order.
+     */
     nextTurn() {
       if (!this.isOrdered || this.orderedPlayerIds.length === 0) {
         console.warn('❌ Cannot advance turn: players not ordered')
         return
       }
 
-      // Set current player's turn to false
       const currentPlayerId = this.orderedPlayerIds[this.currentTurnIndex]
       this._setPlayerTurn(currentPlayerId, false)
 
-      // Move to next player (wrap around if at the end)
       this.currentTurnIndex = (this.currentTurnIndex + 1) % this.orderedPlayerIds.length
 
-      // Set new current player's turn to true
       const nextPlayerId = this.orderedPlayerIds[this.currentTurnIndex]
       this._setPlayerTurn(nextPlayerId, true)
 
-      // Save state
       this._saveToLocalStorage()
     },
 
+    /**
+     * Loads saved player order and turn index from localStorage.
+     */
     loadSavedOrder() {
       const savedIds = localStorage.getItem('orderedPlayerIds')
       const savedOrderState = localStorage.getItem('playersOrdered')
@@ -142,7 +160,6 @@ export const usePlayerOrderStore = defineStore('playerOrderStore', {
       if (savedIds) {
         this.orderedPlayerIds = JSON.parse(savedIds)
 
-        // Update the player store with saved randomizedPositions
         this.orderedPlayerIds.forEach((id, index) => {
           const playerIndex = playerStore.players.findIndex((p) => p.id === id)
           if (playerIndex !== -1) {
@@ -166,19 +183,20 @@ export const usePlayerOrderStore = defineStore('playerOrderStore', {
 
       if (savedTurnIndex && this.isOrdered) {
         this.currentTurnIndex = parseInt(savedTurnIndex, 10)
-
-        // Set the current player's turn to true
         const currentPlayerId = this.orderedPlayerIds[this.currentTurnIndex]
-        if (currentPlayerId) {
-          this._setPlayerTurn(currentPlayerId, true)
-        }
+        if (currentPlayerId) this._setPlayerTurn(currentPlayerId, true)
       }
 
-      // Save player data to localStorage after updates
       localStorage.setItem('players', JSON.stringify(playerStore.players))
     },
 
-    // Private helper methods
+    // ─────────────────────────────
+    // PRIVATE HELPERS
+    // ─────────────────────────────
+
+    /**
+     * Sets a player's turn status.
+     */
     _setPlayerTurn(playerId: string | number, isTurn: boolean) {
       const playerStore = usePlayerRegistration()
       const playerIndex = playerStore.players.findIndex((p) => p.id === playerId)
@@ -195,6 +213,9 @@ export const usePlayerOrderStore = defineStore('playerOrderStore', {
       }
     },
 
+    /**
+     * Resets all players' turn flags.
+     */
     _resetAllPlayerTurns() {
       const playerStore = usePlayerRegistration()
       playerStore.players.forEach((player, index) => {
@@ -202,15 +223,14 @@ export const usePlayerOrderStore = defineStore('playerOrderStore', {
       })
     },
 
+    /**
+     * Saves current order and player data to localStorage.
+     */
     _saveToLocalStorage() {
       const playerStore = usePlayerRegistration()
-
-      // Save order state
       localStorage.setItem('orderedPlayerIds', JSON.stringify(this.orderedPlayerIds))
       localStorage.setItem('playersOrdered', JSON.stringify(this.isOrdered))
       localStorage.setItem('currentTurnIndex', String(this.currentTurnIndex))
-
-      // Save player data
       localStorage.setItem('players', JSON.stringify(playerStore.players))
     },
   },

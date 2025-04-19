@@ -90,6 +90,8 @@
     <div></div>
   </div>
 
+  <!-- TEST BLOCK: REMOVE IF NOT NEEDED -->
+
   <div>
     <h2 v-if="orderedPlayers.length">Player Order</h2>
     <ul>
@@ -106,8 +108,11 @@
       <p>Current Player: {{ currentTurnPlayer.name }}</p>
       <button @click="goToNextTurn">Next Turn</button>
     </div>
+
+    <pre>{{ JSON.stringify(orderedPlayers, null, 2) }}</pre>
   </div>
-  <pre>{{ JSON.stringify(orderedPlayers, null, 2) }}</pre>
+
+  <!-- END OF TEST BLOCK -->
 </template>
 
 <script setup lang="ts">
@@ -115,24 +120,23 @@ import { ref, computed, watch, onMounted } from 'vue'
 import GameTable from '@/assets/img/game-zone/Game-Table.svg'
 import { usePlayerRandomizer } from '@/composables/usePlayerRandomizer'
 
-const { randomizePlayers, getCurrentPlayer, resetPlayerOrder, orderedPlayers } =
+// TEST BLOCK SCRIPT: REMOVE IF NOT NEEDED
+const { orderedPlayers, randomizePlayers, getCurrentPlayer, resetPlayerOrder } =
   usePlayerRandomizer()
 
-// Reactive state
 const turn = ref(1)
 
-// Computed current player
 const currentTurnPlayer = computed(() => getCurrentPlayer(turn.value))
 
-// Methods
 const handleRandomize = () => {
-  const randomized = randomizePlayers()
-  console.log('🎯 Ordered Players after randomize:', randomized)
+  randomizePlayers()
 }
 
 const goToNextTurn = () => {
   turn.value++
 }
+
+// END OF TEST BLOCK SCRIPT: REMOVE IF NOT NEEDED
 
 // Sample player cards
 const playerCards = ref([
