@@ -27,5 +27,11 @@ export const usePlayerRegistration = defineStore('playerRegistrationStore', {
       // Update the local state
       this.players = players
     },
+
+    clearPlayers() {
+      // Clear both the state and localStorage
+      this.players = []
+      localStorage.removeItem('players')
+    },
   },
 })

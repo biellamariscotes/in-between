@@ -9,10 +9,13 @@
     :label-position="labelPosition"
     :size="formSize"
     status-icon
-    validate-on-rule-change="true"
     @submit.prevent="onSubmit"
   >
-    <div v-for="(field, index) in dynamicInputFields" :key="index" class="item-wrapper">
+    <div
+      v-for="(field, index) in dynamicInputFields"
+      :key="index"
+      :class="['item-wrapper', isLastInOddArray(index) ? 'center-item' : '']"
+    >
       <el-form-item
         :label="'Name:'"
         :prop="'[' + index + '].name'"
@@ -42,20 +45,20 @@ import type { ComponentSize, FormInstance, FormProps } from 'element-plus'
 import type { Player } from '@/interface/player'
 import { useRegistrationRule } from '@/composables/rules/useRegistrationRule'
 import { usePlayerRegistration } from '@/stores/player'
+import { useRouter } from 'vue-router'
 
 const labelPosition = ref<FormProps['labelPosition']>('left')
 const formSize = ref<ComponentSize>('default')
 const ruleFormRef = ref<FormInstance>()
 const playerRegistration = usePlayerRegistration()
+const router = useRouter()
+
+const numberOfPlayers = Number(localStorage.getItem('playerCount')) || 0
 
 // Initialize dynamicInputFields as an array
 const dynamicInputFields = ref<Player[]>(
-  Array.from({ length: 6 }, () => ({ name: '', credits: null })),
+  Array.from({ length: numberOfPlayers }, () => ({ name: '', credits: null })),
 )
-
-const resetForm = () => {
-  dynamicInputFields.value = dynamicInputFields.value.map(() => ({ name: '', credits: null }))
-}
 
 const onSubmit = async () => {
   try {
@@ -66,10 +69,8 @@ const onSubmit = async () => {
         (player) => player.name && player.credits,
       )
 
-      const playersData = JSON.stringify(validPlayers)
-
-      // Save to local storage
-      localStorage.setItem('players', playersData)
+      // Clear existing players first
+      playerRegistration.clearPlayers()
 
       // Register each valid player individually
       validPlayers.forEach((player) => {
@@ -79,11 +80,19 @@ const onSubmit = async () => {
           credits: player.credits,
         })
       })
-      resetForm()
+      // Reset the form fields
+      ruleFormRef.value?.resetFields()
+
+      // Go to GameZone
+      router.push('/game-zone')
     }
   } catch (error) {
     console.error('Error during form submission:', error)
   }
+}
+
+const isLastInOddArray = (index: number): boolean => {
+  return dynamicInputFields.value.length % 2 !== 0 && index === dynamicInputFields.value.length - 1
 }
 </script>
 
@@ -112,11 +121,16 @@ const onSubmit = async () => {
   max-width: 450px;
 }
 
-::v-deep .el-form-item.is-error .el-input__wrapper {
+.center-item {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+
+:deep(.el-form-item.is-error .el-input__wrapper) {
   box-shadow: none;
 }
 
-::v-deep .el-form-item__label {
+:deep(.el-form-item__label) {
   font-weight: 500;
   letter-spacing: 1.2px;
   font-size: 1.1125em;
@@ -124,24 +138,25 @@ const onSubmit = async () => {
   color: black;
 }
 
-::v-deep .el-input {
+:deep(.el-input) {
   max-width: 250px;
   width: 250px;
   border: none !important;
 }
 
-::v-deep .el-form-item__label-wrap {
+:deep(.el-form-item__label-wrap) {
   display: block;
 }
 
-::v-deep
+:deep(
   .el-form-item.is-required:not(.is-no-asterisk).asterisk-left
-  > .el-form-item__label-wrap
-  > .el-form-item__label:before {
+    > .el-form-item__label-wrap
+    > .el-form-item__label:before
+) {
   content: '' !important;
 }
 
-::v-deep .el-input__wrapper {
+:deep(.el-input__wrapper) {
   padding: 0.2rem 0.5rem;
   border-bottom: 1px solid black;
   background: transparent;
@@ -149,7 +164,7 @@ const onSubmit = async () => {
   border-radius: 0;
 }
 
-::v-deep .el-input__inner {
+:deep(.el-input__inner) {
   font-size: 1em;
   font-weight: 500;
   text-transform: uppercase;

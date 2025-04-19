@@ -69,6 +69,6 @@ onUnmounted(() => {
   background-size: cover;
   background-position: center;
   opacity: 0.07;
-  z-index: 50;
+  z-index: 1;
 }
 </style>
