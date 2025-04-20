@@ -47,10 +47,6 @@ const cardData = computed<Card | undefined>(() => {
 
 // Debug logging
 watchEffect(() => {
-  console.log('🂠 cardId prop:', props.cardId)
-  console.log('📄 cardsData loaded:', cardsData.value)
-  console.log('🧩 cardData computed:', cardData.value)
-
   if (cardData.value) {
     const imagePath = getCardImagePath(cardData.value.id)
     console.log('🖼️ Image Path:', imagePath)

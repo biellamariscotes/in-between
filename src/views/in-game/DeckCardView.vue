@@ -4,6 +4,10 @@
       Start Game
     </button>
 
+    <button class="bg-blue-500 text-white px-4 py-2 rounded" @click="game.drawThirdCard()">
+      Draw 3rd card
+    </button>
+
     <PlayingCardDeck />
 
     <div class="text-center text-gray-700 mt-4">
@@ -16,11 +20,6 @@
 <script setup lang="ts">
 import PlayingCardDeck from '@/components/decks/PlayingDeck.vue'
 import { useGameStore } from '@/stores/game-store'
-import { onMounted } from 'vue'
 
 const game = useGameStore()
-
-onMounted(() => {
-  game.startGame()
-})
 </script>

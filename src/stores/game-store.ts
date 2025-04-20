@@ -1,3 +1,31 @@
+/**
+ * PARTIAL GAME CONCEPT
+ *
+ *
+ * In-Between Card Game Store
+ *
+ * How to Play:
+ * 1. Game starts with 500 points in your pot
+ * 2. Two cards are shown face up
+ * 3. Place your bet (can't bet more than what's in your pot)
+ * 4. Draw a third card
+ *
+ * Winning:
+ * - If the third card is between the two face-up cards = Win your bet amount
+ * - If the two face-up cards are equal:
+ *   * You can choose if the next card will be higher or lower
+ *   * Guess correctly = Win double your bet
+ *
+ * Losing:
+ * - If the third card matches either face-up card = Lose double your bet
+ * - If the face-up cards are next to each other (like 7,8) = Lose your bet
+ * - If the third card is not between = Lose your bet
+ *
+ * Game Ends:
+ * - When there aren't enough cards left to play (needs 3 cards per round)
+ * - You can always restart the game
+ */
+
 import { defineStore } from 'pinia'
 import { createDeck } from '@/utils/createDeck'
 import { shuffle } from '@/utils/shuffleDeck'
@@ -12,7 +40,6 @@ export const useGameStore = defineStore('game', {
       return JSON.parse(savedState) as GameState
     }
 
-    // Return default state if no saved state found
     return {
       deck: [] as Card[],
       faceUpCards: [null, null] as (Card | null)[],
@@ -35,10 +62,20 @@ export const useGameStore = defineStore('game', {
 
     // Helper to ensure cards have proper ID
     ensureCardHasId(card: any) {
-      if (card && !card.id && card.suit && card.rank) {
-        card.id = this.getCardId(card.suit, card.rank)
+      if (!card) return null
+
+      if (!card.id && card.suit && card.rank) {
+        const id = this.getCardId(card.suit, card.rank)
+        return { ...card, id } // Return a new object with the ID added
       }
       return card
+    },
+
+    initGameState() {
+      const savedCard = localStorage.getItem('currentCard')
+      if (savedCard) {
+        this.currentCard = JSON.parse(savedCard)
+      }
     },
 
     // Save the state to localStorage
@@ -50,10 +87,8 @@ export const useGameStore = defineStore('game', {
     startGame() {
       // Create and shuffle the deck
       const createdDeck = createDeck()
-      console.log('Created Deck:', createdDeck) // Debug log
 
       this.deck = shuffle(createdDeck)
-      console.log('Shuffled Deck Length:', this.deck.length) // Debug log
 
       // Check if deck has enough cards
       if (this.deck.length < 2) {
@@ -76,10 +111,7 @@ export const useGameStore = defineStore('game', {
         const cardWithId1 = this.ensureCardHasId(card1)
         const cardWithId2 = this.ensureCardHasId(card2)
 
-        console.log('Cards with IDs:', cardWithId1, cardWithId2) // Debug log
-
         this.faceUpCards = [cardWithId1, cardWithId2] // Set faceUpCards here
-        console.log('Face Up Cards after assignment:', this.faceUpCards) // Debug log
       } catch (error) {
         console.error('Error drawing initial cards:', error)
         this.message = 'Error drawing cards. Please restart.'
@@ -126,14 +158,21 @@ export const useGameStore = defineStore('game', {
     // Draws third card and determines win/loss
     drawThirdCard() {
       // Check if player made a bet
-      if (this.currentBet <= 0) {
-        this.message = 'Please place a bet first!'
-        return
-      }
+      // if (this.currentBet <= 0) {
+      //   this.message = 'Please place a bet first!'
+      //   return
+      // }
 
-      // Get the third card and ensure it has an ID
-      const drawnCard = this.deck.pop()!
-      this.currentCard = this.ensureCardHasId(drawnCard)
+      const drawnCard = this.deck.pop()
+
+      // Ensure card has ID and assign it to currentCard
+      const cardWithId = this.ensureCardHasId(drawnCard)
+
+      // Set current card
+      this.currentCard = { ...cardWithId }
+
+      // Save just the currentCard to localStorage
+      localStorage.setItem('currentCard', JSON.stringify(this.currentCard))
 
       // Card values for comparison (1=Ace through 13=King)
       const rankOrder: Record<string, number> = {
@@ -169,7 +208,6 @@ export const useGameStore = defineStore('game', {
         if (!this.equalCardsChoice && !this.awaitingEqualChoice) {
           this.awaitingEqualChoice = true
           this.message = 'Cards are equal! Choose to play higher or lower.'
-          this.currentCard = null // Hide the drawn card until choice is made
           return
         }
 
@@ -210,7 +248,7 @@ export const useGameStore = defineStore('game', {
         } else if (r3 === r1 || r3 === r2) {
           // If it exactly matches (a "post") lose double bet.
           this.pot += this.currentBet * 2
-          this.message = 'Card matches one of the face up cards. You lose double your bet!'
+          this.message = 'Card matches one of the face-up cards. You lose double your bet!'
         } else {
           this.pot += this.currentBet
           this.message = `Lose. ${this.currentCard?.rank} is not between ${card1?.rank} and ${card2?.rank}.`
@@ -219,6 +257,9 @@ export const useGameStore = defineStore('game', {
         // Reset awaiting choice state when starting new round
         this.awaitingEqualChoice = false
       }
+
+      // Save the state before resetting for next round
+      this.saveStateToLocalStorage()
 
       // Prepare for next round or end game if deck is low
       if (this.deck.length < 3) {
@@ -230,13 +271,9 @@ export const useGameStore = defineStore('game', {
           const newCard1 = this.deck.pop()!
           const newCard2 = this.deck.pop()!
           this.faceUpCards = [this.ensureCardHasId(newCard1), this.ensureCardHasId(newCard2)]
-          this.currentCard = null
           this.currentBet = 0
         }
       }
-
-      // Save the state after every card draw
-      this.saveStateToLocalStorage()
     },
   },
 })
