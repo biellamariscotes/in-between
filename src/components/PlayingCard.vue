@@ -2,17 +2,12 @@
   <div class="card-container">
     <div class="playing-card" :class="{ 'is-flipped': faceUp }">
       <div class="card-face card-back">
-        <el-image
-          :src="BackCard"
-          class="card-image" 
-          :draggable="false"
-          :class="customClass"
-        />
+        <el-image :src="BackCard" class="card-image" :draggable="false" :class="customClass" />
       </div>
       <div class="card-face card-front">
         <el-image
           v-if="cardData"
-          :src="getCardImagePath(cardData.file_name)"
+          :src="getCardImagePath(cardData.id)"
           class="card-image"
           :draggable="false"
           :class="customClass"
@@ -23,55 +18,64 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import BackCard from '@/assets/img/back-card.png';
-import { useDataFetcher } from '@/composables/useDataFetcher';
-import type {Card} from '@/interface/card'; 
+import { computed, watchEffect } from 'vue'
+import BackCard from '@/assets/img/back-card.png'
+import { useDataFetcher } from '@/composables/useDataFetcher'
+import type { Card } from '@/interface/card'
+
 const props = defineProps({
   cardId: {
     type: String,
-    default: ''
+    default: '',
   },
   faceUp: {
     type: Boolean,
-    default: false
+    default: false,
   },
   customClass: {
     type: String,
-    default: ''
-  }
-});
+    default: '',
+  },
+})
 
-const { data: cardsData } = useDataFetcher<Card[]>('/src/data/cards.json');
+const { data: cardsData } = useDataFetcher<Card[]>('/src/data/cards.json')
 
 const cardData = computed<Card | undefined>(() => {
-  if (!props.cardId || !cardsData.value) return undefined;
-  return cardsData.value.find(card => card.id === props.cardId);
-});
+  if (!props.cardId || !cardsData.value) return undefined
+  return cardsData.value.find((card) => card.id === props.cardId)
+})
 
-function getCardImagePath(fileName: string | undefined): string {
-  if (!fileName) {
-    return ''; // Return empty string or a default image path if fileName is undefined
+// Debug logging
+watchEffect(() => {
+  console.log('🂠 cardId prop:', props.cardId)
+  console.log('📄 cardsData loaded:', cardsData.value)
+  console.log('🧩 cardData computed:', cardData.value)
+
+  if (cardData.value) {
+    const imagePath = getCardImagePath(cardData.value.id)
+    console.log('🖼️ Image Path:', imagePath)
   }
-  return new URL(`../assets/img/cards/${fileName}`, import.meta.url).href;
+})
+
+function getCardImagePath(id: string | undefined): string {
+  if (!id) return ''
+  return new URL(`../assets/img/cards/${id}.svg`, import.meta.url).href
 }
 </script>
 
 <style scoped>
 .card-container {
-  width: 20%;  
-  height: 90%; 
+  width: 200px; /* or fixed width like 200px */
+  aspect-ratio: 2.5 / 3.5; /* optional for consistent sizing */
   perspective: 1000px;
-  margin: 0 -3px;
 }
 
 .playing-card {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.6s;
   transform-style: preserve-3d;
-  cursor: pointer;
+  transition: transform 0.6s;
 }
 
 .playing-card.is-flipped {
@@ -80,11 +84,10 @@ function getCardImagePath(fileName: string | undefined): string {
 
 .card-face {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  inset: 0; /* shorthand for top/right/bottom/left: 0 */
   backface-visibility: hidden;
-  border-radius: 4px; 
-  box-shadow: 0.5px 0.5px 3px rgba(0, 0, 0, 0.5); 
+  border-radius: 4px;
+  box-shadow: 0.5px 0.5px 3px rgba(0, 0, 0, 0.5);
 }
 
 .card-front {
@@ -92,16 +95,17 @@ function getCardImagePath(fileName: string | undefined): string {
 }
 
 .card-image {
-  width: 100%;
-  height: 100%;
-  border-radius: 4px; 
+  width: 100px;
+  height: 100px;
+  object-fit: cover; /* ensures it fills properly */
+  border-radius: 4px;
 }
 
-.card-container:hover .playing-card:not(.is-flipping) {
-  transform: translateY(-4px) rotateY(0); 
+.card-container:hover .playing-card {
+  transform: translateY(-4px) rotateY(0deg);
 }
 
-.card-container:hover .playing-card.is-flipped:not(.is-flipping) {
+.card-container:hover .playing-card.is-flipped {
   transform: translateY(-4px) rotateY(180deg);
 }
 </style>

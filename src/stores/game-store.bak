@@ -2,29 +2,21 @@ import { defineStore } from 'pinia'
 import { createDeck } from '@/utils/createDeck'
 import { shuffle } from '@/utils/shuffleDeck'
 import { cards } from '@/utils/data/cards'
-import type { Card, GameState } from '@/interface/card'
+import { reactive } from 'vue' // import reactive
+import type { GameState } from '@/interface/card'
 
 export const useGameStore = defineStore('game', {
-  state: (): GameState => {
-    // Try to load from localStorage
-    const savedState = localStorage.getItem('gameState')
-    if (savedState) {
-      return JSON.parse(savedState) as GameState
-    }
-
-    // Return default state if no saved state found
-    return {
-      deck: [] as Card[],
-      faceUpCards: [null, null] as (Card | null)[],
-      currentCard: null as Card | null,
-      pot: 500,
-      currentBet: 0,
-      message: '',
-      gameOver: false,
-      equalCardsChoice: null,
-      awaitingEqualChoice: false,
-    }
-  },
+  state: (): GameState => ({
+    deck: [],
+    faceUpCards: reactive([]), // Make faceUpCards reactive
+    currentCard: null,
+    pot: 500,
+    currentBet: 0,
+    message: '',
+    gameOver: false,
+    equalCardsChoice: null,
+    awaitingEqualChoice: false,
+  }),
 
   actions: {
     // Helper function to get card ID based on rank and suit
@@ -39,11 +31,6 @@ export const useGameStore = defineStore('game', {
         card.id = this.getCardId(card.suit, card.rank)
       }
       return card
-    },
-
-    // Save the state to localStorage
-    saveStateToLocalStorage() {
-      localStorage.setItem('gameState', JSON.stringify(this.$state))
     },
 
     // Starts or restarts the game
@@ -94,9 +81,6 @@ export const useGameStore = defineStore('game', {
       this.gameOver = false
       this.equalCardsChoice = null
       this.awaitingEqualChoice = false
-
-      // Save the state after the game starts
-      this.saveStateToLocalStorage()
     },
 
     // Handles when player makes a bet
@@ -108,9 +92,6 @@ export const useGameStore = defineStore('game', {
 
       this.currentBet = betAmount
       this.message = `Bet placed: ${betAmount}`
-
-      // Save state after placing the bet
-      this.saveStateToLocalStorage()
     },
 
     // Handles player's choice when face-up cards are equal
@@ -118,9 +99,6 @@ export const useGameStore = defineStore('game', {
       this.equalCardsChoice = choice
       this.awaitingEqualChoice = false
       this.drawThirdCard()
-
-      // Save state after player makes a choice
-      this.saveStateToLocalStorage()
     },
 
     // Draws third card and determines win/loss
@@ -234,9 +212,6 @@ export const useGameStore = defineStore('game', {
           this.currentBet = 0
         }
       }
-
-      // Save the state after every card draw
-      this.saveStateToLocalStorage()
     },
   },
 })

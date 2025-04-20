@@ -9,8 +9,8 @@ export interface Card {
 // Define the game state.
 export interface GameState {
   deck: Card[] // All cards in the deck
-  faceUpCards: Card[] // The two cards shown face up
-  currentCard: Card | null // The third card that gets drawn
+  faceUpCards: (Card | null)[] // Update this to allow Card or null
+  currentCard: Card | null
   pot: number // Player's money/points
   currentBet: number // How much player is betting
   message: string // Game messages for the player
