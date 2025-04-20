@@ -157,11 +157,10 @@ export const useGameStore = defineStore('game', {
 
     // Draws third card and determines win/loss
     drawThirdCard() {
-      // Check if player made a bet
-      // if (this.currentBet <= 0) {
-      //   this.message = 'Please place a bet first!'
-      //   return
-      // }
+      if (this.currentBet <= 0) {
+        this.message = 'Please place a bet first!'
+        return
+      }
 
       const drawnCard = this.deck.pop()
 
