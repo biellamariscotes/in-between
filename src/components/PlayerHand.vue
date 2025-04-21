@@ -42,17 +42,20 @@ defineProps({
 .player-hand {
   display: flex;
   justify-content: center;
-  gap: 5px;
   width: 100%;
   position: relative;
   transition: transform 0.2s ease;
 }
 
 .card-wrapper {
-  width: 50px;
-  height: 70px;
+  width: 14vw;
+  height: 19vw;
+  max-width: 60px;
+  max-height: 90px;
+  min-width: 32px;
+  min-height: 44px;
   flex-shrink: 0;
-  margin: 0 2px;
+  margin: 0 1px; /* Reduce margin for even less space */
   transition: transform 0.2s ease;
 }
 
@@ -74,8 +77,8 @@ defineProps({
 }
 
 .player-card {
-  width: 100%;
-  height: 100%;
+  width: 90% !important;
+  height: 90% !important;
   object-fit: contain;
   transition: transform 0.2s ease;
 }
