@@ -53,6 +53,12 @@ export const useGameStore = defineStore('game', {
     }
   },
 
+  getters: {
+    getTotalPot: (state) => {
+      return state.pot
+    },
+  },
+
   actions: {
     // Helper function to get card ID based on rank and suit
     getCardId(suit: string, rank: string): string {

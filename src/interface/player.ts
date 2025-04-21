@@ -4,4 +4,5 @@ export interface Player {
   credits?: number | null
   randomizedPosition?: number
   isTurn?: boolean
+  isTurnComplete?: boolean
 }
