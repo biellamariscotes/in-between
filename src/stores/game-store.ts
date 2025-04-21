@@ -1,43 +1,21 @@
-/**
- * PARTIAL GAME CONCEPT
- *
- *
- * In-Between Card Game Store
- *
- * How to Play:
- * 1. Game starts with 500 points in your pot
- * 2. Two cards are shown face up
- * 3. Place your bet (can't bet more than what's in your pot)
- * 4. Draw a third card
- *
- * Winning:
- * - If the third card is between the two face-up cards = Win your bet amount
- * - If the two face-up cards are equal:
- *   * You can choose if the next card will be higher or lower
- *   * Guess correctly = Win double your bet
- *
- * Losing:
- * - If the third card matches either face-up card = Lose double your bet
- * - If the face-up cards are next to each other (like 7,8) = Lose your bet
- * - If the third card is not between = Lose your bet
- *
- * Game Ends:
- * - When there aren't enough cards left to play (needs 3 cards per round)
- * - You can always restart the game
- */
-
 import { defineStore } from 'pinia'
 import { createDeck } from '@/utils/createDeck'
 import { shuffle } from '@/utils/shuffleDeck'
 import { cards } from '@/utils/data/cards'
 import type { Card, GameState } from '@/interface/card'
+import type { Player } from '@/interface/player'
 
 export const useGameStore = defineStore('game', {
   state: (): GameState => {
     // Try to load from localStorage
     const savedState = localStorage.getItem('gameState')
     if (savedState) {
-      return JSON.parse(savedState) as GameState
+      try {
+        return JSON.parse(savedState) as GameState
+      } catch (e) {
+        console.error('Failed to parse saved game state:', e)
+        // Fall through to create a new state
+      }
     }
 
     return {
@@ -50,12 +28,46 @@ export const useGameStore = defineStore('game', {
       gameOver: false,
       equalCardsChoice: null,
       awaitingEqualChoice: false,
+      players: [] as Player[],
+      currentPlayerIndex: 0,
+      roundsPlayed: 0,
+      winnings: [],
+      playerPots: [],
+      isMultiplayer: false,
+      betsPlaced: [],
+      gameStarted: false,
+      // Timer-related state
+      turnTimeRemaining: 10,
+      turnTimerActive: false,
+      turnTimerInterval: null,
     }
   },
 
   getters: {
     getTotalPot: (state) => {
       return state.pot
+    },
+
+    getCurrentPlayerPot: (state) => {
+      if (state.isMultiplayer && state.playerPots.length > state.currentPlayerIndex) {
+        return state.playerPots[state.currentPlayerIndex]
+      }
+      return state.pot
+    },
+
+    canPlaceBet: (state) => {
+      return !state.gameOver && !state.awaitingEqualChoice && state.currentBet === 0
+    },
+
+    canDrawCard: (state) => {
+      return !state.gameOver && state.currentBet > 0 && !state.awaitingEqualChoice
+    },
+
+    activePlayerName: (state) => {
+      if (state.isMultiplayer && state.players.length > state.currentPlayerIndex) {
+        return state.players[state.currentPlayerIndex].name
+      }
+      return 'Player'
     },
   },
 
@@ -67,7 +79,7 @@ export const useGameStore = defineStore('game', {
     },
 
     // Helper to ensure cards have proper ID
-    ensureCardHasId(card: any) {
+    ensureCardHasId(card: Card | null): Card | null {
       if (!card) return null
 
       if (!card.id && card.suit && card.rank) {
@@ -89,11 +101,39 @@ export const useGameStore = defineStore('game', {
       localStorage.setItem('gameState', JSON.stringify(this.$state))
     },
 
+    // Initialize multiplayer mode
+    setupMultiplayerGame(players: Player[]) {
+      this.isMultiplayer = players.length > 1
+      this.players = players
+      this.playerPots = new Array(players.length).fill(500) // Each player starts with 500 points
+      this.betsPlaced = new Array(players.length).fill(0)
+      this.winnings = new Array(players.length).fill(0)
+      this.currentPlayerIndex = 0
+      this.startTurnTimer() // Start timer when setting up game
+    },
+
+    // Move to next player's turn
+    nextPlayerTurn() {
+      if (!this.isMultiplayer) return
+
+      this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length
+
+      // Reset current player's state
+      this.currentCard = null // This is crucial - reset currentCard when moving to next player
+      this.currentBet = 0
+      this.message = `${this.activePlayerName}'s turn. Place your bet.`
+
+      // Reset and start timer for next player
+      this.startTurnTimer()
+
+      // Save state after changing turns
+      this.saveStateToLocalStorage()
+    },
+
     // Starts or restarts the game
     startGame() {
       // Create and shuffle the deck
       const createdDeck = createDeck()
-
       this.deck = shuffle(createdDeck)
 
       // Check if deck has enough cards
@@ -107,8 +147,6 @@ export const useGameStore = defineStore('game', {
       try {
         const card1 = this.deck.pop()
         const card2 = this.deck.pop()
-
-        console.log('Drawn Cards:', card1, card2) // Debug log
 
         if (!card1 || !card2) {
           throw new Error('Failed to draw cards from deck')
@@ -124,14 +162,25 @@ export const useGameStore = defineStore('game', {
         return
       }
 
-      // Initialize game state
+      // Initialize single player game state
+      if (!this.isMultiplayer) {
+        this.pot = 500
+      }
+
+      // Common game state initialization
       this.currentCard = null
-      this.pot = 500
       this.currentBet = 0
-      this.message = 'Game started! Place your bet.'
+      this.message = this.isMultiplayer
+        ? `Game started! ${this.activePlayerName}'s turn to place a bet.`
+        : 'Game started! Place your bet.'
       this.gameOver = false
       this.equalCardsChoice = null
       this.awaitingEqualChoice = false
+      this.roundsPlayed = 0
+      this.gameStarted = true
+
+      // Start the turn timer for the first player
+      this.startTurnTimer()
 
       // Save the state after the game starts
       this.saveStateToLocalStorage()
@@ -139,13 +188,20 @@ export const useGameStore = defineStore('game', {
 
     // Handles when player makes a bet
     placeBet(betAmount: number) {
-      if (betAmount > this.pot) {
+      const currentPot = this.isMultiplayer ? this.playerPots[this.currentPlayerIndex] : this.pot
+
+      if (betAmount > currentPot) {
         this.message = 'Bet exceeds the pot amount!'
         return
       }
 
       this.currentBet = betAmount
-      this.message = `Bet placed: ${betAmount}`
+
+      if (this.isMultiplayer) {
+        this.betsPlaced[this.currentPlayerIndex] = betAmount
+      }
+
+      this.message = `${this.isMultiplayer ? this.activePlayerName + ' ' : ''}Bet placed: ${betAmount}`
 
       // Save state after placing the bet
       this.saveStateToLocalStorage()
@@ -153,6 +209,9 @@ export const useGameStore = defineStore('game', {
 
     // Handles player's choice when face-up cards are equal
     handleEqualCardsChoice(choice: 'higher' | 'lower') {
+      // Stop timer when choice is made
+      this.stopTurnTimer()
+
       this.equalCardsChoice = choice
       this.awaitingEqualChoice = false
       this.drawThirdCard()
@@ -163,18 +222,26 @@ export const useGameStore = defineStore('game', {
 
     // Draws third card and determines win/loss
     drawThirdCard() {
-      // if (this.currentBet <= 0) {
-      //   this.message = 'Please place a bet first!'
-      //   return
-      // }
+      // Stop the timer when player makes a move
+      this.stopTurnTimer()
+
+      if (this.currentBet <= 0) {
+        this.message = 'Please place a bet first!'
+        return
+      }
 
       const drawnCard = this.deck.pop()
+      if (!drawnCard) {
+        this.message = 'No more cards in the deck!'
+        this.gameOver = true
+        return
+      }
 
       // Ensure card has ID and assign it to currentCard
       const cardWithId = this.ensureCardHasId(drawnCard)
 
       // Set current card
-      this.currentCard = { ...cardWithId }
+      this.currentCard = cardWithId
 
       // Save just the currentCard to localStorage
       localStorage.setItem('currentCard', JSON.stringify(this.currentCard))
@@ -196,88 +263,236 @@ export const useGameStore = defineStore('game', {
         king: 13,
       }
 
-      // Convert cards to number values for easier comparison
-      const card1 = this.faceUpCards[0]
-      const card2 = this.faceUpCards[1]
-      const r1 = card1?.rank ? rankOrder[card1.rank] : 0
-      const r2 = card2?.rank ? rankOrder[card2.rank] : 0
-      const r3 = this.currentCard?.rank ? rankOrder[this.currentCard.rank] : 0
+      // Extract and process card values more efficiently
+      const [card1, card2] = this.faceUpCards
+      const r1 = card1?.rank ? rankOrder[card1.rank.toString()] || 0 : 0
+      const r2 = card2?.rank ? rankOrder[card2.rank.toString()] || 0 : 0
+      const r3 = this.currentCard?.rank ? rankOrder[this.currentCard.rank.toString()] || 0 : 0
 
-      // Find which face-up card is higher/lower
+      // Find min/max values more efficiently
       const lower = Math.min(r1, r2)
       const higher = Math.max(r1, r2)
 
-      // If face-up cards are equal
+      // Process the result
+      let winAmount = 0
+      let resultMessage = ''
+
+      // Handle equal cards case
       if (r1 === r2) {
-        // If we're waiting for player's choice
         if (!this.equalCardsChoice && !this.awaitingEqualChoice) {
           this.awaitingEqualChoice = true
           this.message = 'Cards are equal! Choose to play higher or lower.'
           return
         }
 
-        // Process the player's choice
         if (this.equalCardsChoice === 'higher') {
           if (r3 > r1) {
-            this.pot -= this.currentBet * 2 // Double win for correct higher/lower
-            this.message = `Win! ${this.currentCard?.rank} is higher than ${card1?.rank}.`
+            winAmount = this.currentBet * 2
+            resultMessage = `Win! ${this.currentCard?.rank} is higher than ${card1?.rank}.`
           } else {
-            this.pot += this.currentBet
-            this.message = `Lose! ${this.currentCard?.rank} is not higher than ${card1?.rank}.`
+            winAmount = -this.currentBet
+            resultMessage = `Lose! ${this.currentCard?.rank} is not higher than ${card1?.rank}.`
           }
         } else if (this.equalCardsChoice === 'lower') {
           if (r3 < r1) {
-            this.pot -= this.currentBet * 2 // Double win for correct higher/lower
-            this.message = `Win! ${this.currentCard?.rank} is lower than ${card1?.rank}.`
+            winAmount = this.currentBet * 2
+            resultMessage = `Win! ${this.currentCard?.rank} is lower than ${card1?.rank}.`
           } else {
-            this.pot += this.currentBet
-            this.message = `Lose! ${this.currentCard?.rank} is not lower than ${card1?.rank}.`
+            winAmount = -this.currentBet
+            resultMessage = `Lose! ${this.currentCard?.rank} is not lower than ${card1?.rank}.`
           }
         }
 
-        // Reset the choice for next round
         this.equalCardsChoice = null
       }
-
-      // If face-up cards are consecutive numbers
+      // Handle consecutive cards case
       else if (higher - lower === 1) {
-        this.pot += this.currentBet
-        this.message = 'Cards are consecutive. You lose your bet.'
+        winAmount = -this.currentBet
+        resultMessage = 'Cards are consecutive. You lose your bet.'
       }
-
-      // Otherwise, check if third card is between
+      // Handle standard case (cards with gap)
       else {
         if (r3 > lower && r3 < higher) {
-          this.pot -= this.currentBet
-          this.message = `Win! ${this.currentCard?.rank} is between ${card1?.rank} and ${card2?.rank}.`
+          winAmount = this.currentBet
+          resultMessage = `Win! ${this.currentCard?.rank} is between ${card1?.rank} and ${card2?.rank}.`
         } else if (r3 === r1 || r3 === r2) {
-          // If it exactly matches (a "post") lose double bet.
-          this.pot += this.currentBet * 2
-          this.message = 'Card matches one of the face-up cards. You lose double your bet!'
+          winAmount = -this.currentBet * 2
+          resultMessage = 'Card matches one of the face-up cards. You lose double your bet!'
         } else {
-          this.pot += this.currentBet
-          this.message = `Lose. ${this.currentCard?.rank} is not between ${card1?.rank} and ${card2?.rank}.`
+          winAmount = -this.currentBet
+          resultMessage = `Lose. ${this.currentCard?.rank} is not between ${card1?.rank} and ${card2?.rank}.`
+        }
+      }
+
+      // Reset state
+      this.awaitingEqualChoice = false
+
+      // Update player's pot and message
+      if (this.isMultiplayer) {
+        this.playerPots[this.currentPlayerIndex] += winAmount
+        if (winAmount > 0) {
+          this.winnings[this.currentPlayerIndex] += winAmount
         }
 
-        // Reset awaiting choice state when starting new round
-        this.awaitingEqualChoice = false
+        const playerName =
+          this.players[this.currentPlayerIndex]?.name || `Player ${this.currentPlayerIndex + 1}`
+        this.message = `${playerName}: ${resultMessage}`
+      } else {
+        this.pot += winAmount
+        this.message = resultMessage
       }
+
+      this.roundsPlayed++
+      this.currentBet = 0
 
       // Save the state before resetting for next round
       this.saveStateToLocalStorage()
 
-      // Prepare for next round or end game if deck is low
+      // Check if game should end
       if (this.deck.length < 3) {
         this.message += ' Not enough cards to continue. Game over.'
         this.gameOver = true
+        return
+      }
+
+      // Handle next round
+      this.handleNextRound()
+    },
+
+    // Handle transition to next round
+    handleNextRound() {
+      if (this.isMultiplayer) {
+        // Set up next player's turn after a short delay
+        setTimeout(() => {
+          this.nextPlayerTurn()
+
+          // Draw new cards for the next player
+          this.drawNewFaceUpCards()
+        }, 2000)
+      } else if (!this.gameOver) {
+        // Start a new round in single player mode
+        this.drawNewFaceUpCards()
+        this.currentBet = 0
+        this.startTurnTimer()
+      }
+    },
+
+    // Draw new face-up cards for the next round
+    drawNewFaceUpCards() {
+      if (this.deck.length < 2) {
+        this.message += ' Not enough cards to continue. Game over.'
+        this.gameOver = true
+        return
+      }
+
+      const newCard1 = this.deck.pop()
+      const newCard2 = this.deck.pop()
+
+      if (!newCard1 || !newCard2) {
+        this.message += ' Error drawing cards. Game over.'
+        this.gameOver = true
+        return
+      }
+
+      this.faceUpCards = [this.ensureCardHasId(newCard1), this.ensureCardHasId(newCard2)]
+    },
+
+    // Handles player folding (skipping their turn)
+    fold() {
+      // Stop the timer when player folds
+      this.stopTurnTimer()
+
+      if (this.isMultiplayer) {
+        this.message = `${this.players[this.currentPlayerIndex].name} folded and skipped their turn.`
+
+        // Move to the next player's turn
+        setTimeout(() => {
+          this.nextPlayerTurn()
+
+          // Draw new cards for the next player
+          this.drawNewFaceUpCards()
+        }, 2000)
       } else {
-        // Start a new round if game is still active.
-        if (!this.gameOver) {
-          const newCard1 = this.deck.pop()!
-          const newCard2 = this.deck.pop()!
-          this.faceUpCards = [this.ensureCardHasId(newCard1), this.ensureCardHasId(newCard2)]
-          this.currentBet = 0
+        // For single player, just move to the next round
+        this.message = 'You folded and skipped your turn.'
+
+        // Draw new cards for the next round
+        this.drawNewFaceUpCards()
+        this.currentBet = 0
+      }
+
+      this.roundsPlayed++ // Count fold as a completed round
+
+      // Save state after folding
+      this.saveStateToLocalStorage()
+    },
+
+    // Reset bet without drawing
+    cancelBet() {
+      if (this.currentBet > 0) {
+        this.currentBet = 0
+        this.message = 'Bet canceled.'
+        this.saveStateToLocalStorage()
+
+        // Restart timer after cancelling bet
+        this.startTurnTimer()
+      }
+    },
+
+    // Start the turn timer
+    startTurnTimer() {
+      // Clear any existing timer
+      this.stopTurnTimer()
+
+      // Set initial time
+      this.turnTimeRemaining = 10
+      this.turnTimerActive = true
+
+      // Create a new interval that ticks every second
+      this.turnTimerInterval = setInterval(() => {
+        this.turnTimeRemaining--
+
+        // If time runs out, auto-fold
+        if (this.turnTimeRemaining <= 0) {
+          this.stopTurnTimer()
+          this.autoFold()
         }
+      }, 1000)
+    },
+
+    // Stop the turn timer
+    stopTurnTimer() {
+      if (this.turnTimerInterval) {
+        clearInterval(this.turnTimerInterval)
+        this.turnTimerInterval = null
+      }
+      this.turnTimerActive = false
+    },
+
+    // Auto-fold when time runs out
+    autoFold() {
+      if (this.gameStarted && !this.gameOver) {
+        console.log('Time ran out - auto-folding')
+        this.fold()
+      }
+    },
+
+    // Get game statistics
+    getGameStats() {
+      if (this.isMultiplayer) {
+        return {
+          roundsPlayed: this.roundsPlayed,
+          playerStats: this.players.map((player, index) => ({
+            name: player.name,
+            currentPot: this.playerPots[index],
+            totalWinnings: this.winnings[index],
+          })),
+        }
+      }
+
+      return {
+        roundsPlayed: this.roundsPlayed,
+        currentPot: this.pot,
       }
     },
   },
