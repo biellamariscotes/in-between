@@ -1,5 +1,5 @@
 <template>
-  <div class="deck flex gap-4 justify-center" height="100px" width="100px">
+  <div class="decks">
     <!-- First face-up card -->
     <PlayingCard v-if="game.faceUpCards[0]" :card-id="game.faceUpCards[0]?.id" :face-up="true" />
 
@@ -27,3 +27,10 @@ onMounted(() => {
   game.initGameState()
 })
 </script>
+
+<style scope>
+.decks {
+  width: 9%;
+  height: 9%;
+}
+</style>

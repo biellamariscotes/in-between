@@ -1,41 +1,35 @@
 <template>
-  <div 
-    class="player-hand" 
+  <div
+    class="player-hand"
     :class="[
-      orientation === 'left' ? 'hand-left' : 
-      orientation === 'right' ? 'hand-right' : 
-      'hand-normal'
+      orientation === 'left' ? 'hand-left' : orientation === 'right' ? 'hand-right' : 'hand-normal',
     ]"
   >
     <div class="card-wrapper" v-for="(cardId, index) in cards" :key="index">
-      <PlayingCard 
-        :card-id="cardId" 
-        :face-up="showCards" 
-        class="player-card"
-      />
+      <PlayingCard :card-id="cardId" :face-up="showCards" class="player-card" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
-import PlayingCard from './PlayingCard.vue';
+import { defineProps } from 'vue'
+import PlayingCard from './PlayingCard.vue'
 
 defineProps({
   cards: {
     type: Array as () => string[],
-    default: () => []
+    default: () => [],
   },
   showCards: {
     type: Boolean,
-    default: false
+    default: false,
   },
   orientation: {
     type: String,
-    default: 'normal', // 'normal', 'left', or 'right'
-    validator: (value: string) => ['normal', 'left', 'right'].includes(value)
-  }
-});
+    default: 'normal',
+    validator: (value: string) => ['normal', 'left', 'right'].includes(value),
+  },
+})
 </script>
 
 <style scoped>
@@ -55,8 +49,6 @@ defineProps({
   min-width: 32px;
   min-height: 44px;
   flex-shrink: 0;
-  margin: 0 1px; /* Reduce margin for even less space */
-  transition: transform 0.2s ease;
 }
 
 /* Rotate the entire hand container instead of individual cards */
@@ -68,7 +60,8 @@ defineProps({
   transform: rotate(-90deg);
 }
 
-.hand-left, .hand-right {
+.hand-left,
+.hand-right {
   position: relative;
   height: auto;
   flex-direction: row;

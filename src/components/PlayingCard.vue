@@ -61,9 +61,8 @@ function getCardImagePath(id: string | undefined): string {
 
 <style scoped>
 .card-container {
-  width: 200px; /* or fixed width like 200px */
+  width: 100%; /* or fixed width like 200px */
   aspect-ratio: 2.5 / 3.5; /* optional for consistent sizing */
-  perspective: 1000px;
 }
 
 .playing-card {
@@ -91,8 +90,8 @@ function getCardImagePath(id: string | undefined): string {
 }
 
 .card-image {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
   object-fit: cover; /* ensures it fills properly */
   border-radius: 4px;
 }
