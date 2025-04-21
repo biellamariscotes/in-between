@@ -2,7 +2,7 @@
   <div class="game-zone-container">
     <el-image
       :src="GameTable"
-      style="height: 85%; width: 85%; position: absolute; pointer-events: none; user-select: none"
+      style="height: 85%; width: 85%; position: absolute; user-select: none; z-index: 10"
       alt="Game Table"
       :draggable="false"
     />
@@ -78,9 +78,12 @@
         <h1 class="border">POT AMOUNT</h1>
       </div>
     </div>
+
+    <!-- Actions Container -->
     <div class="actions-container">
-      <h1 style="color: white">Action Container</h1>
+      <GameCta />
     </div>
+
     <div class="timer-container">
       <h1 style="color: white">Timer</h1>
     </div>
@@ -119,6 +122,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import GameTable from '@/assets/img/game-zone/Game-Table.svg'
 import { usePlayerRandomizer } from '@/composables/usePlayerRandomizer'
+import GameCta from '@/components/GameCta.vue'
 
 // TEST BLOCK SCRIPT: REMOVE IF NOT NEEDED
 const { orderedPlayers, randomizePlayers, getCurrentPlayer, resetPlayerOrder } =

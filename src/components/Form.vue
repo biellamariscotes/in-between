@@ -34,7 +34,7 @@
     </div>
 
     <div class="btn-group">
-      <Button btnType="submit" variant="secondary" class="next-btn">Start Game</Button>
+      <Button btnType="submit" variant="secondary">Start Game</Button>
     </div>
   </el-form>
 </template>
@@ -102,6 +102,7 @@ const isLastInOddArray = (index: number): boolean => {
   justify-content: center;
   align-items: center;
   grid-column: span 2;
+  gap: 10px;
 }
 
 .el-form {

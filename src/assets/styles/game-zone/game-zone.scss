@@ -43,9 +43,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 900;
   border: 2px solid white;
-  pointer-events: none;
 }
 .game-zone {
   width: 10%;
