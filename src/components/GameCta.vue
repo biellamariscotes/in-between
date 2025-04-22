@@ -62,6 +62,7 @@
 import { ref, computed } from 'vue'
 import { useGameStore } from '@/stores/game-store'
 import { ElMessage } from 'element-plus'
+import { usePlayerRandomizer } from '@/composables/usePlayerRandomizer'
 
 const chooseBet = ref(false)
 
@@ -80,6 +81,8 @@ const maxAllowedBet = computed(() => {
 })
 
 const betAmount = ref(minBet)
+
+const { getCurrentPlayer } = usePlayerRandomizer()
 
 const handleBetOption = () => {
   chooseBet.value = true
@@ -118,6 +121,12 @@ const handleDealNow = () => {
   gameStore.placeBet(betAmount.value)
   gameStore.drawThirdCard()
   chooseBet.value = false
+
+  // Set current player's isTurn to false
+  const currentPlayer = getCurrentPlayer(gameStore.currentPlayerIndex + 1)
+  if (currentPlayer) {
+    currentPlayer.isTurn = false
+  }
 }
 
 const handleAllIn = () => {
@@ -125,11 +134,23 @@ const handleAllIn = () => {
 
   // Draw card and end turn
   gameStore.drawThirdCard()
+
+  // Set current player's isTurn to false
+  const currentPlayer = getCurrentPlayer(gameStore.currentPlayerIndex + 1)
+  if (currentPlayer) {
+    currentPlayer.isTurn = false
+  }
 }
 
 const handleFold = () => {
   gameStore.fold()
   ElMessage.info('Turn folded')
+
+  // Set current player's isTurn to false
+  const currentPlayer = getCurrentPlayer(gameStore.currentPlayerIndex + 1)
+  if (currentPlayer) {
+    currentPlayer.isTurn = false
+  }
 }
 </script>
 
