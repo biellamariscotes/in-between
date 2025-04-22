@@ -33,4 +33,8 @@ export interface GameState {
   turnTimeRemaining: number
   turnTimerActive: boolean
   turnTimerInterval: ReturnType<typeof setTimeout> | null
+
+  // New properties
+  communalPot: number
+  rakeAmount: number
 }

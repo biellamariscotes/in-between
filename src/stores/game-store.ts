@@ -4,6 +4,7 @@ import { shuffle } from '@/utils/shuffleDeck'
 import { cards } from '@/utils/data/cards'
 import type { Card, GameState } from '@/interface/card'
 import type { Player } from '@/interface/player'
+import { usePlayerRegistration } from '@/stores/player'
 
 export const useGameStore = defineStore('game', {
   state: (): GameState => {
@@ -36,10 +37,13 @@ export const useGameStore = defineStore('game', {
       isMultiplayer: false,
       betsPlaced: [],
       gameStarted: false,
+      // New properties
+      communalPot: 0,
+      rakeAmount: 100,
       // Timer-related state
       turnTimeRemaining: 10,
       turnTimerActive: false,
-      turnTimerInterval: null,
+      turnTimerInterval: null as number | null,
     }
   },
 
@@ -68,6 +72,11 @@ export const useGameStore = defineStore('game', {
         return state.players[state.currentPlayerIndex].name
       }
       return 'Player'
+    },
+
+    // Add getter for communal pot
+    getCommunalPot: (state) => {
+      return state.communalPot
     },
   },
 
@@ -130,6 +139,72 @@ export const useGameStore = defineStore('game', {
       this.saveStateToLocalStorage()
     },
 
+    // Collect rake from all players at the start of a round
+    collectRake() {
+      const playerStore = usePlayerRegistration()
+
+      if (this.isMultiplayer) {
+        // For multiplayer mode, collect rake from each registered player
+        for (let i = 0; i < this.players.length; i++) {
+          const player = this.players[i]
+          if (!player) continue // Skip if player doesn't exist
+
+          const playerId = player.id
+
+          // Find the registered player with this ID
+          const registeredPlayerIndex = playerStore.players.findIndex((p) => p.id === playerId)
+
+          if (registeredPlayerIndex !== -1) {
+            // Deduct rake from the player's credits
+            const registeredPlayer = playerStore.players[registeredPlayerIndex]
+            const playerCredits = registeredPlayer.credits || 0
+
+            if (playerCredits >= this.rakeAmount) {
+              registeredPlayer.credits = playerCredits - this.rakeAmount
+              this.communalPot += this.rakeAmount
+            } else {
+              // If player doesn't have enough credits, take what they have
+              this.communalPot += playerCredits
+              registeredPlayer.credits = 0
+            }
+
+            // Update the player's pot in the game
+            this.playerPots[i] = registeredPlayer.credits || 0
+          } else {
+            // Handle case where player isn't registered
+            this.playerPots[i] = 0
+          }
+        }
+      } else {
+        // For single player mode
+        if (this.players.length > 0 && this.players[0]) {
+          const playerId = this.players[0].id
+          if (playerId) {
+            const playerIndex = playerStore.players.findIndex((p) => p.id === playerId)
+            if (playerIndex !== -1) {
+              const registeredPlayer = playerStore.players[playerIndex]
+              const playerCredits = registeredPlayer.credits || 0
+
+              if (playerCredits >= this.rakeAmount) {
+                registeredPlayer.credits = playerCredits - this.rakeAmount
+                this.communalPot += this.rakeAmount
+              } else {
+                this.communalPot += playerCredits
+                registeredPlayer.credits = 0
+              }
+              this.pot = registeredPlayer.credits || 0
+            }
+          }
+        }
+      }
+
+      // Save updated player data to localStorage
+      localStorage.setItem('players', JSON.stringify(playerStore.players))
+
+      this.message = `New round started! Rake of ${this.rakeAmount} collected from players.`
+      this.saveStateToLocalStorage()
+    },
+
     // Starts or restarts the game
     startGame() {
       // Create and shuffle the deck
@@ -138,8 +213,34 @@ export const useGameStore = defineStore('game', {
       const createdDeck = createDeck()
       this.deck = shuffle(createdDeck)
 
-      // Check if deck has enough cards
+      // Load players from registration store
+      const playerStore = usePlayerRegistration()
+      playerStore.loadPlayersFromStorage()
 
+      // If multiplayer, set up players from registration
+      if (this.players.length > 1) {
+        this.isMultiplayer = true
+        // Update player pots from registration store
+        this.playerPots = this.players.map((player) => {
+          const registeredPlayer = playerStore.players.find((p) => p.id === player.id)
+          return registeredPlayer?.credits || 0
+        })
+      } else {
+        // Single player setup
+        this.isMultiplayer = false
+        if (this.players.length === 1) {
+          const registeredPlayer = playerStore.players.find((p) => p.id === this.players[0].id)
+          if (registeredPlayer) {
+            this.pot = registeredPlayer.credits ?? 0
+          } else {
+            this.pot = 500 // Default value
+          }
+        } else {
+          this.pot = 500 // Default value if no player
+        }
+      }
+
+      // Check if deck has enough cards
       if (this.deck.length < 3) {
         console.error('Deck has insufficient cards to start the game')
         this.message = 'Error initializing deck. Please refresh.'
@@ -165,22 +266,22 @@ export const useGameStore = defineStore('game', {
         return
       }
 
-      // Initialize single player game state
-      if (!this.isMultiplayer) {
-        this.pot = 500
-      }
-
-      // Common game state initialization
+      // Initialize game state
+      this.communalPot = 0 // Reset communal pot
       this.currentCard = null
       this.currentBet = 0
-      this.message = this.isMultiplayer
-        ? `Game started! ${this.activePlayerName}'s turn to place a bet.`
-        : 'Game started! Place your bet.'
       this.gameOver = false
       this.equalCardsChoice = null
       this.awaitingEqualChoice = false
       this.roundsPlayed = 0
       this.gameStarted = true
+
+      // Collect rake to start the first round
+      this.collectRake()
+
+      this.message = this.isMultiplayer
+        ? `Game started! ${this.activePlayerName}'s turn to place a bet.`
+        : 'Game started! Place your bet.'
 
       // Start the turn timer for the first player
       this.startTurnTimer()
@@ -197,6 +298,7 @@ export const useGameStore = defineStore('game', {
         this.message = 'Bet exceeds the pot amount!'
         return
       }
+
       this.currentBet = betAmount
 
       if (this.isMultiplayer) {
@@ -213,11 +315,9 @@ export const useGameStore = defineStore('game', {
     handleEqualCardsChoice(choice: 'higher' | 'lower') {
       // Stop timer when choice is made
       this.stopTurnTimer()
-
       this.equalCardsChoice = choice
       this.awaitingEqualChoice = false
       this.drawThirdCard()
-
       // Save state after player makes a choice
       this.saveStateToLocalStorage()
     },
@@ -241,14 +341,12 @@ export const useGameStore = defineStore('game', {
 
       // Ensure card has ID and assign it to currentCard
       const cardWithId = this.ensureCardHasId(drawnCard)
-
-      // Set current card
       this.currentCard = cardWithId
 
       // Save just the currentCard to localStorage
       localStorage.setItem('currentCard', JSON.stringify(this.currentCard))
 
-      // Card values for comparison (1=Ace through 13=King)
+      // Card values for comparison
       const rankOrder: Record<string, number> = {
         '1': 1,
         '2': 2,
@@ -265,19 +363,20 @@ export const useGameStore = defineStore('game', {
         king: 13,
       }
 
-      // Extract and process card values more efficiently
+      // Extract and process card values
       const [card1, card2] = this.faceUpCards
       const r1 = card1?.rank ? rankOrder[card1.rank.toString()] || 0 : 0
       const r2 = card2?.rank ? rankOrder[card2.rank.toString()] || 0 : 0
       const r3 = this.currentCard?.rank ? rankOrder[this.currentCard.rank.toString()] || 0 : 0
 
-      // Find min/max values more efficiently
+      // Find min/max values
       const lower = Math.min(r1, r2)
       const higher = Math.max(r1, r2)
 
-      // Process the result
+      // Process the results
       let winAmount = 0
       let resultMessage = ''
+      const playerStore = usePlayerRegistration()
 
       // Handle equal cards case
       if (r1 === r2) {
@@ -289,49 +388,78 @@ export const useGameStore = defineStore('game', {
 
         if (this.equalCardsChoice === 'higher') {
           if (r3 > r1) {
-            winAmount = this.currentBet * 2
-            resultMessage = `Win! ${this.currentCard?.rank} is higher than ${card1?.rank}.`
+            // Win - get the bet amount from communal pot
+            winAmount = this.currentBet + this.communalPot
+            resultMessage = `Win! ${this.currentCard?.rank} is higher than ${card1?.rank}. You win the pot of ${this.communalPot}!`
+            this.communalPot = 0 // Reset pot after win
           } else {
+            // Lose - add bet to communal pot
             winAmount = -this.currentBet
+            this.communalPot += this.currentBet
             resultMessage = `Lose! ${this.currentCard?.rank} is not higher than ${card1?.rank}.`
           }
         } else if (this.equalCardsChoice === 'lower') {
           if (r3 < r1) {
-            winAmount = this.currentBet * 2
-            resultMessage = `Win! ${this.currentCard?.rank} is lower than ${card1?.rank}.`
+            // Win - get the bet amount from communal pot
+            winAmount = this.currentBet + this.communalPot
+            resultMessage = `Win! ${this.currentCard?.rank} is lower than ${card1?.rank}. You win the pot of ${this.communalPot}!`
+            this.communalPot = 0 // Reset pot after win
           } else {
+            // Lose - add bet to communal pot
             winAmount = -this.currentBet
+            this.communalPot += this.currentBet
             resultMessage = `Lose! ${this.currentCard?.rank} is not lower than ${card1?.rank}.`
           }
         }
-
         this.equalCardsChoice = null
       }
       // Handle consecutive cards case
       else if (higher - lower === 1) {
+        // Lose - add bet to communal pot
         winAmount = -this.currentBet
+        this.communalPot += this.currentBet
         resultMessage = 'Lose! Cards are consecutive.'
       }
       // Handle standard case (cards with gap)
       else {
         if (r3 > lower && r3 < higher) {
-          winAmount = this.currentBet
-          resultMessage = `Win! ${this.currentCard?.rank} is between ${card1?.rank} and ${card2?.rank}.`
+          // Win - get the bet amount plus communal pot
+          winAmount = this.currentBet + this.communalPot
+          resultMessage = `Win! ${this.currentCard?.rank} is between ${card1?.rank} and ${card2?.rank}. You win the pot of ${this.communalPot}!`
+          this.communalPot = 0 // Reset pot after win
         } else if (r3 === r1 || r3 === r2) {
+          // Double loss - add double bet to communal pot
           winAmount = -this.currentBet * 2
-          resultMessage = 'Lose! Card matches one of the face-up cards. You lose double your bet!'
+          this.communalPot += this.currentBet * 2
+          resultMessage = `Lose! Card matches one of the face-up cards. You lose double your bet!`
         } else {
+          // Lose - add bet to communal pot
           winAmount = -this.currentBet
-          resultMessage = `Lose!. ${this.currentCard?.rank} is not between ${card1?.rank} and ${card2?.rank}.`
+          this.communalPot += this.currentBet
+          resultMessage = `Lose! ${this.currentCard?.rank} is not between ${card1?.rank} and ${card2?.rank}.`
         }
       }
 
       // Reset state
       this.awaitingEqualChoice = false
 
-      // Update player's pot and message
+      // Update player's credits in both game store and registration store
       if (this.isMultiplayer) {
+        // Update player's pot in the game
         this.playerPots[this.currentPlayerIndex] += winAmount
+
+        // Update registered player's credits
+        const playerId = this.players[this.currentPlayerIndex]?.id
+        if (playerId) {
+          const playerIndex = playerStore.players.findIndex((p) => p.id === playerId)
+          if (playerIndex !== -1) {
+            const registeredPlayer = playerStore.players[playerIndex]
+            const currentCredits = registeredPlayer.credits || 0
+
+            registeredPlayer.credits = Math.max(0, currentCredits + winAmount)
+          }
+        }
+
         if (winAmount > 0) {
           this.winnings[this.currentPlayerIndex] += winAmount
         }
@@ -340,12 +468,38 @@ export const useGameStore = defineStore('game', {
           this.players[this.currentPlayerIndex]?.name || `Player ${this.currentPlayerIndex + 1}`
         this.message = `${playerName}: ${resultMessage}`
       } else {
+        // Single player mode
         this.pot += winAmount
+        if (winAmount > 0) {
+          // Update registered player's credits
+          if (this.players.length > 0 && this.players[0]) {
+            const playerId = this.players[0].id
+            if (playerId) {
+              const playerIndex = playerStore.players.findIndex((p) => p.id === playerId)
+              if (playerIndex !== -1) {
+                const registeredPlayer = playerStore.players[playerIndex]
+                const currentCredits = registeredPlayer.credits || 0
+
+                registeredPlayer.credits = Math.max(0, currentCredits + winAmount)
+              }
+            }
+          }
+        }
         this.message = resultMessage
       }
 
+      // Save updated player data
+      localStorage.setItem('players', JSON.stringify(playerStore.players))
       this.roundsPlayed++
       this.currentBet = 0
+
+      // If a player won, start a new round after
+      if (winAmount > 0 && !this.gameOver) {
+        // Start a new round with a new rake collection
+        setTimeout(() => {
+          this.collectRake()
+        }, 2000)
+      }
 
       // Save the state before resetting for next round
       this.saveStateToLocalStorage()
@@ -367,7 +521,6 @@ export const useGameStore = defineStore('game', {
         // Set up next player's turn after a short delay
         setTimeout(() => {
           this.nextPlayerTurn()
-
           // Draw new cards for the next player
           this.drawNewFaceUpCards()
         }, 2000)
@@ -406,25 +559,20 @@ export const useGameStore = defineStore('game', {
 
       if (this.isMultiplayer) {
         this.message = `${this.players[this.currentPlayerIndex].name} folded and skipped their turn.`
-
         // Move to the next player's turn
         setTimeout(() => {
           this.nextPlayerTurn()
-
           // Draw new cards for the next player
           this.drawNewFaceUpCards()
         }, 2000)
       } else {
         // For single player, just move to the next round
         this.message = 'You folded and skipped your turn.'
-
         // Draw new cards for the next round
         this.drawNewFaceUpCards()
         this.currentBet = 0
       }
-
       this.roundsPlayed++ // Count fold as a completed round
-
       // Save state after folding
       this.saveStateToLocalStorage()
     },
@@ -435,7 +583,6 @@ export const useGameStore = defineStore('game', {
         this.currentBet = 0
         this.message = 'Bet canceled.'
         this.saveStateToLocalStorage()
-
         // Restart timer after cancelling bet
         this.startTurnTimer()
       }
@@ -453,7 +600,6 @@ export const useGameStore = defineStore('game', {
       // Create a new interval that ticks every second
       this.turnTimerInterval = setInterval(() => {
         this.turnTimeRemaining--
-
         // If time runs out, auto-fold
         if (this.turnTimeRemaining <= 0) {
           this.stopTurnTimer()

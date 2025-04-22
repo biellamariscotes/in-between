@@ -40,7 +40,6 @@
         src="../assets/img/buttons/all-in.png"
         alt="all-in-png"
         class="all-in-cta"
-        @click="handleAllIn"
       />
       <img
         src="../assets/img/buttons/bet.png"
@@ -114,15 +113,24 @@ const showFoldConfirmation = ref(false)
 const gameStore = useGameStore()
 const minBet = 100 // Minimum bet amount
 
-const totalPot = computed(() => {
+// Player's available credits
+const playerCredits = computed(() => {
   if (gameStore.isMultiplayer) {
     return gameStore.playerPots[gameStore.currentPlayerIndex] || 0
   }
   return gameStore.pot || 0
 })
 
+// Max bet is limited by BOTH communal pot AND player's own credits
 const maxAllowedBet = computed(() => {
-  return totalPot.value
+  // Can't bet more than what's in the communal pot
+  const potLimit = gameStore.communalPot || 0
+  
+  // Can't bet more than player's available credits
+  const creditLimit = playerCredits.value
+  
+  // Return the smaller of the two limits
+  return Math.min(potLimit, creditLimit)
 })
 
 const betAmount = ref(minBet)
@@ -142,11 +150,22 @@ const handleMin = () => {
 }
 
 const handleHalf = () => {
-  betAmount.value = Math.floor(totalPot.value / 2)
+  // Half of communal pot, not half of player's credits
+  betAmount.value = Math.floor(gameStore.communalPot / 2)
+  
+  // Ensure it's not more than player has
+  if (betAmount.value > playerCredits.value) {
+    betAmount.value = playerCredits.value
+  }
+  
+  // Ensure it's at least the minimum
+  if (betAmount.value < minBet) {
+    betAmount.value = minBet
+  }
 }
 
 const handleMax = () => {
-  betAmount.value = totalPot.value
+  betAmount.value = maxAllowedBet.value
 }
 
 const handleDealNow = () => {
@@ -155,8 +174,8 @@ const handleDealNow = () => {
     return
   }
 
-  if (betAmount.value > totalPot.value) {
-    ElMessage.warning('Bet cannot exceed your available credits')
+  if (betAmount.value > maxAllowedBet.value) {
+    ElMessage.warning('Bet cannot exceed the communal pot or your available credits')
     return
   }
 
@@ -166,23 +185,22 @@ const handleDealNow = () => {
   chooseBet.value = false
 }
 
-const handleAllIn = () => {
-  showAllInConfirmation.value = true
+const handleFold = () => {
+  // Execute fold action directly
+  gameStore.fold()
+  ElMessage.info('Turn folded')
 }
 
+// These methods are not used since we removed the confirmation dialogs
 const confirmAllIn = () => {
   // Close modal
   showAllInConfirmation.value = false
 
-  // Place bet with all available credits
-  gameStore.placeBet(totalPot.value)
+  // Place bet with maximum allowed
+  gameStore.placeBet(maxAllowedBet.value)
 
   // Draw card and end turn
   gameStore.drawThirdCard()
-}
-
-const handleFold = () => {
-  showFoldConfirmation.value = true
 }
 
 const confirmFold = () => {
