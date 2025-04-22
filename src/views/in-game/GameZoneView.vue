@@ -213,7 +213,9 @@ const gameStore = useGameStore()
 
 // Load players from localStorage if not already loaded
 const playerStore = usePlayerStore()
+
 const registrationStore = usePlayerRegistration()
+
 onMounted(() => {
   if (!registrationStore.players.length) {
     registrationStore.loadPlayersFromStorage()
