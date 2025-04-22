@@ -150,8 +150,14 @@
 
     <!-- Actions Container -->
     <div class="actions-container">
-      <!-- <div v-if="!gameStore.gameStarted">
-        <button class="game-button primary-button" @click="startNewGame">Start Game</button>
+      <div v-if="!gameStore.gameStarted">
+        <img
+          src="../../assets/img/buttons/start-game.png"
+          alt="fold-btn"
+          class="start-cta"
+          @click="startNewGame"
+        />
+        <!-- <button class="game-button primary-button" @click="startNewGame">Start Game</button> -->
       </div>
       <div v-else-if="gameStore.gameOver">
         <button class="game-button primary-button" @click="startNewGame">New Game</button>
@@ -164,15 +170,15 @@
           <button class="game-button choice-button" @click="handleChoice('lower')">Lower</button>
         </div>
       </div>
-      <div v-else-if="gameStore.currentBet > 0">
+      <!-- <div v-else-if="gameStore.currentBet > 0">
         <button class="game-button primary-button" @click="drawCard">Draw Card</button>
         <button class="game-button secondary-button" @click="gameStore.cancelBet">
           Cancel Bet
         </button>
-      </div>
-      <div v-else>
       </div> -->
-      <GameCta />
+      <div style="width: 100%" v-else>
+        <GameCta />
+      </div>
     </div>
 
     <div class="timer-container">
@@ -363,19 +369,17 @@ function startNewGame() {
 }
 
 // Draw third card and show win/lose modal
-function drawCard() {
-  // Stop the timer when drawing a card and showing results
-  gameStore.stopTurnTimer()
+// function drawCard() {
+//   gameStore.stopTurnTimer()
 
-  gameStore.drawThirdCard()
+//   gameStore.drawThirdCard()
 
-  // Check if player won or lost based on gameStore
-  if (gameStore.message.includes('Win')) {
-    showWinModal()
-  } else if (gameStore.message.includes('Lose')) {
-    showLoseModal()
-  }
-}
+//   if (gameStore.message.includes('Win')) {
+//     showWinModal()
+//   } else if (gameStore.message.includes('Lose')) {
+//     showLoseModal()
+//   }
+// }
 
 function handleChoice(choice: 'higher' | 'lower') {
   gameStore.handleEqualCardsChoice(choice)
@@ -603,6 +607,12 @@ watch(
   max-width: 100%;
   max-height: 100%;
   object-fit: contain; /* Ensures image maintains aspect ratio */
+}
+
+.start-cta {
+  width: 330px;
+  height: 80px;
+  cursor: pointer;
 }
 
 @keyframes fadeIn {
