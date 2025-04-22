@@ -368,18 +368,23 @@ function startNewGame() {
   gameStore.startGame()
 }
 
-// Draw third card and show win/lose modal
-// function drawCard() {
-//   gameStore.stopTurnTimer()
+function drawCard() {
+  gameStore.stopTurnTimer()
 
-//   gameStore.drawThirdCard()
+  gameStore.drawThirdCard()
 
-//   if (gameStore.message.includes('Win')) {
-//     showWinModal()
-//   } else if (gameStore.message.includes('Lose')) {
-//     showLoseModal()
-//   }
-// }
+  if (gameStore.message.includes('Win')) {
+    showWinModal()
+  } else if (gameStore.message.includes('Lose')) {
+    showLoseModal()
+  }
+  // Check if player won or lost based on gameStore
+  if (gameStore.message.includes('Win')) {
+    showWinModal()
+  } else if (gameStore.message.includes('Lose')) {
+    showLoseModal()
+  }
+}
 
 function handleChoice(choice: 'higher' | 'lower') {
   gameStore.handleEqualCardsChoice(choice)

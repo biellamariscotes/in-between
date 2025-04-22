@@ -56,50 +56,6 @@
       />
     </div>
   </div>
-
-  <!-- All-in confirmation modal -->
-  <!-- <el-dialog
-    v-model="showAllInConfirmation"
-    title="Confirm All-In"
-    width="320px"
-    center
-    :modal="true"
-    :append-to-body="true"
-    :show-close="false"
-    :lock-scroll="true"
-    class="game-dialog"
-    :overlay-class="'dialog-overlay'"
-  >
-    <span>Are you sure you want to bet all your credits?</span>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="showAllInConfirmation = false">Cancel</el-button>
-        <el-button type="primary" @click="confirmAllIn">Confirm</el-button>
-      </span>
-    </template>
-  </el-dialog> -->
-
-  <!-- Fold confirmation modal -->
-  <!-- <el-dialog
-    v-model="showFoldConfirmation"
-    title="Confirm Fold"
-    width="320px"
-    center
-    :modal="true"
-    :append-to-body="true"
-    :show-close="false"
-    :lock-scroll="true"
-    class="game-dialog"
-    :overlay-class="'dialog-overlay'"
-  >
-    <span>Are you sure you want to fold? You will forfeit your turn.</span>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="showFoldConfirmation = false">Cancel</el-button>
-        <el-button type="primary" @click="confirmFold">Confirm</el-button>
-      </span>
-    </template>
-  </el-dialog> -->
 </template>
 
 <script setup lang="ts">
@@ -108,8 +64,6 @@ import { useGameStore } from '@/stores/game-store'
 import { ElMessage } from 'element-plus'
 
 const chooseBet = ref(false)
-const showAllInConfirmation = ref(false)
-const showFoldConfirmation = ref(false)
 
 const gameStore = useGameStore()
 const minBet = 100 // Minimum bet amount
@@ -167,14 +121,6 @@ const handleDealNow = () => {
 }
 
 const handleAllIn = () => {
-  showAllInConfirmation.value = true
-}
-
-const confirmAllIn = () => {
-  // Close modal
-  showAllInConfirmation.value = false
-
-  // Place bet with all available credits
   gameStore.placeBet(totalPot.value)
 
   // Draw card and end turn
@@ -182,14 +128,6 @@ const confirmAllIn = () => {
 }
 
 const handleFold = () => {
-  showFoldConfirmation.value = true
-}
-
-const confirmFold = () => {
-  // Close modal
-  showFoldConfirmation.value = false
-
-  // Execute fold action
   gameStore.fold()
   ElMessage.info('Turn folded')
 }
