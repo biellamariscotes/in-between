@@ -17,6 +17,7 @@
     <div class="turn-container">
       <h1 style="color: white">{{ currentPlayerDisplay }}'s Turn</h1>
     </div>
+
     <div class="game-zone">
       <div class="card-table">
         <div class="game-cards">
@@ -28,13 +29,16 @@
             />
           </div>
 
-          <div class="face-up-card" v-if="isCurrentCardDrawnByCurrentPlayer">
+          <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
             <PlayerHand
+              v-if="gameStore.currentCard"
               :cards="[cardToDisplayId(gameStore.currentCard)]"
               :show-cards="true"
               orientation="normal"
             />
+            <img v-else :src="Shadowquestion" alt="Shadow Question" class="shadowquestion" />
           </div>
+
           <div class="face-up-card" v-else>
             <div class="card-placeholder"></div>
           </div>
@@ -48,12 +52,12 @@
           </div>
         </div>
 
-        <!-- Replace game message with player credit display -->
         <div class="credit-display">
           <h2>Credit: {{ currentPlayerPot }}</h2>
         </div>
       </div>
     </div>
+
     <div class="table-container">
       <div
         v-for="position in 6"
@@ -182,8 +186,9 @@
     </div>
 
     <div class="timer-container">
-      <h2 :class="['timer', { warning: timeRunningLow }]">Time: {{ formattedTimeRemaining }}</h2>
+      <CountdownTimer />
     </div>
+
     <div class="settings-container">
       <button class="settings-button" @click="toggleSettings">
         <span class="settings-icon">⚙️</span>
@@ -195,6 +200,7 @@
 <script setup lang="ts">
 import { computed, watch, onMounted, onUnmounted, ref } from 'vue'
 import GameTable from '@/assets/img/game-zone/Game-Table.svg'
+import Shadowquestion from '@/assets/img/game-zone/shadowquestion.svg'
 import PlayerHand from '@/components/PlayerHand.vue'
 import GameCta from '@/components/GameCta.vue'
 import type { Card } from '@/interface/card'
@@ -203,6 +209,7 @@ import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
 import YouWinImage from '@/assets/img/game-zone/you-win.png'
 import YouLoseImage from '@/assets/img/game-zone/you-lose.png'
+import CountdownTimer from '@/components/CountdownTimer.vue'
 
 // Result modal state
 const showResultModal = ref(false)
@@ -357,7 +364,7 @@ const currentPlayerPot = computed(() => {
 
 // Game actions
 function startNewGame() {
-  // Setup multiplayer if more than one active player
+  // Setup multiplayer if more than one active playeruseGameStore useGameStore
   if (playerCount.value > 1) {
     const activePlayers = players.value.slice(0, playerCount.value)
     gameStore.setupMultiplayerGame(activePlayers)
@@ -406,28 +413,6 @@ function setupGameDisplay() {
 }
 
 // Timer functionality
-const formattedTimeRemaining = computed(() => {
-  if (!gameStore.gameStarted || gameStore.gameOver) {
-    return '10s'
-  }
-  return `${gameStore.turnTimeRemaining}s`
-})
-
-// Apply warning style when time is running low (3 seconds or less)
-const timeRunningLow = computed(() => {
-  return gameStore.turnTimeRemaining <= 3 && gameStore.turnTimerActive
-})
-
-// When user's turn is active, ensure timer is running
-watch(
-  () => gameStore.currentPlayerIndex,
-  () => {
-    if (gameStore.gameStarted && !gameStore.gameOver && !showResultModal.value) {
-      // Only start the timer for the new player if no modal is showing
-      gameStore.startTurnTimer()
-    }
-  },
-)
 
 // Clean up timer when component is unmounted
 onUnmounted(() => {
@@ -506,30 +491,34 @@ watch(
 
 .game-cards {
   display: flex;
-  flex-direction: column; /* Change to column layout */
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 15px; /* Adjusted for vertical spacing */
-  height: 100%; /* Ensure container uses available height */
+  gap: 15px;
+  height: 100%;
   padding: 10px;
 }
 
 /* Adjust styling for table cards to match player hands */
 .face-up-card,
 .current-card {
-  width: 100px;
-  height: 140px;
-  background-color: rgba(0, 0, 0, 0.2);
+  width: 140px;
+  height: 220px;
   border-radius: 10px;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
+  /* background-color: rgba(0, 0, 0, 0.2); */
+
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+.shadowquestion {
+  width: 1000px;
+  height: 250px;
+}
+
 .card-placeholder {
   display: flex;
-
   width: 100px;
   height: 140px;
   background-color: rgba(0, 0, 0, 0.2);
@@ -559,7 +548,7 @@ watch(
   width: 100%;
 }
 
-.timer {
+/* .timer {
   color: white;
   font-size: 1.5rem;
   transition: color 0.3s ease;
@@ -568,7 +557,7 @@ watch(
 .timer.warning {
   color: #ff5252;
   animation: pulse 1s infinite;
-}
+} */
 
 @keyframes pulse {
   0% {
