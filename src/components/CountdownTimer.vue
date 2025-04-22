@@ -33,7 +33,7 @@ const numberSvgs: Record<number, string> = {
 const timeRemaining = ref(10)
 
 const getSvgSrc = (number: number): string =>
-  numberSvgs[number] || '/src/assets/img/timer/default.svg'
+  numberSvgs[number] || '/src/assets/img/game-zone/timer/10.svg'
 
 const formattedTimeRemaining = computed(() => {
   if (!gameStore.gameStarted || gameStore.gameOver) {
