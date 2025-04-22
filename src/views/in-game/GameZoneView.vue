@@ -203,6 +203,10 @@ import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
 import YouWinImage from '@/assets/img/game-zone/you-win.png'
 import YouLoseImage from '@/assets/img/game-zone/you-lose.png'
+import { usePlayerRandomizer } from '@/composables/usePlayerRandomizer'
+
+const { orderedPlayers, randomizePlayers, getCurrentPlayer, resetPlayerOrder } =
+  usePlayerRandomizer()
 
 // Result modal state
 const showResultModal = ref(false)
@@ -214,7 +218,9 @@ const gameStore = useGameStore()
 // Load players from localStorage if not already loaded
 const playerStore = usePlayerStore()
 const registrationStore = usePlayerRegistration()
+
 onMounted(() => {
+  randomizePlayers()
   if (!registrationStore.players.length) {
     registrationStore.loadPlayersFromStorage()
   }
