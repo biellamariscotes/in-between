@@ -34,45 +34,53 @@
           },
         ]"
       >
-        <div :class="[
+        <div
+          :class="[
             'player-indicator-container',
             { 'player-info-left': position === 6 },
             { 'player-info-right': position === 5 },
-            { 'player-info-reverse': position === 3 || position === 4 }
-          ]">
+            { 'player-info-reverse': position === 3 || position === 4 },
+          ]"
+        >
           <div
             v-if="activePlayers[position - 1] && currentPlayerIndex === position - 1"
             class="turn-indicator"
           >
-          <div :class="[
-              'arrow-animation', 
-              { 
-                'arrow-bottom': position === 3 || position === 4,
-                'arrow-left': position === 5,
-                'arrow-right': position === 6
-              }
-            ]"></div>
+            <div
+              :class="[
+                'arrow-animation',
+                {
+                  'arrow-bottom': position === 3 || position === 4,
+                  'arrow-left': position === 5,
+                  'arrow-right': position === 6,
+                },
+              ]"
+            ></div>
           </div>
-          
-          <div style="width: 100%; height: 100%; display: flex; justify-items: center; align-items: center; flex-direction: column;" >
-            
+
+          <div
+            style="
+              width: 100%;
+              height: 100%;
+              display: flex;
+              justify-items: center;
+              align-items: center;
+              flex-direction: column;
+            "
+          >
             <h1 class="player-name">
               <!-- Show registered player name if available -->
               <template v-if="activePlayers[position - 1] && players[position - 1]">
                 {{ players[position - 1].name }}
               </template>
-              <template v-else>
-                Empty
-              </template>
+              <template v-else> Empty </template>
             </h1>
             <h1 class="player-points">
               <!-- Show registered player credits if available -->
               <template v-if="activePlayers[position - 1] && players[position - 1]">
                 P {{ players[position - 1].credits }}
               </template>
-              <template v-else>
-                P 0
-              </template>
+              <template v-else> P 0 </template>
             </h1>
           </div>
           <PlayerHand
@@ -114,7 +122,9 @@ const deck = ref<Card[]>([])
 
 // Load players from localStorage if not already loaded
 const playerStore = usePlayerStore()
+
 const registrationStore = usePlayerRegistration()
+
 onMounted(() => {
   if (!registrationStore.players.length) {
     registrationStore.loadPlayersFromStorage()
@@ -131,7 +141,7 @@ function cardToId(card: Card): string {
     hearts: 'h',
     diamonds: 'd',
     clubs: 'c',
-    spades: 's'
+    spades: 's',
   } as const
   const suit = suitMap[card.suit as keyof typeof suitMap] ?? 'x'
   const rank = typeof card.rank === 'string' ? card.rank : String(card.rank)
@@ -161,7 +171,6 @@ function setupGame() {
 }
 onMounted(setupGame)
 watch(playerCount, setupGame)
-
 
 const activePlayers = computed(() => {
   const active = Array(6).fill(false)
@@ -318,15 +327,31 @@ onMounted(() => {
   left: 50%;
   transform: translateX(-50%);
 }
-.player-1, .player-2, .player-3, .player-4 {
+.player-1,
+.player-2,
+.player-3,
+.player-4 {
   position: absolute;
   width: 20%;
 }
-.player-1 { bottom: 0; left: 25%; }
-.player-2 { bottom: 0; right: 25%; }
-.player-3 { top: 0; left: 25%; }
-.player-4 { top: 0; right: 25%; }
-.player-5, .player-6 {
+.player-1 {
+  bottom: 0;
+  left: 25%;
+}
+.player-2 {
+  bottom: 0;
+  right: 25%;
+}
+.player-3 {
+  top: 0;
+  left: 25%;
+}
+.player-4 {
+  top: 0;
+  right: 25%;
+}
+.player-5,
+.player-6 {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -336,8 +361,12 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
 }
-.player-5 { left: 0; }
-.player-6 { right: 0; }
+.player-5 {
+  left: 0;
+}
+.player-6 {
+  right: 0;
+}
 
 /* Pot styling */
 .pot-amount {
@@ -373,7 +402,6 @@ onMounted(() => {
 
 /* Player indicator and info containers */
 
-
 .turn-indicator {
   position: absolute;
   width: 100%;
@@ -382,32 +410,43 @@ onMounted(() => {
   z-index: 20;
 }
 
-.player-info-reverse { flex-direction: column-reverse; }
-.player-info-left, .player-info-right {
+.player-info-reverse {
+  flex-direction: column-reverse;
+}
+.player-info-left,
+.player-info-right {
   flex-direction: row;
   width: 100%;
   height: 100%;
 }
-.player-info-right { flex-direction: row-reverse; }
+.player-info-right {
+  flex-direction: row-reverse;
+}
 
 /* Player hand for side players */
-.player-5 .player-hand, .player-6 .player-hand {
+.player-5 .player-hand,
+.player-6 .player-hand {
   width: 100%;
   height: 100%;
   margin: 0;
   justify-content: center;
   align-items: center;
 }
-.player-5 .card-wrapper, .player-6 .card-wrapper {
+.player-5 .card-wrapper,
+.player-6 .card-wrapper {
   margin: 0 5px;
   transform: none;
 }
-.player-5 .player-card:hover, .player-6 .player-card:hover {
+.player-5 .player-card:hover,
+.player-6 .player-card:hover {
   transform: translateY(-3px) rotate(0);
 }
 
 /* Remove old/unused card containers */
-.cards-container, .cards-left, .cards-right, .back-card {
+.cards-container,
+.cards-left,
+.cards-right,
+.back-card {
   display: none;
 }
 
@@ -425,7 +464,9 @@ onMounted(() => {
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
   border-top: 20px solid gold;
-  animation: pulse 1s infinite alternate, bounce 1.5s infinite;
+  animation:
+    pulse 1s infinite alternate,
+    bounce 1.5s infinite;
   filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
   z-index: 20;
   /* Center the arrow regardless of position */
@@ -438,7 +479,9 @@ onMounted(() => {
   top: auto;
   bottom: -24px;
   transform: translateX(-50%) rotate(180deg);
-  animation: pulse 1s infinite alternate, bounce-reverse 1.5s infinite;
+  animation:
+    pulse 1s infinite alternate,
+    bounce-reverse 1.5s infinite;
 }
 
 .arrow-right {
@@ -450,7 +493,9 @@ onMounted(() => {
   right: auto;
   top: 50%;
   transform: translateY(-50%) rotate(0);
-  animation: pulse 1s infinite alternate, bounce-horizontal 1.5s infinite;
+  animation:
+    pulse 1s infinite alternate,
+    bounce-horizontal 1.5s infinite;
 }
 
 .arrow-left {
@@ -462,11 +507,14 @@ onMounted(() => {
   right: -35px;
   top: 50%;
   transform: translateY(-50%) rotate(0);
-  animation: pulse 1s infinite alternate, bounce-horizontal 1.5s infinite;
+  animation:
+    pulse 1s infinite alternate,
+    bounce-horizontal 1.5s infinite;
 }
 
 /* Player text */
-.player-name, .player-points {
+.player-name,
+.player-points {
   color: white;
   font-size: 12px;
   margin: 2px 0;
@@ -475,22 +523,41 @@ onMounted(() => {
 
 /* Animations */
 @keyframes pulse {
-  0% { opacity: 0.7; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(-10px); }
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+  }
 }
 
 @keyframes bounce-reverse {
-  0%, 100% { transform: translateX(-50%) translateY(0) rotate(180deg); }
-  50% { transform: translateX(-50%) translateY(10px) rotate(180deg); }
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0) rotate(180deg);
+  }
+  50% {
+    transform: translateX(-50%) translateY(10px) rotate(180deg);
+  }
 }
 
 @keyframes bounce-horizontal {
-  0%, 100% { transform: translateY(-50%) translateX(0); }
-  50% { transform: translateY(-50%) translateX(-10px); }
+  0%,
+  100% {
+    transform: translateY(-50%) translateX(0);
+  }
+  50% {
+    transform: translateY(-50%) translateX(-10px);
+  }
 }
 </style>

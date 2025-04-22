@@ -50,6 +50,7 @@ export const useGameStore = defineStore('game', {
       gameOver: false,
       equalCardsChoice: null,
       awaitingEqualChoice: false,
+      hasFolded: false,
     }
   },
 
@@ -86,12 +87,15 @@ export const useGameStore = defineStore('game', {
     // Starts or restarts the game
     startGame() {
       // Create and shuffle the deck
+      localStorage.removeItem('currentCard')
+
       const createdDeck = createDeck()
 
       this.deck = shuffle(createdDeck)
 
       // Check if deck has enough cards
-      if (this.deck.length < 2) {
+
+      if (this.deck.length < 3) {
         console.error('Deck has insufficient cards to start the game')
         this.message = 'Error initializing deck. Please refresh.'
         return
@@ -133,15 +137,16 @@ export const useGameStore = defineStore('game', {
 
     // Handles when player makes a bet
     placeBet(betAmount: number) {
+      if (this.hasFolded) {
+        this.message = 'You folded! Wait for the next round.'
+        return
+      }
       if (betAmount > this.pot) {
         this.message = 'Bet exceeds the pot amount!'
         return
       }
-
       this.currentBet = betAmount
       this.message = `Bet placed: ${betAmount}`
-
-      // Save state after placing the bet
       this.saveStateToLocalStorage()
     },
 
@@ -161,6 +166,11 @@ export const useGameStore = defineStore('game', {
       //   this.message = 'Please place a bet first!'
       //   return
       // }
+      if (this.hasFolded) {
+        this.message = 'you folded this round! Wait for the next one.'
+        return
+      }
+      window.location.reload()
 
       const drawnCard = this.deck.pop()
 
@@ -227,6 +237,10 @@ export const useGameStore = defineStore('game', {
             this.pot += this.currentBet
             this.message = `Lose! ${this.currentCard?.rank} is not lower than ${card1?.rank}.`
           }
+          if (this.hasFolded) {
+            this.message = 'You folded this round! Wait for the next one.'
+            return
+          }
         }
 
         // Reset the choice for next round
@@ -273,6 +287,22 @@ export const useGameStore = defineStore('game', {
           this.currentBet = 0
         }
       }
+    },
+
+    fold() {
+      this.hasFolded = true
+      this.message = 'Player has folded! Starting a new round...'
+      setTimeout(() => {
+        this.resetRound()
+        this.startGame()
+      }, 900)
+    },
+    resetRound() {
+      this.hasFolded = false
+      this.currentBet = 0
+      this.currentCard = null
+      this.faceUpCards = [null, null]
+      this.message = 'New round started! Place your bet.'
     },
   },
 })

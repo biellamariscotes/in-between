@@ -17,4 +17,5 @@ export interface GameState {
   gameOver: boolean // Tracks if game has ended
   equalCardsChoice: 'higher' | 'lower' | null // Player's choice when cards are equal
   awaitingEqualChoice: boolean // Waiting for player to choose higher/lower
+  hasFolded: boolean // ✅ Must be included here
 }
