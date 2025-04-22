@@ -19,11 +19,11 @@
         @click="handleBackOption"
       />
 
-      <img 
-        src="../assets/img/buttons/deal-now.png" 
-        alt="deal-now-btn" 
-        class="deal-cta" 
-        @click="handleDealNow" 
+      <img
+        src="../assets/img/buttons/deal-now.png"
+        alt="deal-now-btn"
+        class="deal-cta"
+        @click="handleDealNow"
       />
     </el-form>
 
@@ -36,11 +36,11 @@
 
   <div v-else class="actions-wrapper">
     <div class="btn-wrapper">
-      <img 
-        src="../assets/img/buttons/all-in.png" 
-        alt="all-in-png" 
-        class="all-in-cta" 
-        @click="handleAllIn" 
+      <img
+        src="../assets/img/buttons/all-in.png"
+        alt="all-in-png"
+        class="all-in-cta"
+        @click="handleAllIn"
       />
       <img
         src="../assets/img/buttons/bet.png"
@@ -48,17 +48,17 @@
         class="bet-cta"
         @click="handleBetOption"
       />
-      <img 
-        src="../assets/img/buttons/fold.png" 
-        alt="fold-btn" 
-        class="fold-cta" 
-        @click="handleFold" 
+      <img
+        src="../assets/img/buttons/fold.png"
+        alt="fold-btn"
+        class="fold-cta"
+        @click="handleFold"
       />
     </div>
   </div>
 
   <!-- All-in confirmation modal -->
-  <el-dialog
+  <!-- <el-dialog
     v-model="showAllInConfirmation"
     title="Confirm All-In"
     width="320px"
@@ -77,10 +77,10 @@
         <el-button type="primary" @click="confirmAllIn">Confirm</el-button>
       </span>
     </template>
-  </el-dialog>
+  </el-dialog> -->
 
   <!-- Fold confirmation modal -->
-  <el-dialog
+  <!-- <el-dialog
     v-model="showFoldConfirmation"
     title="Confirm Fold"
     width="320px"
@@ -99,7 +99,7 @@
         <el-button type="primary" @click="confirmFold">Confirm</el-button>
       </span>
     </template>
-  </el-dialog>
+  </el-dialog> -->
 </template>
 
 <script setup lang="ts">
@@ -154,12 +154,12 @@ const handleDealNow = () => {
     ElMessage.warning('Please enter a valid bet amount')
     return
   }
-  
+
   if (betAmount.value > totalPot.value) {
     ElMessage.warning('Bet cannot exceed your available credits')
     return
   }
-  
+
   // Place bet and draw card
   gameStore.placeBet(betAmount.value)
   gameStore.drawThirdCard()
@@ -173,10 +173,10 @@ const handleAllIn = () => {
 const confirmAllIn = () => {
   // Close modal
   showAllInConfirmation.value = false
-  
+
   // Place bet with all available credits
   gameStore.placeBet(totalPot.value)
-  
+
   // Draw card and end turn
   gameStore.drawThirdCard()
 }
@@ -188,7 +188,7 @@ const handleFold = () => {
 const confirmFold = () => {
   // Close modal
   showFoldConfirmation.value = false
-  
+
   // Execute fold action
   gameStore.fold()
   ElMessage.info('Turn folded')
@@ -222,12 +222,14 @@ const confirmFold = () => {
 
 .all-in-cta,
 .fold-cta {
+  margin-top: 20px;
   width: 250px;
   height: 80px;
   cursor: pointer;
 }
 
 .bet-cta {
+  margin-top: 20px;
   width: 250px;
   height: 85px;
   margin-bottom: 5px;
@@ -241,11 +243,10 @@ const confirmFold = () => {
 }
 
 .deal-cta {
-  width: 235px;
-  height: 85px;
-  position: absolute;
-  top: 40%;
-  right: -45%;
+  margin-top: 15px;
+  width: 220px;
+  height: 50px;
+
   cursor: pointer;
 }
 

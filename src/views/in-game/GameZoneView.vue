@@ -150,7 +150,7 @@
 
     <!-- Actions Container -->
     <div class="actions-container">
-      <div v-if="!gameStore.gameStarted">
+      <!-- <div v-if="!gameStore.gameStarted">
         <button class="game-button primary-button" @click="startNewGame">Start Game</button>
       </div>
       <div v-else-if="gameStore.gameOver">
@@ -171,8 +171,8 @@
         </button>
       </div>
       <div v-else>
-        <GameCta />
-      </div>
+      </div> -->
+      <GameCta />
     </div>
 
     <div class="timer-container">
