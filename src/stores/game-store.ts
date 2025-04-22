@@ -133,11 +133,14 @@ export const useGameStore = defineStore('game', {
     // Starts or restarts the game
     startGame() {
       // Create and shuffle the deck
+      localStorage.removeItem('currentCard')
+
       const createdDeck = createDeck()
       this.deck = shuffle(createdDeck)
 
       // Check if deck has enough cards
-      if (this.deck.length < 2) {
+
+      if (this.deck.length < 3) {
         console.error('Deck has insufficient cards to start the game')
         this.message = 'Error initializing deck. Please refresh.'
         return
@@ -194,7 +197,6 @@ export const useGameStore = defineStore('game', {
         this.message = 'Bet exceeds the pot amount!'
         return
       }
-
       this.currentBet = betAmount
 
       if (this.isMultiplayer) {
@@ -308,7 +310,7 @@ export const useGameStore = defineStore('game', {
       // Handle consecutive cards case
       else if (higher - lower === 1) {
         winAmount = -this.currentBet
-        resultMessage = 'Cards are consecutive. You lose your bet.'
+        resultMessage = 'Lose! Cards are consecutive.'
       }
       // Handle standard case (cards with gap)
       else {
@@ -317,10 +319,10 @@ export const useGameStore = defineStore('game', {
           resultMessage = `Win! ${this.currentCard?.rank} is between ${card1?.rank} and ${card2?.rank}.`
         } else if (r3 === r1 || r3 === r2) {
           winAmount = -this.currentBet * 2
-          resultMessage = 'Card matches one of the face-up cards. You lose double your bet!'
+          resultMessage = 'Lose! Card matches one of the face-up cards. You lose double your bet!'
         } else {
           winAmount = -this.currentBet
-          resultMessage = `Lose. ${this.currentCard?.rank} is not between ${card1?.rank} and ${card2?.rank}.`
+          resultMessage = `Lose!. ${this.currentCard?.rank} is not between ${card1?.rank} and ${card2?.rank}.`
         }
       }
 

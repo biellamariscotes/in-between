@@ -207,6 +207,8 @@ import { usePlayerRandomizer } from '@/composables/usePlayerRandomizer'
 
 const { orderedPlayers, randomizePlayers, getCurrentPlayer, resetPlayerOrder } =
   usePlayerRandomizer()
+import YouFoldImage from '@/assets/img/game-zone/you-fold.png'
+
 
 // Result modal state
 const showResultModal = ref(false)
@@ -217,6 +219,7 @@ const gameStore = useGameStore()
 
 // Load players from localStorage if not already loaded
 const playerStore = usePlayerStore()
+
 const registrationStore = usePlayerRegistration()
 
 onMounted(() => {
@@ -447,6 +450,28 @@ onUnmounted(() => {
   }
 })
 
+// Show fold modal
+function showFoldModal() {
+  // Stop the turn timer while showing result
+  gameStore.stopTurnTimer()
+
+  resultModalImage.value = YouFoldImage
+  showResultModal.value = true
+
+  // Auto-close after 2 seconds and only then process the next turn
+  setTimeout(() => {
+    showResultModal.value = false
+    // Only restart the game flow after the modal has closed
+    if (gameStore.isMultiplayer && gameStore.gameStarted && !gameStore.gameOver) {
+      // Wait a bit more before moving to next player
+      setTimeout(() => {
+        // Ensure the next player's turn timer doesn't start until modal is gone
+        gameStore.startTurnTimer()
+      }, 500)
+    }
+  }, 2000)
+}
+
 // Show win modal
 function showWinModal() {
   // Stop the turn timer while showing result
@@ -506,6 +531,9 @@ watch(
       } else if (newMessage.includes('Lose')) {
         gameStore.stopTurnTimer()
         showLoseModal()
+      } else if (newMessage.includes('Fold') || newMessage.includes('folded')) {
+        gameStore.stopTurnTimer()
+        showFoldModal()
       }
     }
   },
