@@ -1,3 +1,4 @@
+import type { Player } from './player'
 export interface Card {
   suit?: string
   rank?: string
@@ -17,4 +18,19 @@ export interface GameState {
   gameOver: boolean // Tracks if game has ended
   equalCardsChoice: 'higher' | 'lower' | null // Player's choice when cards are equal
   awaitingEqualChoice: boolean // Waiting for player to choose higher/lower
+
+  // Multiplayer related properties
+  isMultiplayer: boolean // Whether game is in multiplayer mode
+  players: Player[] // Array of player objects
+  currentPlayerIndex: number // Index of the current player
+  roundsPlayed: number // Number of rounds played
+  winnings: number[] // Array of player winnings
+  playerPots: number[] // Array of player pots
+  betsPlaced: number[] // Array of bets placed by players
+  gameStarted: boolean // Whether the game has started
+
+  // Timer related properties
+  turnTimeRemaining: number
+  turnTimerActive: boolean
+  turnTimerInterval: ReturnType<typeof setTimeout> | null
 }
