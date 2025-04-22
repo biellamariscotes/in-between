@@ -1,5 +1,5 @@
 <template>
-  <div class="test">
+  <div class="decks">
     <!-- First face-up card -->
     <PlayingCard v-if="game.faceUpCards[0]" :card-id="game.faceUpCards[0]?.id" :face-up="true" />
 
@@ -34,9 +34,9 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-.test {
-  width: 10%;
-  height: 10%;
+<style scope>
+.decks {
+  width: 9%;
+  height: 9%;
 }
 </style>

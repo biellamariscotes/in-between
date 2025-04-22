@@ -61,7 +61,7 @@ function handleClick(event: MouseEvent) {
   border-radius: 10px;
   text-transform: uppercase;
   letter-spacing: 2px;
-  border: 5px solid;
+  border: 3px solid;
   border-image: linear-gradient(
     180deg,
     #ffb53d 0%,

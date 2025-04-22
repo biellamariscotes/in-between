@@ -2,24 +2,56 @@
   <div class="game-zone-container">
     <el-image
       :src="GameTable"
-      style="height: 85%; width: 85%; position: absolute; pointer-events: none; user-select: none"
+      style="height: 85%; width: 85%; position: absolute; user-select: none; z-index: 10"
       alt="Game Table"
       :draggable="false"
     />
+
+    <!-- Win/Lose Modal -->
+    <div v-if="showResultModal" class="result-modal">
+      <div class="modal-content">
+        <img :src="resultModalImage" alt="Game Result" />
+      </div>
+    </div>
+
     <div class="turn-container">
-      <h1 style="color: white">{{ currentPlayer }}'s Turn</h1>
+      <h1 style="color: white">{{ currentPlayerDisplay }}'s Turn</h1>
     </div>
     <div class="game-zone">
-      <div
-        style="
-          width: 100%;
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        "
-      >
-        <h1>Left cards</h1>
+      <div class="card-table">
+        <div class="game-cards">
+          <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
+            <PlayerHand
+              :cards="[cardToDisplayId(gameStore.faceUpCards[0])]"
+              :show-cards="true"
+              orientation="normal"
+            />
+          </div>
+
+          <div class="face-up-card" v-if="isCurrentCardDrawnByCurrentPlayer">
+            <PlayerHand
+              :cards="[cardToDisplayId(gameStore.currentCard)]"
+              :show-cards="true"
+              orientation="normal"
+            />
+          </div>
+          <div class="face-up-card" v-else>
+            <div class="card-placeholder"></div>
+          </div>
+
+          <div class="face-up-card" v-if="gameStore.faceUpCards[1]">
+            <PlayerHand
+              :cards="[cardToDisplayId(gameStore.faceUpCards[1])]"
+              :show-cards="true"
+              orientation="normal"
+            />
+          </div>
+        </div>
+
+        <!-- Replace game message with player credit display -->
+        <div class="credit-display">
+          <h2>Credit: {{ currentPlayerPot }}</h2>
+        </div>
       </div>
     </div>
     <div class="table-container">
@@ -29,7 +61,7 @@
         :class="[
           `player-${position}`,
           {
-            'active-player': activePlayers[position - 1] && currentPlayerIndex === position - 1,
+            'active-player': activePlayers[position - 1] && isCurrentPlayer(position - 1),
             'inactive-spot': !activePlayers[position - 1],
           },
         ]"
@@ -43,7 +75,7 @@
           ]"
         >
           <div
-            v-if="activePlayers[position - 1] && currentPlayerIndex === position - 1"
+            v-if="activePlayers[position - 1] && isCurrentPlayer(position - 1)"
             class="turn-indicator"
           >
             <div
@@ -60,12 +92,10 @@
 
           <div
             style="
-              width: 100%;
-              height: 100%;
               display: flex;
+              flex-direction: column;
               justify-items: center;
               align-items: center;
-              flex-direction: column;
             "
           >
             <h1 class="player-name">
@@ -76,49 +106,110 @@
               <template v-else> Empty </template>
             </h1>
             <h1 class="player-points">
-              <!-- Show registered player credits if available -->
-              <template v-if="activePlayers[position - 1] && players[position - 1]">
-                P {{ players[position - 1].credits }}
+              <!-- Show player pot from game store if player is active -->
+              <template
+                v-if="
+                  activePlayers[position - 1] &&
+                  gameStore.isMultiplayer &&
+                  gameStore.playerPots[position - 1]
+                "
+              >
+                P {{ gameStore.playerPots[position - 1] }}
+              </template>
+              <template
+                v-else-if="
+                  activePlayers[position - 1] && !gameStore.isMultiplayer && position - 1 === 0
+                "
+              >
+                P {{ gameStore.pot }}
               </template>
               <template v-else> P 0 </template>
             </h1>
           </div>
           <PlayerHand
             :cards="playerCards[position - 1]"
-            :show-cards="currentPlayerIndex === position - 1"
+            :show-cards="isCurrentPlayer(position - 1)"
             :orientation="position === 5 ? 'left' : position === 6 ? 'right' : 'normal'"
           />
         </div>
       </div>
       <div class="pot-amount">
-        <h1 class="border">POT AMOUNT</h1>
+        <h1 class="border">
+          POT AMOUNT:
+          {{
+            gameStore.isMultiplayer
+              ? gameStore.playerPots[gameStore.currentPlayerIndex]
+              : gameStore.pot
+          }}
+        </h1>
+        <h2 v-if="gameStore.currentBet > 0" class="border">
+          CURRENT BET: {{ gameStore.currentBet }}
+        </h2>
       </div>
     </div>
+
+    <!-- Actions Container -->
     <div class="actions-container">
-      <h1 style="color: white">Action Container</h1>
+      <div v-if="!gameStore.gameStarted">
+        <img
+          src="../../assets/img/buttons/start-game.png"
+          alt="fold-btn"
+          class="start-cta"
+          @click="startNewGame"
+        />
+        <!-- <button class="game-button primary-button" @click="startNewGame">Start Game</button> -->
+      </div>
+      <div v-else-if="gameStore.gameOver">
+        <button class="game-button primary-button" @click="startNewGame">New Game</button>
+        <h2 class="game-over-text">Game Over!</h2>
+      </div>
+      <div v-else-if="gameStore.awaitingEqualChoice">
+        <h3 class="choice-prompt">Cards are equal! Choose:</h3>
+        <div class="button-group">
+          <button class="game-button choice-button" @click="handleChoice('higher')">Higher</button>
+          <button class="game-button choice-button" @click="handleChoice('lower')">Lower</button>
+        </div>
+      </div>
+      <!-- <div v-else-if="gameStore.currentBet > 0">
+        <button class="game-button primary-button" @click="drawCard">Draw Card</button>
+        <button class="game-button secondary-button" @click="gameStore.cancelBet">
+          Cancel Bet
+        </button>
+      </div> -->
+      <div style="width: 100%" v-else>
+        <GameCta />
+      </div>
     </div>
+
     <div class="timer-container">
-      <h1 style="color: white">Timer</h1>
+      <h2 :class="['timer', { warning: timeRunningLow }]">Time: {{ formattedTimeRemaining }}</h2>
     </div>
     <div class="settings-container">
-      <h1 style="color: white">Gear Icon</h1>
+      <button class="settings-button" @click="toggleSettings">
+        <span class="settings-icon">⚙️</span>
+      </button>
     </div>
-    <div></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { computed, watch, onMounted, onUnmounted, ref } from 'vue'
 import GameTable from '@/assets/img/game-zone/Game-Table.svg'
 import PlayerHand from '@/components/PlayerHand.vue'
-import { createDeck } from '@/utils/createDeck'
-import { shuffle } from '@/utils/shuffleDeck'
+import GameCta from '@/components/GameCta.vue'
 import type { Card } from '@/interface/card'
 import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
+import { useGameStore } from '@/stores/game-store'
+import YouWinImage from '@/assets/img/game-zone/you-win.png'
+import YouLoseImage from '@/assets/img/game-zone/you-lose.png'
 
-// --- Deck creation and shuffling ---
-const deck = ref<Card[]>([])
+// Result modal state
+const showResultModal = ref(false)
+const resultModalImage = ref('')
+
+// --- Initialize game store ---
+const gameStore = useGameStore()
 
 // Load players from localStorage if not already loaded
 const playerStore = usePlayerStore()
@@ -148,30 +239,68 @@ function cardToId(card: Card): string {
   return suit + rank
 }
 
-// Deal cards to players
-function dealCards(deck: Card[], numPlayers: number, cardsPerPlayer = 3): string[][] {
-  const hands: string[][] = Array.from({ length: 6 }, () => [])
-  let deckIdx = 0
-  for (let p = 0; p < numPlayers; p++) {
-    for (let c = 0; c < cardsPerPlayer; c++) {
-      if (deckIdx < deck.length) {
-        hands[p].push(cardToId(deck[deckIdx++]))
+// Convert card from game store to display format
+function cardToDisplayId(card: Card | null): string {
+  if (!card) return ''
+
+  // If card already has an id property, use it
+  if (card.id) return card.id
+
+  // Otherwise construct from suit and rank
+  return cardToId(card)
+}
+
+// Track if a user has drawn their card this turn to know when to display middle card
+const isCurrentCardDrawnByCurrentPlayer = computed(() => {
+  // Only show if current card exists AND currentBet is 0 (means card was drawn this turn)
+  // In the game flow: bet is set > 0, then card is drawn, then bet is reset to 0
+  return gameStore.currentCard !== null && gameStore.currentBet === 0 && gameStore.roundsPlayed > 0
+})
+
+// Keep track of player cards based on game state
+const playerCards = computed(() => {
+  const cards: string[][] = Array(6)
+    .fill(0)
+    .map(() => [])
+
+  if (gameStore.gameStarted) {
+    const currentPlayerIdx = gameStore.currentPlayerIndex
+
+    // Show the left card
+    if (gameStore.faceUpCards[0]) {
+      cards[currentPlayerIdx][0] = cardToDisplayId(gameStore.faceUpCards[0])
+    }
+
+    // For middle card - only show if the player has drawn it this turn
+    if (isCurrentCardDrawnByCurrentPlayer.value) {
+      cards[currentPlayerIdx][1] = cardToDisplayId(gameStore.currentCard)
+    } else {
+      // Otherwise keep middle position hidden
+      cards[currentPlayerIdx][1] = 'back'
+    }
+
+    // Show the right card
+    if (gameStore.faceUpCards[1]) {
+      cards[currentPlayerIdx][2] = cardToDisplayId(gameStore.faceUpCards[1])
+    }
+
+    // For other players, just show face-down cards
+    for (let i = 0; i < playerCount.value; i++) {
+      if (i !== currentPlayerIdx) {
+        cards[i] = ['back', 'back', 'back']
       }
     }
+  } else {
+    // Before game starts, all players have face-down cards
+    for (let i = 0; i < playerCount.value; i++) {
+      cards[i] = ['back', 'back', 'back']
+    }
   }
-  return hands
-}
 
-// Shuffle and deal when component mounts or playerCount changes
-const playerCards = ref<string[][]>([[], [], [], [], [], []])
-function setupGame() {
-  const newDeck = shuffle(createDeck())
-  deck.value = newDeck
-  playerCards.value = dealCards(newDeck, playerCount.value)
-}
-onMounted(setupGame)
-watch(playerCount, setupGame)
+  return cards
+})
 
+// Active players computation
 const activePlayers = computed(() => {
   const active = Array(6).fill(false)
   // Distribution logic for different player counts
@@ -201,363 +330,308 @@ const activePlayers = computed(() => {
   return active
 })
 
-// Active player list
-const activePlayersList = computed(() => {
-  return activePlayers.value
-    .map((isActive, index) => {
-      return isActive ? `Player ${index + 1}` : null
-    })
-    .filter(Boolean)
-})
+// Check if a player position is the current player
+function isCurrentPlayer(playerIndex: number): boolean {
+  return playerIndex === gameStore.currentPlayerIndex
+}
 
-// Current player tracking
-const currentPlayerIndex = ref(0)
-const currentPlayer = computed(() => {
-  // Find the name of the active player at the current index
-  let count = 0
-  for (let i = 0; i < activePlayers.value.length; i++) {
-    if (activePlayers.value[i]) {
-      if (count === currentPlayerIndex.value) {
-        return `Player ${i + 1}`
-      }
-      count++
-    }
+// Current player name display
+const currentPlayerDisplay = computed(() => {
+  if (!gameStore.gameStarted) {
+    return 'Game not started'
   }
-  return 'No Players'
+
+  if (gameStore.isMultiplayer && players.value[gameStore.currentPlayerIndex]) {
+    return players.value[gameStore.currentPlayerIndex].name
+  }
+
+  // Default to Player 1 for single player mode
+  return players.value[0]?.name || 'Player 1'
 })
 
-// Reset current player index if player count changes
+// Current player's pot amount
+const currentPlayerPot = computed(() => {
+  if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
+    return gameStore.playerPots[gameStore.currentPlayerIndex]
+  }
+  return gameStore.pot
+})
+
+// Game actions
+function startNewGame() {
+  // Setup multiplayer if more than one active player
+  if (playerCount.value > 1) {
+    const activePlayers = players.value.slice(0, playerCount.value)
+    gameStore.setupMultiplayerGame(activePlayers)
+  } else {
+    gameStore.isMultiplayer = false
+  }
+
+  gameStore.startGame()
+}
+
+// Draw third card and show win/lose modal
+// function drawCard() {
+//   gameStore.stopTurnTimer()
+
+//   gameStore.drawThirdCard()
+
+//   if (gameStore.message.includes('Win')) {
+//     showWinModal()
+//   } else if (gameStore.message.includes('Lose')) {
+//     showLoseModal()
+//   }
+// }
+
+function handleChoice(choice: 'higher' | 'lower') {
+  gameStore.handleEqualCardsChoice(choice)
+}
+
+function toggleSettings() {
+  // Implement settings panel logic here
+  console.log('Settings toggled')
+}
+
+// Reset game when player count changes
 watch(playerCount, () => {
-  currentPlayerIndex.value = 0
+  // Only reset if game is not in progress
+  if (!gameStore.gameStarted || gameStore.gameOver) {
+    setupGameDisplay()
+  }
 })
 
-// For demo purposes - this cycles through active players automatically
-onMounted(() => {
-  setInterval(() => {
-    if (activePlayersList.value.length > 0) {
-      currentPlayerIndex.value = (currentPlayerIndex.value + 1) % activePlayersList.value.length
-    }
-  }, 3000) // Change player every 3 seconds
+// Define the setupGameDisplay function to prevent errors
+function setupGameDisplay() {
+  // This is called when player count changes
+  // We don't need to do anything here since playerCards is computed
+  console.log('Game display reset due to player count change')
+}
+
+// Timer functionality
+const formattedTimeRemaining = computed(() => {
+  if (!gameStore.gameStarted || gameStore.gameOver) {
+    return '10s'
+  }
+  return `${gameStore.turnTimeRemaining}s`
 })
+
+// Apply warning style when time is running low (3 seconds or less)
+const timeRunningLow = computed(() => {
+  return gameStore.turnTimeRemaining <= 3 && gameStore.turnTimerActive
+})
+
+// When user's turn is active, ensure timer is running
+watch(
+  () => gameStore.currentPlayerIndex,
+  () => {
+    if (gameStore.gameStarted && !gameStore.gameOver && !showResultModal.value) {
+      // Only start the timer for the new player if no modal is showing
+      gameStore.startTurnTimer()
+    }
+  },
+)
+
+// Clean up timer when component is unmounted
+onUnmounted(() => {
+  if (gameStore.turnTimerInterval) {
+    clearInterval(gameStore.turnTimerInterval)
+  }
+})
+
+// Show win modal
+function showWinModal() {
+  // Stop the turn timer while showing result
+  gameStore.stopTurnTimer()
+
+  resultModalImage.value = YouWinImage
+  showResultModal.value = true
+
+  // Auto-close after 4 seconds and only then process the next turn
+  setTimeout(() => {
+    showResultModal.value = false
+    // Only restart the game flow after the modal has closed
+    // This gives the player time to see their result
+    if (gameStore.isMultiplayer && gameStore.gameStarted && !gameStore.gameOver) {
+      // Wait a bit more before moving to next player
+      setTimeout(() => {
+        // Ensure the next player's turn timer doesn't start until modal is gone
+        gameStore.startTurnTimer()
+      }, 500)
+    }
+  }, 2000)
+}
+
+// Show lose modal
+function showLoseModal() {
+  // Stop the turn timer while showing result
+  gameStore.stopTurnTimer()
+
+  resultModalImage.value = YouLoseImage
+  showResultModal.value = true
+
+  // Auto-close after 4 seconds and only then process the next turn
+  setTimeout(() => {
+    showResultModal.value = false
+    // Only restart the game flow after the modal has closed
+    // This gives the player time to see their result
+    if (gameStore.isMultiplayer && gameStore.gameStarted && !gameStore.gameOver) {
+      // Wait a bit more before moving to next player
+      setTimeout(() => {
+        // Ensure the next player's turn timer doesn't start until modal is gone
+        gameStore.startTurnTimer()
+      }, 500)
+    }
+  }, 2000)
+}
+
+// Listen to state changes in game store to show modals
+watch(
+  () => gameStore.message,
+  (newMessage, oldMessage) => {
+    // Only trigger on message changes that are results
+    if (oldMessage !== newMessage) {
+      // Stop timer when showing results
+      if (newMessage.includes('Win!')) {
+        gameStore.stopTurnTimer()
+        showWinModal()
+      } else if (newMessage.includes('Lose')) {
+        gameStore.stopTurnTimer()
+        showLoseModal()
+      }
+    }
+  },
+)
 </script>
 
-<style lang="css" scoped>
-/* Utility classes */
-.flex-center {
+<style scoped>
+/* ...existing styles... */
+
+.game-cards {
+  display: flex;
+  flex-direction: column; /* Change to column layout */
+  justify-content: center;
+  align-items: center;
+  gap: 15px; /* Adjusted for vertical spacing */
+  height: 100%; /* Ensure container uses available height */
+  padding: 10px;
+}
+
+/* Adjust styling for table cards to match player hands */
+.face-up-card,
+.current-card {
+  width: 100px;
+  height: 140px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.absolute {
-  position: absolute;
+
+.card-placeholder {
+  display: flex;
+
+  width: 100px;
+  height: 140px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
 }
-.border-white {
-  border: 2px solid white;
-}
-.text-white {
+
+/* Add styling for the credit display */
+.credit-display {
   color: white;
-}
-.text-shadow {
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  margin-top: 15px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
-/* Main containers */
-.game-zone-container {
+/* Add container styling to ensure cards stay in bounds */
+.card-table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
   width: 100%;
-  height: 100vh;
-  background: url('@/assets/img/game-zone/play-background.png') center/cover no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-/* Overlay containers */
-.settings-container,
-.timer-container,
-.actions-container,
-.game-zone,
-.turn-container {
-  position: absolute;
-  z-index: 100;
-  border: 2px solid white;
-  pointer-events: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.settings-container {
-  width: 5%;
-  height: 8%;
-  bottom: 7%;
-  right: 7%;
-}
-.timer-container {
-  width: 13%;
-  height: 13%;
-  top: 7%;
-  right: 7%;
-}
-.actions-container {
-  width: 40%;
-  height: 18%;
-  bottom: 7%;
-}
-.game-zone {
-  width: 10%;
-  height: 80%;
-  left: 7%;
-}
-.turn-container {
-  width: 40%;
-  height: 10%;
-  top: 3%;
-}
-
-/* Table and player positions */
-.table-container {
-  width: 45%;
-  height: 42%;
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  pointer-events: none;
-  top: 26%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-.player-1,
-.player-2,
-.player-3,
-.player-4 {
-  position: absolute;
-  width: 20%;
-}
-.player-1 {
-  bottom: 0;
-  left: 25%;
-}
-.player-2 {
-  bottom: 0;
-  right: 25%;
-}
-.player-3 {
-  top: 0;
-  left: 25%;
-}
-.player-4 {
-  top: 0;
-  right: 25%;
-}
-.player-5,
-.player-6 {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 15%;
-  height: 35%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.player-5 {
-  left: 0;
-}
-.player-6 {
-  right: 0;
-}
-
-/* Pot styling */
-.pot-amount {
-  position: absolute;
-  width: 20%;
-  height: 30%;
-}
-.pot-amount h1 {
+.timer {
   color: white;
-  font-size: 14px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid white;
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
 }
 
-/* Player spot states */
-.active-player {
-  background-color: rgba(255, 215, 0, 0.3);
-  transition: background-color 0.3s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.inactive-spot {
-  background-color: rgba(30, 30, 30, 0.5);
-  opacity: 0.6;
+.timer.warning {
+  color: #ff5252;
+  animation: pulse 1s infinite;
 }
 
-/* Player indicator and info containers */
-
-.turn-indicator {
-  position: absolute;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  z-index: 20;
-}
-
-.player-info-reverse {
-  flex-direction: column-reverse;
-}
-.player-info-left,
-.player-info-right {
-  flex-direction: row;
-  width: 100%;
-  height: 100%;
-}
-.player-info-right {
-  flex-direction: row-reverse;
-}
-
-/* Player hand for side players */
-.player-5 .player-hand,
-.player-6 .player-hand {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  justify-content: center;
-  align-items: center;
-}
-.player-5 .card-wrapper,
-.player-6 .card-wrapper {
-  margin: 0 5px;
-  transform: none;
-}
-.player-5 .player-card:hover,
-.player-6 .player-card:hover {
-  transform: translateY(-3px) rotate(0);
-}
-
-/* Remove old/unused card containers */
-.cards-container,
-.cards-left,
-.cards-right,
-.back-card {
-  display: none;
-}
-
-/* Center card highlight */
-.center-card {
-  transform: scale(1.5);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-}
-
-/* Arrow animations */
-.arrow-animation {
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-top: 20px solid gold;
-  animation:
-    pulse 1s infinite alternate,
-    bounce 1.5s infinite;
-  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
-  z-index: 20;
-  /* Center the arrow regardless of position */
-  left: 50%;
-  transform: translateX(-50%);
-  top: -24px;
-}
-
-.arrow-bottom {
-  top: auto;
-  bottom: -24px;
-  transform: translateX(-50%) rotate(180deg);
-  animation:
-    pulse 1s infinite alternate,
-    bounce-reverse 1.5s infinite;
-}
-
-.arrow-right {
-  border-top: 15px solid transparent;
-  border-bottom: 15px solid transparent;
-  border-left: 20px solid gold;
-  border-right: none;
-  left: -35px;
-  right: auto;
-  top: 50%;
-  transform: translateY(-50%) rotate(0);
-  animation:
-    pulse 1s infinite alternate,
-    bounce-horizontal 1.5s infinite;
-}
-
-.arrow-left {
-  border-top: 15px solid transparent;
-  border-bottom: 15px solid transparent;
-  border-right: 20px solid gold;
-  border-left: none;
-  left: auto;
-  right: -35px;
-  top: 50%;
-  transform: translateY(-50%) rotate(0);
-  animation:
-    pulse 1s infinite alternate,
-    bounce-horizontal 1.5s infinite;
-}
-
-/* Player text */
-.player-name,
-.player-points {
-  color: white;
-  font-size: 12px;
-  margin: 2px 0;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-/* Animations */
 @keyframes pulse {
   0% {
-    opacity: 0.7;
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
   }
   100% {
     opacity: 1;
   }
 }
 
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateX(-50%) translateY(0);
+/* Result modal styles */
+.result-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 16000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  width: 80%; /* Fixed smaller width */
+  animation: scaleIn 0.4s ease;
+  z-index: 16000;
+}
+
+.modal-content img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Ensures image maintains aspect ratio */
+}
+
+.start-cta {
+  width: 330px;
+  height: 80px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  50% {
-    transform: translateX(-50%) translateY(-10px);
+  to {
+    opacity: 1;
   }
 }
 
-@keyframes bounce-reverse {
-  0%,
-  100% {
-    transform: translateX(-50%) translateY(0) rotate(180deg);
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
   }
-  50% {
-    transform: translateX(-50%) translateY(10px) rotate(180deg);
-  }
-}
-
-@keyframes bounce-horizontal {
-  0%,
-  100% {
-    transform: translateY(-50%) translateX(0);
-  }
-  50% {
-    transform: translateY(-50%) translateX(-10px);
+  to {
+    transform: scale(1);
   }
 }
 </style>
