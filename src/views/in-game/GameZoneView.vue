@@ -49,9 +49,7 @@
         </div>
 
         <!-- Replace game message with player credit display -->
-        <div class="credit-display">
-          <h2>Credit: {{ currentPlayerPot }}</h2>
-        </div>
+        <CashFlow :gameStore="gameStore" />
       </div>
     </div>
     <div class="table-container">
@@ -157,7 +155,6 @@
           class="start-cta"
           @click="startNewGame"
         />
-        <!-- <button class="game-button primary-button" @click="startNewGame">Start Game</button> -->
       </div>
       <div v-else-if="gameStore.gameOver">
         <button class="game-button primary-button" @click="startNewGame">New Game</button>
@@ -170,14 +167,8 @@
           <button class="game-button choice-button" @click="handleChoice('lower')">Lower</button>
         </div>
       </div>
-      <!-- <div v-else-if="gameStore.currentBet > 0">
-        <button class="game-button primary-button" @click="drawCard">Draw Card</button>
-        <button class="game-button secondary-button" @click="gameStore.cancelBet">
-          Cancel Bet
-        </button>
-      </div> -->
       <div style="width: 100%" v-else>
-        <GameCta />
+        <GameCta :addCredit="addCredit" />
       </div>
     </div>
 
@@ -201,6 +192,7 @@ import type { Card } from '@/interface/card'
 import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
+import CashFlow from '@/components/CashFlow.vue'
 import YouWinImage from '@/assets/img/game-zone/you-win.png'
 import YouLoseImage from '@/assets/img/game-zone/you-lose.png'
 
@@ -210,6 +202,27 @@ const resultModalImage = ref('')
 
 // --- Initialize game store ---
 const gameStore = useGameStore()
+
+const addCredit = ref(false)
+
+// Current player's pot amount
+const currentPlayerPot = computed(() => {
+  if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
+    return gameStore.playerPots[gameStore.currentPlayerIndex]
+  }
+  return gameStore.pot
+})
+
+// Watch for changes in currentPlayerPot and revalidate addCredit
+watch(currentPlayerPot, (newValue) => {
+  console.log('player credit status : ', addCredit.value)
+
+  if (newValue >= 1) {
+    addCredit.value = true
+  } else {
+    addCredit.value = false
+  }
+})
 
 // Load players from localStorage if not already loaded
 const playerStore = usePlayerStore()
@@ -348,12 +361,12 @@ const currentPlayerDisplay = computed(() => {
 })
 
 // Current player's pot amount
-const currentPlayerPot = computed(() => {
-  if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
-    return gameStore.playerPots[gameStore.currentPlayerIndex]
-  }
-  return gameStore.pot
-})
+// const currentPlayerPot = computed(() => {
+//   if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
+//     return gameStore.playerPots[gameStore.currentPlayerIndex]
+//   }
+//   return gameStore.pot
+// })
 
 // Game actions
 function startNewGame() {
@@ -535,18 +548,6 @@ watch(
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   border: 2px dashed rgba(255, 255, 255, 0.3);
-}
-
-/* Add styling for the credit display */
-.credit-display {
-  color: white;
-  text-align: center;
-  margin-top: 15px;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 /* Add container styling to ensure cards stay in bounds */

@@ -35,7 +35,7 @@
   </div>
 
   <div v-else class="actions-wrapper">
-    <div class="btn-wrapper">
+    <div v-if="props.addCredit" class="btn-wrapper">
       <img
         src="../assets/img/buttons/all-in.png"
         alt="all-in-png"
@@ -54,6 +54,31 @@
         class="fold-cta"
         @click="handleFold"
       />
+    </div>
+    <div v-else class="credit">
+      <div class="credit-wrapper">
+        <img
+          src="../assets/img/buttons/insufficient.png"
+          alt="all-in-png"
+          class="insufficient"
+          @click="handleAllIn"
+        />
+      </div>
+
+      <div class="credit-actions">
+        <img
+          src="../assets/img/buttons/add.png"
+          alt="all-in-png"
+          class="insufficient"
+          @click="handleAllIn"
+        />
+        <img
+          src="../assets/img/buttons/no.png"
+          alt="all-in-png"
+          class="insufficient"
+          @click="handleAllIn"
+        />
+      </div>
     </div>
   </div>
 
@@ -110,6 +135,7 @@ import { ElMessage } from 'element-plus'
 const chooseBet = ref(false)
 const showAllInConfirmation = ref(false)
 const showFoldConfirmation = ref(false)
+const props = defineProps(['addCredit'])
 
 const gameStore = useGameStore()
 const minBet = 100 // Minimum bet amount
@@ -170,29 +196,29 @@ const handleAllIn = () => {
   showAllInConfirmation.value = true
 }
 
-const confirmAllIn = () => {
-  // Close modal
-  showAllInConfirmation.value = false
+// const confirmAllIn = () => {
+//   // Close modal
+//   showAllInConfirmation.value = false
 
-  // Place bet with all available credits
-  gameStore.placeBet(totalPot.value)
+//   // Place bet with all available credits
+//   gameStore.placeBet(totalPot.value)
 
-  // Draw card and end turn
-  gameStore.drawThirdCard()
-}
+//   // Draw card and end turn
+//   gameStore.drawThirdCard()
+// }
 
 const handleFold = () => {
   showFoldConfirmation.value = true
 }
 
-const confirmFold = () => {
-  // Close modal
-  showFoldConfirmation.value = false
+// const confirmFold = () => {
+//   // Close modal
+//   showFoldConfirmation.value = false
 
-  // Execute fold action
-  gameStore.fold()
-  ElMessage.info('Turn folded')
-}
+//   // Execute fold action
+//   gameStore.fold()
+//   ElMessage.info('Turn folded')
+// }
 </script>
 
 <style lang="css" scoped>
@@ -257,6 +283,35 @@ const confirmFold = () => {
 
 .slider-demo-block {
   width: 100%;
+}
+
+.credit {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.insufficient {
+  width: 100%;
+  height: 40px;
+}
+
+.credit-wrapper {
+  width: 100%;
+}
+
+.credit-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.credit-actions img {
+  width: 280px;
+  height: 70px;
+  cursor: pointer;
 }
 
 :deep(.el-input) {

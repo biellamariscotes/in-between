@@ -11,6 +11,7 @@ declare module 'vue' {
     BackCard: typeof import('./src/components/Back-Card.vue')['default']
     Button: typeof import('./src/components/Button.vue')['default']
     Carousel: typeof import('./src/components/Carousel.vue')['default']
+    CashFlow: typeof import('./src/components/CashFlow.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
     ElCarouselItem: typeof import('element-plus/es')['ElCarouselItem']
