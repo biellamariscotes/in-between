@@ -2,13 +2,14 @@
   <div class="card-container">
     <div class="playing-card" :class="{ 'is-flipped': faceUp }">
       <div class="card-face card-back">
-        <el-image class="card-image" :class="customClass" />
+        <el-image :src="BackCard" class="card-image" :draggable="false" :class="customClass" />
       </div>
       <div class="card-face card-front">
         <el-image
           v-if="cardData"
           :src="getCardImagePath(cardData.id)"
           class="card-image"
+          :draggable="false"
           :class="customClass"
         />
       </div>
@@ -18,6 +19,7 @@
 
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
+import BackCard from '@/assets/img/back-card.png'
 import { useDataFetcher } from '@/composables/useDataFetcher'
 import type { Card } from '@/interface/card'
 
@@ -64,6 +66,7 @@ function getCardImagePath(id: string | undefined): string {
 }
 
 .playing-card {
+  position: relative;
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
@@ -80,8 +83,6 @@ function getCardImagePath(id: string | undefined): string {
   backface-visibility: hidden;
   border-radius: 4px;
   box-shadow: 0.5px 0.5px 3px rgba(0, 0, 0, 0.5);
-  margin: 10px;
-  opacity: 100px;
 }
 
 .card-front {
@@ -95,11 +96,11 @@ function getCardImagePath(id: string | undefined): string {
   border-radius: 4px;
 }
 
-/* .card-container:hover .playing-card {
+.card-container:hover .playing-card {
   transform: translateY(-4px) rotateY(0deg);
 }
 
 .card-container:hover .playing-card.is-flipped {
   transform: translateY(-4px) rotateY(180deg);
-} */
+}
 </style>
