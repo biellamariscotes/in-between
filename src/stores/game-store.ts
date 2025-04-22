@@ -133,11 +133,14 @@ export const useGameStore = defineStore('game', {
     // Starts or restarts the game
     startGame() {
       // Create and shuffle the deck
+      localStorage.removeItem('currentCard')
+
       const createdDeck = createDeck()
       this.deck = shuffle(createdDeck)
 
       // Check if deck has enough cards
-      if (this.deck.length < 2) {
+
+      if (this.deck.length < 3) {
         console.error('Deck has insufficient cards to start the game')
         this.message = 'Error initializing deck. Please refresh.'
         return
@@ -194,7 +197,6 @@ export const useGameStore = defineStore('game', {
         this.message = 'Bet exceeds the pot amount!'
         return
       }
-
       this.currentBet = betAmount
 
       if (this.isMultiplayer) {
