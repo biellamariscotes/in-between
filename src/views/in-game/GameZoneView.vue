@@ -72,28 +72,25 @@
       :isActive="gameStore.turnTimerActive"
     />
 
+    <!-- Main Menu -->
     <div class="settings-container">
-      <button class="settings-button" @click="toggleSettings">
+      <button class="settings-button" @click="toggleMainMenu">
         <span class="settings-icon">⚙️</span>
       </button>
     </div>
+
+    <MainMenuDialog></MainMenuDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import GameTable from '@/assets/img/game-zone/Game-Table.svg'
 import GameCta from '@/components/GameCta.vue'
 import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
-
-// Import new components
-import TimerDisplay from '@/components/TimerDisplay.vue'
-import GameCards from '@/components/GameCards.vue'
-import PlayerPosition from '@/components/PlayerPosition.vue'
-import CommunalPot from '@/components/CommunalPot.vue'
-import ResultModal from '@/components/ResultModal.vue'
+import eventBus from '@/eventBus'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/cardUtils'
@@ -186,19 +183,6 @@ function handleChoice(choice: 'higher' | 'lower') {
   gameStore.handleEqualCardsChoice(choice)
 }
 
-function toggleSettings() {
-  // Implement settings panel logic here
-  console.log('Settings toggled')
-}
-
-// Reset game when player count changes
-watch(playerCount, () => {
-  // Only reset if game is not in progress
-  if (!gameStore.gameStarted || gameStore.gameOver) {
-    setupGameDisplay()
-  }
-})
-
 // Define the setupGameDisplay function to prevent errors
 function setupGameDisplay() {
   // This is called when player count changes
@@ -211,6 +195,12 @@ onUnmounted(() => {
     clearInterval(gameStore.turnTimerInterval)
   }
 })
+
+// ------- MAIN MENU LOGIC ---------
+
+const toggleMainMenu = () => {
+  eventBus.emit('toggle-main-menu')
+}
 
 // Listen to state changes in game store to show modals
 watch(
@@ -232,4 +222,12 @@ watch(
     }
   },
 )
+
+// Reset game when player count changes
+watch(playerCount, () => {
+  // Only reset if game is not in progress
+  if (!gameStore.gameStarted || gameStore.gameOver) {
+    setupGameDisplay()
+  }
+})
 </script>
