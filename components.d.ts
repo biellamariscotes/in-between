@@ -9,11 +9,14 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BackCard: typeof import('./src/components/Back-Card.vue')['default']
+    BetForm: typeof import('./src/components/BetForm.vue')['default']
     Button: typeof import('./src/components/Button.vue')['default']
     CardTable: typeof import('./src/components/game/CardTable.vue')['default']
     Carousel: typeof import('./src/components/Carousel.vue')['default']
+    CashFlow: typeof import('./src/components/CashFlow.vue')['default']
     CommunalPot: typeof import('./src/components/CommunalPot.vue')['default']
     CountdownTimer: typeof import('./src/components/CountdownTimer.vue')['default']
+    CreditForm: typeof import('./src/components/CreditForm.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
     ElCarouselItem: typeof import('element-plus/es')['ElCarouselItem']

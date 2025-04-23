@@ -18,18 +18,19 @@
         </div>
       </div>
 
-      <div class="credit-display">
-        <h2>Credit: {{ playerCredit }}</h2>
-      </div>
+      <CashFlow :gameStore="gameStore" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
+import { useGameStore } from '@/stores/game-store'
 import PlayerHand from '@/components/PlayerHand.vue'
 
-const props = defineProps<{
+const gameStore = useGameStore()
+
+defineProps<{
   leftCard: string
   middleCard: string
   rightCard: string
@@ -82,7 +83,7 @@ const props = defineProps<{
   color: white;
   text-align: center;
   margin-top: 15px;
-  background-color: rgba(0, 0, 0, 0.7);
+  /* background-color: rgba(0, 0, 0, 0.7); */
   padding: 10px;
   border-radius: 5px;
   font-weight: bold;

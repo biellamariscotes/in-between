@@ -48,9 +48,7 @@
           </div>
         </div>
 
-        <div class="credit-display">
-          <h2>Credit: {{ currentPlayerPot }}</h2>
-        </div>
+        <CashFlow :gameStore="gameStore" />
       </div>
     </div>
 
@@ -93,7 +91,7 @@
         </div>
       </div>
       <div style="width: 100%" v-else>
-        <GameCta />
+        <GameCta :addCredit="addCredit" />
       </div>
     </div>
 
@@ -126,6 +124,8 @@ import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
 import eventBus from '@/eventBus'
 import CountdownTimer from '@/components/CountdownTimer.vue'
+import MainMenuDialog from '@/components/dialog/MainMenuDialog.vue'
+import CashFlow from '@/components/CashFlow.vue'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/cardUtils'
@@ -140,6 +140,27 @@ import { isCurrentPlayer, getActivePlayers, calculatePlayerCards } from '@/utils
 
 // --- Initialize game store ---
 const gameStore = useGameStore()
+
+const addCredit = ref(false)
+
+// Current player's pot amount
+const currentPlayerPot = computed(() => {
+  if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
+    return gameStore.playerPots[gameStore.currentPlayerIndex]
+  }
+  return gameStore.pot
+})
+
+// Watch for changes in currentPlayerPot and revalidate addCredit
+watch(currentPlayerPot, (newValue) => {
+  console.log('player credit status : ', addCredit.value)
+
+  if (newValue >= 1) {
+    addCredit.value = true
+  } else {
+    addCredit.value = false
+  }
+})
 
 // Load players from localStorage if not already loaded
 const playerStore = usePlayerStore()
@@ -175,13 +196,20 @@ const currentPlayerDisplay = computed(() => {
   return players.value[0]?.name || 'Player 1'
 })
 
-// Current player's pot amount
-const currentPlayerPot = computed(() => {
-  if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
-    return gameStore.playerPots[gameStore.currentPlayerIndex]
-  }
-  return gameStore.pot
-})
+// const currentPlayerPot = computed(() => {
+//   if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
+//     return gameStore.playerPots[gameStore.currentPlayerIndex]
+//   }
+//   return gameStore.pot
+// })
+
+// // Current player's pot amount
+// const currentPlayerPot = computed(() => {
+//   if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
+//     return gameStore.playerPots[gameStore.currentPlayerIndex]
+//   }
+//   return gameStore.pot
+// })
 
 // Helper to get player points for a specific position
 function getPlayerPoints(position: number): number {
