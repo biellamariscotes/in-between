@@ -34,7 +34,7 @@ const props = defineProps({
 
 // Create dynamic styles based on card count
 const handStyle = computed(() => ({
-  '--card-count': props.cards.length
+  '--card-count': props.cards.length,
 }))
 </script>
 
@@ -72,14 +72,6 @@ const handStyle = computed(() => ({
 }
 
 .hand-left,
-.hand-right {
-  position: relative;
-  height: 100%;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
 .player-card {
   width: 100% !important;
   height: 100% !important;

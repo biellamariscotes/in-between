@@ -14,14 +14,45 @@
       <h1 style="color: white">{{ currentPlayerDisplay }}'s Turn</h1>
     </div>
 
-    <!-- Game Cards Component -->
-    <GameCards
-      :leftCard="gameStore.faceUpCards[0] ? cardToDisplayId(gameStore.faceUpCards[0]) : ''"
-      :middleCard="gameStore.currentCard ? cardToDisplayId(gameStore.currentCard) : ''"
-      :rightCard="gameStore.faceUpCards[1] ? cardToDisplayId(gameStore.faceUpCards[1]) : ''"
-      :showMiddleCard="isCurrentCardDrawnByCurrentPlayer"
-      :playerCredit="currentPlayerPot"
-    />
+    <div class="game-zone">
+      <div class="card-table">
+        <div class="game-cards">
+          <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
+            <PlayerHand
+              :cards="[cardToDisplayId(gameStore.faceUpCards[0])]"
+              :show-cards="true"
+              orientation="normal"
+            />
+          </div>
+
+          <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
+            <PlayerHand
+              v-if="gameStore.currentCard"
+              :cards="[cardToDisplayId(gameStore.currentCard)]"
+              :show-cards="true"
+              orientation="normal"
+            />
+            <img v-else :src="Shadowquestion" alt="Shadow Question" class="shadowquestion" />
+          </div>
+
+          <div class="face-up-card" v-else>
+            <div class="card-placeholder"></div>
+          </div>
+
+          <div class="face-up-card" v-if="gameStore.faceUpCards[1]">
+            <PlayerHand
+              :cards="[cardToDisplayId(gameStore.faceUpCards[1])]"
+              :show-cards="true"
+              orientation="normal"
+            />
+          </div>
+        </div>
+
+        <div class="credit-display">
+          <h2>Credit: {{ currentPlayerPot }}</h2>
+        </div>
+      </div>
+    </div>
 
     <div class="table-container">
       <!-- Player Position Components -->
@@ -66,11 +97,9 @@
       </div>
     </div>
 
-    <!-- Timer Component -->
-    <TimerDisplay
-      :timeRemaining="gameStore.turnTimeRemaining"
-      :isActive="gameStore.turnTimerActive"
-    />
+    <div class="timer-container">
+      <CountdownTimer />
+    </div>
 
     <div class="settings-container">
       <button class="settings-button" @click="toggleSettings">
@@ -83,6 +112,7 @@
 <script setup lang="ts">
 import { computed, watch, onMounted, onUnmounted } from 'vue'
 import GameTable from '@/assets/img/game-zone/Game-Table.svg'
+import Shadowquestion from '@/assets/img/game-zone/shadowquestion.svg'
 import GameCta from '@/components/GameCta.vue'
 import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
@@ -94,6 +124,7 @@ import GameCards from '@/components/GameCards.vue'
 import PlayerPosition from '@/components/PlayerPosition.vue'
 import CommunalPot from '@/components/CommunalPot.vue'
 import ResultModal from '@/components/ResultModal.vue'
+import CountdownTimer from '@/components/CountdownTimer.vue'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/cardUtils'
@@ -171,7 +202,7 @@ function getPlayerPoints(position: number): number {
 
 // Game actions
 function startNewGame() {
-  // Setup multiplayer if more than one active player
+  // Setup multiplayer if more than one active playeruseGameStore useGameStore
   if (playerCount.value > 1) {
     const activePlayers = players.value.slice(0, playerCount.value)
     gameStore.setupMultiplayerGame(activePlayers)
@@ -205,6 +236,30 @@ function setupGameDisplay() {
   console.log('Game display reset due to player count change')
 }
 
+// Timer functionality
+const formattedTimeRemaining = computed(() => {
+  if (!gameStore.gameStarted || gameStore.gameOver) {
+    return '10s'
+  }
+  return `${gameStore.turnTimeRemaining}s`
+})
+
+// Apply warning style when time is running low (3 seconds or less)
+const timeRunningLow = computed(() => {
+  return gameStore.turnTimeRemaining <= 3 && gameStore.turnTimerActive
+})
+
+// When user's turn is active, ensure timer is running
+watch(
+  () => gameStore.currentPlayerIndex,
+  () => {
+    if (gameStore.gameStarted && !gameStore.gameOver && !showResultModal.value) {
+      // Only start the timer for the new player if no modal is showing
+      gameStore.startTurnTimer()
+    }
+  },
+)
+
 // Clean up timer when component is unmounted
 onUnmounted(() => {
   if (gameStore.turnTimerInterval) {
@@ -233,3 +288,140 @@ watch(
   },
 )
 </script>
+
+<style scoped>
+/* ...existing styles... */
+
+.game-cards {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  height: 100%;
+  padding: 10px;
+}
+
+/* Adjust styling for table cards to match player hands */
+.face-up-card,
+.current-card {
+  width: 140px;
+  height: 220px;
+  border-radius: 10px;
+  /* background-color: rgba(0, 0, 0, 0.2); */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.shadowquestion {
+  width: 1000px;
+  height: 250px;
+}
+
+.card-placeholder {
+  display: flex;
+  width: 100px;
+  height: 140px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+/* Add styling for the credit display */
+.credit-display {
+  color: white;
+  text-align: center;
+  margin-top: 15px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Add container styling to ensure cards stay in bounds */
+.card-table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+/* .timer {
+  color: white;
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.timer.warning {
+  color: #ff5252;
+  animation: pulse 1s infinite;
+} */
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Result modal styles */
+.result-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 16000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  width: 80%; /* Fixed smaller width */
+  animation: scaleIn 0.4s ease;
+  z-index: 16000;
+}
+
+.modal-content img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Ensures image maintains aspect ratio */
+}
+
+.start-cta {
+  width: 330px;
+  height: 80px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+</style>
