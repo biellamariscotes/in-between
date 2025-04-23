@@ -50,10 +50,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useGameStore } from '@/stores/game-store'
+import { usePlayerRegistration } from '@/stores/player'
 
 // const showAllInConfirmation = ref(false)
 const creditValue = ref(0)
 const gameStore = useGameStore()
+const playerStore = usePlayerRegistration()
 
 const creditForm = ref(false)
 
@@ -66,20 +68,47 @@ const handleBackToAddCredit = () => {
 }
 
 const handleCancelCredit = () => {
-  //
+  // Close or navigate away from the credit form
+  const emit = defineEmits(['close-credit'])
+  emit('close-credit')
 }
 
 const handleSubmitCredit = () => {
-  // Ensure a valid amount is entered.
+  // Ensure a valid amount is entered
   if (creditValue.value <= 0) return
 
-  const index = gameStore.currentPlayerIndex
-  gameStore.playerPots[index] += Number(creditValue.value)
+  try {
+    const index = gameStore.currentPlayerIndex
+    
+    // Update in-game credits
+    if (!gameStore.playerPots[index]) {
+      gameStore.playerPots[index] = 0
+    }
+    gameStore.playerPots[index] += Number(creditValue.value)
+    
+    // Update player registration store
+    const playerId = gameStore.players[index]?.id
+    if (playerId) {
+      const playerIndex = playerStore.players.findIndex(p => p.id === playerId)
+      if (playerIndex !== -1) {
+        const currentCredits = playerStore.players[playerIndex].credits || 0
+        playerStore.players[playerIndex].credits = currentCredits + Number(creditValue.value)
+      }
+    }
 
-  // Optionally, reset the input and hide the form.
-  creditForm.value = false
-
-  console.log('credit value : ', creditValue.value)
+    // Save updated player data to localStorage
+    localStorage.setItem('players', JSON.stringify(playerStore.players))
+    
+    // Update game state in localStorage
+    gameStore.saveStateToLocalStorage()
+    
+    // Reset the form and hide it
+    creditValue.value = 0
+    creditForm.value = false
+    
+  } catch (error) {
+    console.error('Error adding credits:', error)
+  }
 }
 </script>
 
