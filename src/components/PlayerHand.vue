@@ -73,8 +73,6 @@ const handStyle = computed(() => ({
 
 .hand-left,
 .player-card {
-  width: 100% !important;
-  height: 100% !important;
   max-height: 100%;
   object-fit: contain;
   transition: transform 0.2s ease;

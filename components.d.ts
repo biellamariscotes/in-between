@@ -12,7 +12,6 @@ declare module 'vue' {
     Button: typeof import('./src/components/Button.vue')['default']
     CardTable: typeof import('./src/components/game/CardTable.vue')['default']
     Carousel: typeof import('./src/components/Carousel.vue')['default']
-    CountdownTimer: typeof import('./src/components/CountdownTimer.vue')['default']
     CommunalPot: typeof import('./src/components/CommunalPot.vue')['default']
     CountdownTimer: typeof import('./src/components/CountdownTimer.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
