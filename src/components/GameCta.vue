@@ -44,7 +44,6 @@ import CreditForm from './CreditForm.vue'
 
 const chooseBet = ref(false)
 // const showAllInConfirmation = ref(false)
-const showFoldConfirmation = ref(false)
 const props = defineProps(['addCredit'])
 
 const gameStore = useGameStore()
@@ -75,7 +74,7 @@ const handeBackOption = () => {
 }
 
 const handleFold = () => {
-  showFoldConfirmation.value = true
+  gameStore.fold()
 }
 </script>
 
