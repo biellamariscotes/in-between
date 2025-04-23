@@ -103,9 +103,12 @@
 
     <!-- Main Menu -->
     <div class="settings-container">
-      <button class="settings-button" @click="toggleMainMenu">
-        <span class="settings-icon">⚙️</span>
-      </button>
+      <img
+        src="../../assets/img/buttons/main-menu/menu-btn.png"
+        alt="how-to-play-btn"
+        class="menu-btn"
+        @click="toggleMainMenu"
+      />
     </div>
 
     <MainMenuDialog></MainMenuDialog>
