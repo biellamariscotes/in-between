@@ -114,7 +114,6 @@ const playerStore = usePlayerStore()
 const registrationStore = usePlayerRegistration()
 
 onMounted(() => {
-  randomizePlayers()
   if (!registrationStore.players.length) {
     registrationStore.loadPlayersFromStorage()
   }

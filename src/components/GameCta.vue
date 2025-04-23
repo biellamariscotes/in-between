@@ -36,17 +36,23 @@
 
   <div v-else class="actions-wrapper">
     <div class="btn-wrapper">
+      <!-- All In -->
       <img
         src="../assets/img/buttons/all-in.png"
         alt="all-in-png"
         class="all-in-cta"
+        @click="handleAllIn"
       />
+
+      <!-- Bet -->
       <img
         src="../assets/img/buttons/bet.png"
         alt="bet-btn"
         class="bet-cta"
         @click="handleBetOption"
       />
+
+      <!-- Fold -->
       <img
         src="../assets/img/buttons/fold.png"
         alt="fold-btn"
@@ -64,9 +70,9 @@ import { ElMessage } from 'element-plus'
 import { usePlayerRandomizer } from '@/composables/usePlayerRandomizer'
 
 const chooseBet = ref(false)
-
 const gameStore = useGameStore()
 const minBet = 100 // Minimum bet amount
+const { getCurrentPlayer } = usePlayerRandomizer()
 
 // Player's available credits
 const playerCredits = computed(() => {
@@ -76,25 +82,29 @@ const playerCredits = computed(() => {
   return gameStore.pot || 0
 })
 
-// Max bet is limited by BOTH communal pot AND player's own credits
+const handleAllIn = () => {
+  gameStore.placeBet(playerCredits.value)
+  // Draw card and end turn
+  gameStore.drawThirdCard()
+  // Set current player's isTurn to false
+  const currentPlayer = getCurrentPlayer(gameStore.currentPlayerIndex + 1)
+  if (currentPlayer) {
+    currentPlayer.isTurn = false
+  }
+}
+
 const maxAllowedBet = computed(() => {
-  // Can't bet more than what's in the communal pot
   const potLimit = gameStore.communalPot || 0
-  
-  // Can't bet more than player's available credits
   const creditLimit = playerCredits.value
-  
+
   // Return the smaller of the two limits
   return Math.min(potLimit, creditLimit)
 })
 
 const betAmount = ref(minBet)
 
-const { getCurrentPlayer } = usePlayerRandomizer()
-
 const handleBetOption = () => {
   chooseBet.value = true
-  // Initialize with minimum bet
   betAmount.value = minBet
 }
 
@@ -109,12 +119,12 @@ const handleMin = () => {
 const handleHalf = () => {
   // Half of communal pot, not half of player's credits
   betAmount.value = Math.floor(gameStore.communalPot / 2)
-  
+
   // Ensure it's not more than player has
   if (betAmount.value > playerCredits.value) {
     betAmount.value = playerCredits.value
   }
-  
+
   // Ensure it's at least the minimum
   if (betAmount.value < minBet) {
     betAmount.value = minBet
@@ -140,60 +150,12 @@ const handleDealNow = () => {
   gameStore.placeBet(betAmount.value)
   gameStore.drawThirdCard()
   chooseBet.value = false
-
-  // Set current player's isTurn to false
-  const currentPlayer = getCurrentPlayer(gameStore.currentPlayerIndex + 1)
-  if (currentPlayer) {
-    currentPlayer.isTurn = false
-  }
 }
 
-<<<<<<< HEAD
-const handleAllIn = () => {
-  gameStore.placeBet(totalPot.value)
-=======
 const handleFold = () => {
   // Execute fold action directly
   gameStore.fold()
   ElMessage.info('Turn folded')
-}
-
-// These methods are not used since we removed the confirmation dialogs
-const confirmAllIn = () => {
-  // Close modal
-  showAllInConfirmation.value = false
-
-  // Place bet with maximum allowed
-  gameStore.placeBet(maxAllowedBet.value)
->>>>>>> cae09c17753e3812fdb60db0adfbaa3988c5d433
-
-  // Draw card and end turn
-  gameStore.drawThirdCard()
-
-  // Set current player's isTurn to false
-  const currentPlayer = getCurrentPlayer(gameStore.currentPlayerIndex + 1)
-  if (currentPlayer) {
-    currentPlayer.isTurn = false
-  }
-}
-
-<<<<<<< HEAD
-const handleFold = () => {
-=======
-const confirmFold = () => {
-  // Close modal
-  showFoldConfirmation.value = false
-
-  // Execute fold action
->>>>>>> cae09c17753e3812fdb60db0adfbaa3988c5d433
-  gameStore.fold()
-  ElMessage.info('Turn folded')
-
-  // Set current player's isTurn to false
-  const currentPlayer = getCurrentPlayer(gameStore.currentPlayerIndex + 1)
-  if (currentPlayer) {
-    currentPlayer.isTurn = false
-  }
 }
 </script>
 
