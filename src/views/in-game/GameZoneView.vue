@@ -101,16 +101,22 @@
       <CountdownTimer />
     </div>
 
+    <!-- Main Menu -->
     <div class="settings-container">
-      <button class="settings-button" @click="toggleSettings">
-        <span class="settings-icon">⚙️</span>
-      </button>
+      <img
+        src="../../assets/img/buttons/main-menu/menu-btn.png"
+        alt="how-to-play-btn"
+        class="menu-btn"
+        @click="toggleMainMenu"
+      />
     </div>
+
+    <MainMenuDialog></MainMenuDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import GameTable from '@/assets/img/game-zone/Game-Table.svg'
 import Shadowquestion from '@/assets/img/game-zone/shadowquestion.svg'
 import PlayerHand from '@/components/PlayerHand.vue'
@@ -118,12 +124,8 @@ import GameCta from '@/components/GameCta.vue'
 import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
+import eventBus from '@/eventBus'
 import CountdownTimer from '@/components/CountdownTimer.vue'
-
-// Import new components
-import PlayerPosition from '@/components/PlayerPosition.vue'
-import CommunalPot from '@/components/CommunalPot.vue'
-import ResultModal from '@/components/ResultModal.vue'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/cardUtils'
@@ -210,24 +212,22 @@ function handleChoice(choice: 'higher' | 'lower') {
   gameStore.handleEqualCardsChoice(choice)
 }
 
-function toggleSettings() {
-  // Implement settings panel logic here
-  console.log('Settings toggled')
-}
-
-// Reset game when player count changes
-watch(playerCount, () => {
-  // Only reset if game is not in progress
-  if (!gameStore.gameStarted || gameStore.gameOver) {
-    setupGameDisplay()
-  }
-})
-
 // Define the setupGameDisplay function to prevent errors
 function setupGameDisplay() {
   // This is called when player count changes
   console.log('Game display reset due to player count change')
 }
+
+// When user's turn is active, ensure timer is running
+watch(
+  () => gameStore.currentPlayerIndex,
+  () => {
+    if (gameStore.gameStarted && !gameStore.gameOver && !showResultModal.value) {
+      // Only start the timer for the new player if no modal is showing
+      gameStore.startTurnTimer()
+    }
+  },
+)
 
 // Clean up timer when component is unmounted
 onUnmounted(() => {
@@ -236,7 +236,29 @@ onUnmounted(() => {
   }
 })
 
-// Listen to state changes in game store to a modals
+// ------- MAIN MENU LOGIC ---------
+
+const mainMenuVisible = ref(false)
+
+const toggleMainMenu = () => {
+  eventBus.emit('toggle-main-menu')
+}
+
+onMounted(() => {
+  eventBus.on('untoggle-main-menu', (newValue) => {
+    mainMenuVisible.value = newValue
+    console.log(mainMenuVisible.value)
+  })
+})
+
+watch(mainMenuVisible, (newValue) => {
+  if (newValue) {
+    gameStore.haltTurnTimer()
+  } else {
+    gameStore.resumeTurnTimer()
+  }
+})
+
 watch(
   () => gameStore.message,
   (newMessage, oldMessage) => {
@@ -256,4 +278,12 @@ watch(
     }
   },
 )
+
+// Reset game when player count changes
+watch(playerCount, () => {
+  // Only reset if game is not in progress
+  if (!gameStore.gameStarted || gameStore.gameOver) {
+    setupGameDisplay()
+  }
+})
 </script>

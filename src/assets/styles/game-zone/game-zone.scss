@@ -603,3 +603,16 @@
     transform: scale(1);
   }
 }
+
+.el-dialog header {
+  display: none;
+}
+
+.menu-btn {
+  width: 100%;
+  cursor: pointer;
+}
+
+.title-main-menu {
+  font-family: 'Baumans';
+}
