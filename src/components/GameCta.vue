@@ -36,17 +36,23 @@
 
   <div v-else class="actions-wrapper">
     <div class="btn-wrapper">
+      <!-- All In -->
       <img
         src="../assets/img/buttons/all-in.png"
         alt="all-in-png"
         class="all-in-cta"
+        @click="handleAllIn"
       />
+
+      <!-- Bet -->
       <img
         src="../assets/img/buttons/bet.png"
         alt="bet-btn"
         class="bet-cta"
         @click="handleBetOption"
       />
+
+      <!-- Fold -->
       <img
         src="../assets/img/buttons/fold.png"
         alt="fold-btn"
@@ -55,63 +61,18 @@
       />
     </div>
   </div>
-
-  <!-- All-in confirmation modal -->
-  <!-- <el-dialog
-    v-model="showAllInConfirmation"
-    title="Confirm All-In"
-    width="320px"
-    center
-    :modal="true"
-    :append-to-body="true"
-    :show-close="false"
-    :lock-scroll="true"
-    class="game-dialog"
-    :overlay-class="'dialog-overlay'"
-  >
-    <span>Are you sure you want to bet all your credits?</span>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="showAllInConfirmation = false">Cancel</el-button>
-        <el-button type="primary" @click="confirmAllIn">Confirm</el-button>
-      </span>
-    </template>
-  </el-dialog> -->
-
-  <!-- Fold confirmation modal -->
-  <!-- <el-dialog
-    v-model="showFoldConfirmation"
-    title="Confirm Fold"
-    width="320px"
-    center
-    :modal="true"
-    :append-to-body="true"
-    :show-close="false"
-    :lock-scroll="true"
-    class="game-dialog"
-    :overlay-class="'dialog-overlay'"
-  >
-    <span>Are you sure you want to fold? You will forfeit your turn.</span>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="showFoldConfirmation = false">Cancel</el-button>
-        <el-button type="primary" @click="confirmFold">Confirm</el-button>
-      </span>
-    </template>
-  </el-dialog> -->
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useGameStore } from '@/stores/game-store'
 import { ElMessage } from 'element-plus'
+// import { usePlayerRandomizer } from '@/composables/usePlayerRandomizer'
 
 const chooseBet = ref(false)
-const showAllInConfirmation = ref(false)
-const showFoldConfirmation = ref(false)
-
 const gameStore = useGameStore()
 const minBet = 100 // Minimum bet amount
+// const { getCurrentPlayer } = usePlayerRandomizer()
 
 // Player's available credits
 const playerCredits = computed(() => {
@@ -121,14 +82,21 @@ const playerCredits = computed(() => {
   return gameStore.pot || 0
 })
 
-// Max bet is limited by BOTH communal pot AND player's own credits
+const handleAllIn = () => {
+  gameStore.placeBet(playerCredits.value)
+  // Draw card and end turn
+  gameStore.drawThirdCard()
+  // Set current player's isTurn to false
+  // const currentPlayer = getCurrentPlayer(gameStore.currentPlayerIndex + 1)
+  // if (currentPlayer) {
+  //   currentPlayer.isTurn = false
+  // }
+}
+
 const maxAllowedBet = computed(() => {
-  // Can't bet more than what's in the communal pot
   const potLimit = gameStore.communalPot || 0
-  
-  // Can't bet more than player's available credits
   const creditLimit = playerCredits.value
-  
+
   // Return the smaller of the two limits
   return Math.min(potLimit, creditLimit)
 })
@@ -137,7 +105,6 @@ const betAmount = ref(minBet)
 
 const handleBetOption = () => {
   chooseBet.value = true
-  // Initialize with minimum bet
   betAmount.value = minBet
 }
 
@@ -152,12 +119,12 @@ const handleMin = () => {
 const handleHalf = () => {
   // Half of communal pot, not half of player's credits
   betAmount.value = Math.floor(gameStore.communalPot / 2)
-  
+
   // Ensure it's not more than player has
   if (betAmount.value > playerCredits.value) {
     betAmount.value = playerCredits.value
   }
-  
+
   // Ensure it's at least the minimum
   if (betAmount.value < minBet) {
     betAmount.value = minBet
@@ -187,27 +154,6 @@ const handleDealNow = () => {
 
 const handleFold = () => {
   // Execute fold action directly
-  gameStore.fold()
-  ElMessage.info('Turn folded')
-}
-
-// These methods are not used since we removed the confirmation dialogs
-const confirmAllIn = () => {
-  // Close modal
-  showAllInConfirmation.value = false
-
-  // Place bet with maximum allowed
-  gameStore.placeBet(maxAllowedBet.value)
-
-  // Draw card and end turn
-  gameStore.drawThirdCard()
-}
-
-const confirmFold = () => {
-  // Close modal
-  showFoldConfirmation.value = false
-
-  // Execute fold action
   gameStore.fold()
   ElMessage.info('Turn folded')
 }

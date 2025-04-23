@@ -13,16 +13,16 @@
     <div class="turn-container">
       <h1 style="color: white">{{ currentPlayerDisplay }}'s Turn</h1>
     </div>
-    
+
     <!-- Game Cards Component -->
-    <GameCards 
+    <GameCards
       :leftCard="gameStore.faceUpCards[0] ? cardToDisplayId(gameStore.faceUpCards[0]) : ''"
       :middleCard="gameStore.currentCard ? cardToDisplayId(gameStore.currentCard) : ''"
       :rightCard="gameStore.faceUpCards[1] ? cardToDisplayId(gameStore.faceUpCards[1]) : ''"
       :showMiddleCard="isCurrentCardDrawnByCurrentPlayer"
       :playerCredit="currentPlayerPot"
     />
-    
+
     <div class="table-container">
       <!-- Player Position Components -->
       <PlayerPosition
@@ -35,12 +35,9 @@
         :playerPoints="getPlayerPoints(position - 1)"
         :cards="playerCards[position - 1] || []"
       />
-      
+
       <!-- Communal Pot Component -->
-      <CommunalPot 
-        :potAmount="gameStore.communalPot"
-        :currentBet="gameStore.currentBet"
-      />
+      <CommunalPot :potAmount="gameStore.communalPot" :currentBet="gameStore.currentBet" />
     </div>
 
     <!-- Actions Container -->
@@ -70,11 +67,11 @@
     </div>
 
     <!-- Timer Component -->
-    <TimerDisplay 
+    <TimerDisplay
       :timeRemaining="gameStore.turnTimeRemaining"
       :isActive="gameStore.turnTimerActive"
     />
-    
+
     <div class="settings-container">
       <button class="settings-button" @click="toggleSettings">
         <span class="settings-icon">⚙️</span>
@@ -100,7 +97,13 @@ import ResultModal from '@/components/ResultModal.vue'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/cardUtils'
-import { showResultModal, resultModalImage, showWinModal, showLoseModal, showFoldModal } from '@/utils/modalUtils'
+import {
+  showResultModal,
+  resultModalImage,
+  showWinModal,
+  showLoseModal,
+  showFoldModal,
+} from '@/utils/modalUtils'
 import { isCurrentPlayer, getActivePlayers, calculatePlayerCards } from '@/utils/playerUtils'
 
 // --- Initialize game store ---
