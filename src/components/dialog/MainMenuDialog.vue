@@ -1,8 +1,9 @@
 <template>
   <el-dialog v-model="mainMenuVisible" title="Warning" width="500" align-center>
     <h1>Main Menu</h1>
-    <button class="game-button choice-button">How To Play</button>
-    <button class="game-button choice-button" @click="startNewGame">New Game</button>
+    <Button variant="secondary">Half</Button>
+    <Button variant="secondary" @click="startNewGame">Quit Game</Button>
+    <button @click="closeMainMenu">Close</button>
     <template #footer>
       <div class="dialog-footer"></div>
     </template>
@@ -10,17 +11,28 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
 import eventBus from '@/eventBus'
 
 const mainMenuVisible = ref(false)
 const { startNewGame } = useGameLifeCycle()
 
+const closeMainMenu = () => {
+  mainMenuVisible.value = false
+}
+
 onMounted(() => {
   eventBus.on('toggle-main-menu', () => {
     mainMenuVisible.value = true
-    console.log('Main Menu Open')
   })
+})
+
+onUnmounted(() => {
+  eventBus.off('toggle-main-menu')
+})
+
+watch(mainMenuVisible, (newValue) => {
+  eventBus.emit('untoggle-main-menu', newValue)
 })
 </script>

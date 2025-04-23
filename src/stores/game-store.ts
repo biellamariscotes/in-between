@@ -5,21 +5,25 @@ import { cards } from '@/utils/data/cards'
 import type { Card, GameState } from '@/interface/card'
 import type { Player } from '@/interface/player'
 import { usePlayerRegistration } from '@/stores/player'
+import { usePlayerStore } from '@/stores/player-count'
 
 export const useGameStore = defineStore('game', {
   state: (): GameState => {
-    // Try to load from localStorage
-    const savedState = localStorage.getItem('gameState')
-    if (savedState) {
-      try {
-        return JSON.parse(savedState) as GameState
-      } catch (e) {
-        console.error('Failed to parse saved game state:', e)
-        // Fall through to create a new state
+    if (!this?.freshStart) {
+      // Check if freshStart flag exists and is true
+      const savedState = localStorage.getItem('gameState')
+      if (savedState) {
+        try {
+          return JSON.parse(savedState) as GameState
+        } catch (e) {
+          console.error('Failed to parse saved game state:', e)
+          // Fall through to create a new state
+        }
       }
     }
 
     return {
+      freshStart: false,
       deck: [] as Card[],
       faceUpCards: [null, null] as (Card | null)[],
       currentCard: null as Card | null,
@@ -44,6 +48,7 @@ export const useGameStore = defineStore('game', {
       turnTimeRemaining: 10,
       turnTimerActive: false,
       turnTimerInterval: null as number | null,
+      turnTimerHalted: false,
     }
   },
 
@@ -290,6 +295,15 @@ export const useGameStore = defineStore('game', {
       this.saveStateToLocalStorage()
     },
 
+    resetGame() {
+      const allPlayers = usePlayerRegistration()
+      const playerCount = usePlayerStore()
+      allPlayers.clearPlayers()
+      playerCount.clearPlayerCount()
+      localStorage.removeItem('gameState')
+      this.$reset()
+      this.freshStart = true
+    },
     // Handles when player makes a bet
     placeBet(betAmount: number) {
       const currentPot = this.isMultiplayer ? this.playerPots[this.currentPlayerIndex] : this.pot
@@ -615,6 +629,36 @@ export const useGameStore = defineStore('game', {
         this.turnTimerInterval = null
       }
       this.turnTimerActive = false
+    },
+
+    haltTurnTimer() {
+      // Only proceed if the timer is active
+      if (this.turnTimerActive) {
+        // Clear the current interval
+        if (this.turnTimerInterval) {
+          clearInterval(this.turnTimerInterval)
+          this.turnTimerInterval = null
+        }
+        this.turnTimerHalted = true
+      }
+    },
+
+    // Resume the turn timer from where it left off
+    resumeTurnTimer() {
+      // Only resume if it was halted
+      if (this.turnTimerHalted) {
+        // Create a new interval that continues from current time
+        this.turnTimerInterval = setInterval(() => {
+          this.turnTimeRemaining--
+          if (this.turnTimeRemaining <= 0) {
+            this.stopTurnTimer()
+            this.autoFold()
+          }
+        }, 1000)
+
+        // Clear the halted flag
+        this.turnTimerHalted = false
+      }
     },
 
     // Auto-fold when time runs out

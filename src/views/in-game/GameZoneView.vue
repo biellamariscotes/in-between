@@ -150,12 +150,6 @@ onMounted(() => {
 const playerCount = computed(() => playerStore.playerCount ?? 6)
 const players = computed(() => registrationStore.players)
 
-// Track if a user has drawn their card this turn to know when to display middle card
-const isCurrentCardDrawnByCurrentPlayer = computed(() => {
-  // Only show if current card exists AND currentBet is 0 (means card was drawn this turn)
-  return gameStore.currentCard !== null && gameStore.currentBet === 0 && gameStore.roundsPlayed > 0
-})
-
 // Get player cards from utility
 const playerCards = calculatePlayerCards()
 
@@ -219,19 +213,6 @@ function setupGameDisplay() {
   console.log('Game display reset due to player count change')
 }
 
-// Timer functionality
-const formattedTimeRemaining = computed(() => {
-  if (!gameStore.gameStarted || gameStore.gameOver) {
-    return '10s'
-  }
-  return `${gameStore.turnTimeRemaining}s`
-})
-
-// Apply warning style when time is running low (3 seconds or less)
-const timeRunningLow = computed(() => {
-  return gameStore.turnTimeRemaining <= 3 && gameStore.turnTimerActive
-})
-
 // When user's turn is active, ensure timer is running
 watch(
   () => gameStore.currentPlayerIndex,
@@ -252,11 +233,27 @@ onUnmounted(() => {
 
 // ------- MAIN MENU LOGIC ---------
 
+const mainMenuVisible = ref(false)
+
 const toggleMainMenu = () => {
   eventBus.emit('toggle-main-menu')
 }
 
-// Listen to state changes in game store to show modals
+onMounted(() => {
+  eventBus.on('untoggle-main-menu', (newValue) => {
+    mainMenuVisible.value = newValue
+    console.log(mainMenuVisible.value)
+  })
+})
+
+watch(mainMenuVisible, (newValue) => {
+  if (newValue) {
+    gameStore.haltTurnTimer()
+  } else {
+    gameStore.resumeTurnTimer()
+  }
+})
+
 watch(
   () => gameStore.message,
   (newMessage, oldMessage) => {
@@ -287,8 +284,6 @@ watch(playerCount, () => {
 </script>
 
 <style scoped>
-/* ...existing styles... */
-
 .game-cards {
   display: flex;
   flex-direction: column;
@@ -347,17 +342,6 @@ watch(playerCount, () => {
   height: 100%;
   width: 100%;
 }
-
-/* .timer {
-  color: white;
-  font-size: 1.5rem;
-  transition: color 0.3s ease;
-}
-
-.timer.warning {
-  color: #ff5252;
-  animation: pulse 1s infinite;
-} */
 
 @keyframes pulse {
   0% {
