@@ -1,54 +1,46 @@
 <template>
-  <div v-if="chooseBet" class="actions-wrapper">
-    <BetForm @close-bet="handeBackOption" v-model:chooseBet="chooseBet" />
-  </div>
-
-  <div v-else class="actions-wrapper">
-    <div v-if="props.addCredit" class="btn-wrapper">
-      <img
-        src="../assets/img/buttons/all-in.png"
-        alt="all-in-png"
-        class="all-in-cta"
-        @click="handleAllIn"
-      />
-
-      <!-- Bet -->
-      <img
-        src="../assets/img/buttons/bet.png"
-        alt="bet-btn"
-        class="bet-cta"
-        @click="handleBetOption"
-      />
-
-      <!-- Fold -->
-      <img
-        src="../assets/img/buttons/fold.png"
-        alt="fold-btn"
-        class="fold-cta"
-        @click="handleFold"
+  <el-form>
+    <div class="slider-demo-block">
+      <el-slider
+        v-model="betAmount"
+        :min="minBet"
+        :max="maxAllowedBet"
+        show-input="true"
+        :show-input-controls="false"
+        :step="100"
       />
     </div>
 
-    <!--  CashIn/CashOut -->
-    <div v-else class="credit">
-      <CreditForm />
-    </div>
+    <img src="../assets/img/buttons/ekis.png" alt="back-btn" class="back-cta" @click="closeBet" />
+
+    <img
+      src="../assets/img/buttons/deal-now.png"
+      alt="deal-now-btn"
+      class="deal-cta"
+      @click="handleDealNow"
+    />
+  </el-form>
+
+  <div class="btn-wrapper">
+    <Button variant="secondary" @click="handleMin">Min</Button>
+    <Button variant="secondary" @click="handleHalf">Half</Button>
+    <Button variant="secondary" @click="handleMax">Max</Button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useGameStore } from '@/stores/game-store'
-import BetForm from './BetForm.vue'
-import CreditForm from './CreditForm.vue'
-
-const chooseBet = ref(false)
-// const showAllInConfirmation = ref(false)
-const showFoldConfirmation = ref(false)
-const props = defineProps(['addCredit'])
+import { ElMessage } from 'element-plus'
 
 const gameStore = useGameStore()
 const minBet = 100 // Minimum bet amount
+// const { getCurrentPlayer } = usePlayerRandomizer()
+const emit = defineEmits(['closeBet', 'update:chooseBet'])
+
+const closeBet = () => {
+  emit('closeBet')
+}
 
 // Player's available credits
 const playerCredits = computed(() => {
@@ -58,28 +50,58 @@ const playerCredits = computed(() => {
   return gameStore.pot || 0
 })
 
-const handleAllIn = () => {
-  gameStore.placeBet(playerCredits.value)
-  gameStore.drawThirdCard()
-}
+const maxAllowedBet = computed(() => {
+  const potLimit = gameStore.communalPot || 0
+  const creditLimit = playerCredits.value
+
+  // Return the smaller of the two limits
+  return Math.min(potLimit, creditLimit)
+})
 
 const betAmount = ref(minBet)
 
-const handleBetOption = () => {
-  chooseBet.value = true
+const handleMin = () => {
   betAmount.value = minBet
 }
 
-const handeBackOption = () => {
-  chooseBet.value = false
+const handleHalf = () => {
+  // Use only the first value in the playerPots array
+  betAmount.value = Math.floor(gameStore.communalPot / 2)
+
+  if (betAmount.value > playerCredits.value) {
+    betAmount.value = playerCredits.value
+  }
+
+  if (betAmount.value < minBet) {
+    betAmount.value = minBet
+  }
 }
 
-const handleFold = () => {
-  showFoldConfirmation.value = true
+const handleMax = () => {
+  betAmount.value = maxAllowedBet.value
+}
+
+const handleDealNow = () => {
+  if (betAmount.value <= 0) {
+    ElMessage.warning('Please enter a valid bet amount')
+    return
+  }
+
+  if (betAmount.value > maxAllowedBet.value) {
+    ElMessage.warning('Bet cannot exceed the communal pot or your available credits')
+    return
+  }
+
+  // Place bet and draw card
+  gameStore.placeBet(betAmount.value)
+  gameStore.drawThirdCard()
+
+  // Emit an event to notify the parent to update `chooseBet`
+  emit('update:chooseBet', false)
 }
 </script>
 
-<style lang="css" scoped>
+<style scoped>
 .actions-wrapper {
   position: relative;
   width: 100%;
@@ -89,6 +111,7 @@ const handleFold = () => {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding: 5rem;
   gap: 20px;
   z-index: 999;
 }
@@ -103,45 +126,9 @@ const handleFold = () => {
   gap: 20px;
 }
 
-.credit-form-wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-}
-
-.insufficient-wrapper {
-  width: 100%;
-}
-
-.input-credits-text {
-  width: 250px;
-  height: 50px;
-}
-
-.all-in-cta,
-.fold-cta {
-  margin-top: 20px;
-  width: 250px;
-  height: 80px;
-  cursor: pointer;
-}
-
-.bet-cta {
-  margin-top: 20px;
-  width: 250px;
-  height: 85px;
-  margin-bottom: 5px;
-  cursor: pointer;
-}
-
 .back-cta {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
 }
 
@@ -162,46 +149,8 @@ const handleFold = () => {
   width: 100%;
 }
 
-.credit {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.insufficient {
-  width: 100%;
-  height: 40px;
-}
-
-.credit-wrapper {
-  width: 100%;
-}
-
-.credit-actions {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.credit-actions img {
-  width: 280px;
-  height: 70px;
-  cursor: pointer;
-}
-
-.add-credits-cta {
-  position: absolute;
-  top: 30%;
-  right: -20%;
-  width: 190px;
-  height: 60px;
-  cursor: pointer;
-}
-
 :deep(.el-input) {
-  width: 150px;
+  width: 120px;
 }
 
 :deep(.el-slider) {
