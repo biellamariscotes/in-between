@@ -67,12 +67,12 @@
 import { ref, computed } from 'vue'
 import { useGameStore } from '@/stores/game-store'
 import { ElMessage } from 'element-plus'
-import { usePlayerRandomizer } from '@/composables/usePlayerRandomizer'
+// import { usePlayerRandomizer } from '@/composables/usePlayerRandomizer'
 
 const chooseBet = ref(false)
 const gameStore = useGameStore()
 const minBet = 100 // Minimum bet amount
-const { getCurrentPlayer } = usePlayerRandomizer()
+// const { getCurrentPlayer } = usePlayerRandomizer()
 
 // Player's available credits
 const playerCredits = computed(() => {
@@ -87,10 +87,10 @@ const handleAllIn = () => {
   // Draw card and end turn
   gameStore.drawThirdCard()
   // Set current player's isTurn to false
-  const currentPlayer = getCurrentPlayer(gameStore.currentPlayerIndex + 1)
-  if (currentPlayer) {
-    currentPlayer.isTurn = false
-  }
+  // const currentPlayer = getCurrentPlayer(gameStore.currentPlayerIndex + 1)
+  // if (currentPlayer) {
+  //   currentPlayer.isTurn = false
+  // }
 }
 
 const maxAllowedBet = computed(() => {
