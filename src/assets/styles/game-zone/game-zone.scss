@@ -507,18 +507,6 @@
   border: 2px dashed rgba(255, 255, 255, 0.3);
 }
 
-/* Add styling for the credit display */
-.credit-display {
-  color: white;
-  text-align: center;
-  margin-top: 15px;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-}
-
 /* Add container styling to ensure cards stay in bounds */
 .card-table {
   display: flex;

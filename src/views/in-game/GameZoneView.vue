@@ -48,9 +48,7 @@
           </div>
         </div>
 
-        <div class="credit-display">
-          <h2>Credit: {{ currentPlayerPot }}</h2>
-        </div>
+        <CashFlow :gameStore="gameStore" />
       </div>
     </div>
 
@@ -126,6 +124,8 @@ import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
 import eventBus from '@/eventBus'
 import CountdownTimer from '@/components/CountdownTimer.vue'
+import MainMenuDialog from '@/components/dialog/MainMenuDialog.vue'
+import CashFlow from '@/components/CashFlow.vue'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/cardUtils'
