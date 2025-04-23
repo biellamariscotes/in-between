@@ -9,6 +9,7 @@ export interface Card {
 
 // Define the game state.
 export interface GameState {
+  freshStart?: boolean
   deck: Card[] // All cards in the deck
   faceUpCards: (Card | null)[] // Update this to allow Card or null
   currentCard: Card | null
@@ -33,6 +34,7 @@ export interface GameState {
   turnTimeRemaining: number
   turnTimerActive: boolean
   turnTimerInterval: ReturnType<typeof setTimeout> | null
+  turnTimerHalted: boolean
 
   // New properties
   communalPot: number

@@ -3,7 +3,6 @@ import { useGameStore } from '@/stores/game-store'
 import YouWinImage from '@/assets/img/game-zone/you-win.png'
 import YouLoseImage from '@/assets/img/game-zone/you-lose.png'
 import YouFoldImage from '@/assets/img/game-zone/you-fold.png'
-
 export const showResultModal = ref(false)
 export const resultModalImage = ref('')
 

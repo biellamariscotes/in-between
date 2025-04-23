@@ -11,17 +11,48 @@
     <ResultModal :show="showResultModal" :image="resultModalImage" />
 
     <div class="turn-container">
-      <h1 style="color: white">{{ currentPlayerDisplay }}'s Turn</h1>
+      <h1>{{ currentPlayerDisplay }}'s Turn</h1>
     </div>
 
-    <!-- Game Cards Component -->
-    <GameCards
-      :leftCard="gameStore.faceUpCards[0] ? cardToDisplayId(gameStore.faceUpCards[0]) : ''"
-      :middleCard="gameStore.currentCard ? cardToDisplayId(gameStore.currentCard) : ''"
-      :rightCard="gameStore.faceUpCards[1] ? cardToDisplayId(gameStore.faceUpCards[1]) : ''"
-      :showMiddleCard="isCurrentCardDrawnByCurrentPlayer"
-      :playerCredit="currentPlayerPot"
-    />
+    <div class="game-zone">
+      <div class="card-table">
+        <div class="game-cards">
+          <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
+            <PlayerHand
+              :cards="[cardToDisplayId(gameStore.faceUpCards[0])]"
+              :show-cards="true"
+              orientation="normal"
+            />
+          </div>
+
+          <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
+            <PlayerHand
+              v-if="gameStore.currentCard"
+              :cards="[cardToDisplayId(gameStore.currentCard)]"
+              :show-cards="true"
+              orientation="normal"
+            />
+            <img v-else :src="Shadowquestion" alt="Shadow Question" class="shadowquestion" />
+          </div>
+
+          <div class="face-up-card" v-else>
+            <div class="card-placeholder"></div>
+          </div>
+
+          <div class="face-up-card" v-if="gameStore.faceUpCards[1]">
+            <PlayerHand
+              :cards="[cardToDisplayId(gameStore.faceUpCards[1])]"
+              :show-cards="true"
+              orientation="normal"
+            />
+          </div>
+        </div>
+
+        <div class="credit-display">
+          <h2>Credit: {{ currentPlayerPot }}</h2>
+        </div>
+      </div>
+    </div>
 
     <div class="table-container">
       <!-- Player Position Components -->
@@ -66,34 +97,35 @@
       </div>
     </div>
 
-    <!-- Timer Component -->
-    <TimerDisplay
-      :timeRemaining="gameStore.turnTimeRemaining"
-      :isActive="gameStore.turnTimerActive"
-    />
-
-    <div class="settings-container">
-      <button class="settings-button" @click="toggleSettings">
-        <span class="settings-icon">⚙️</span>
-      </button>
+    <div class="timer-container">
+      <CountdownTimer />
     </div>
+
+    <!-- Main Menu -->
+    <div class="settings-container">
+      <img
+        src="../../assets/img/buttons/main-menu/menu-btn.png"
+        alt="how-to-play-btn"
+        class="menu-btn"
+        @click="toggleMainMenu"
+      />
+    </div>
+
+    <MainMenuDialog></MainMenuDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import GameTable from '@/assets/img/game-zone/Game-Table.svg'
+import Shadowquestion from '@/assets/img/game-zone/shadowquestion.svg'
+import PlayerHand from '@/components/PlayerHand.vue'
 import GameCta from '@/components/GameCta.vue'
 import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
-
-// Import new components
-import TimerDisplay from '@/components/TimerDisplay.vue'
-import GameCards from '@/components/GameCards.vue'
-import PlayerPosition from '@/components/PlayerPosition.vue'
-import CommunalPot from '@/components/CommunalPot.vue'
-import ResultModal from '@/components/ResultModal.vue'
+import eventBus from '@/eventBus'
+import CountdownTimer from '@/components/CountdownTimer.vue'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/cardUtils'
@@ -144,12 +176,6 @@ onMounted(() => {
 const playerCount = computed(() => playerStore.playerCount ?? 6)
 const players = computed(() => registrationStore.players)
 
-// Track if a user has drawn their card this turn to know when to display middle card
-const isCurrentCardDrawnByCurrentPlayer = computed(() => {
-  // Only show if current card exists AND currentBet is 0 (means card was drawn this turn)
-  return gameStore.currentCard !== null && gameStore.currentBet === 0 && gameStore.roundsPlayed > 0
-})
-
 // Get player cards from utility
 const playerCards = calculatePlayerCards()
 
@@ -199,7 +225,7 @@ function getPlayerPoints(position: number): number {
 
 // Game actions
 function startNewGame() {
-  // Setup multiplayer if more than one active player
+  // Setup multiplayer if more than one active playeruseGameStore useGameStore
   if (playerCount.value > 1) {
     const activePlayers = players.value.slice(0, playerCount.value)
     gameStore.setupMultiplayerGame(activePlayers)
@@ -214,24 +240,22 @@ function handleChoice(choice: 'higher' | 'lower') {
   gameStore.handleEqualCardsChoice(choice)
 }
 
-function toggleSettings() {
-  // Implement settings panel logic here
-  console.log('Settings toggled')
-}
-
-// Reset game when player count changes
-watch(playerCount, () => {
-  // Only reset if game is not in progress
-  if (!gameStore.gameStarted || gameStore.gameOver) {
-    setupGameDisplay()
-  }
-})
-
 // Define the setupGameDisplay function to prevent errors
 function setupGameDisplay() {
   // This is called when player count changes
   console.log('Game display reset due to player count change')
 }
+
+// When user's turn is active, ensure timer is running
+watch(
+  () => gameStore.currentPlayerIndex,
+  () => {
+    if (gameStore.gameStarted && !gameStore.gameOver && !showResultModal.value) {
+      // Only start the timer for the new player if no modal is showing
+      gameStore.startTurnTimer()
+    }
+  },
+)
 
 // Clean up timer when component is unmounted
 onUnmounted(() => {
@@ -240,7 +264,29 @@ onUnmounted(() => {
   }
 })
 
-// Listen to state changes in game store to show modals
+// ------- MAIN MENU LOGIC ---------
+
+const mainMenuVisible = ref(false)
+
+const toggleMainMenu = () => {
+  eventBus.emit('toggle-main-menu')
+}
+
+onMounted(() => {
+  eventBus.on('untoggle-main-menu', (newValue) => {
+    mainMenuVisible.value = newValue
+    console.log(mainMenuVisible.value)
+  })
+})
+
+watch(mainMenuVisible, (newValue) => {
+  if (newValue) {
+    gameStore.haltTurnTimer()
+  } else {
+    gameStore.resumeTurnTimer()
+  }
+})
+
 watch(
   () => gameStore.message,
   (newMessage, oldMessage) => {
@@ -260,4 +306,12 @@ watch(
     }
   },
 )
+
+// Reset game when player count changes
+watch(playerCount, () => {
+  // Only reset if game is not in progress
+  if (!gameStore.gameStarted || gameStore.gameOver) {
+    setupGameDisplay()
+  }
+})
 </script>

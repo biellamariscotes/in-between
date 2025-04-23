@@ -8,5 +8,10 @@ export const usePlayerStore = defineStore('playerStore', () => {
     playerCount.value = count
     localStorage.setItem('playerCount', JSON.stringify(count))
   }
-  return { playerCount, setPlayerCount }
+
+  const clearPlayerCount = () => {
+    playerCount.value = null
+    localStorage.removeItem('playerCount')
+  }
+  return { playerCount, setPlayerCount, clearPlayerCount }
 })
