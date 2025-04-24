@@ -163,7 +163,7 @@ const currentPlayerPot = computed(() => {
 function updateCreditStatus() {
   const credits = currentPlayerPot.value
   console.log('Updating credit status, current credits:', credits)
-  addCredit.value = credits > 0
+  addCredit.value = credits > 99
 }
 
 // Check credits immediately on mount and after game start
