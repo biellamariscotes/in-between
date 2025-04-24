@@ -171,8 +171,6 @@ import {
 // Add game over modal state
 const showGameOverModal = ref(false)
 
-// Add game over modal state
-const showGameOverModal = ref(false)
 
 // ─────────────────────────────
 // Store Intialization
