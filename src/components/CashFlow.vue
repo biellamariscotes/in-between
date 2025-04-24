@@ -13,13 +13,16 @@ const props = defineProps(['gameStore'])
 
 // Current player's pot amount
 const currentPlayerPot = computed(() => {
-  if (
-    props.gameStore.isMultiplayer &&
-    props.gameStore.playerPots.length > props.gameStore.currentPlayerIndex
-  ) {
+  if (!props.gameStore.gameStarted) return 0
+  
+  // Make sure we have a valid index and value
+  if (props.gameStore.playerPots && 
+      props.gameStore.currentPlayerIndex >= 0 &&
+      props.gameStore.playerPots.length > props.gameStore.currentPlayerIndex) {
     return props.gameStore.playerPots[props.gameStore.currentPlayerIndex]
   }
-  return props.gameStore.pot
+  
+  return 0
 })
 </script>
 

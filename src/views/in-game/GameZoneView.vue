@@ -143,23 +143,54 @@ const gameStore = useGameStore()
 
 const addCredit = ref(false)
 
-// Current player's pot amount
+// Current player's pot amount - simplified computation
 const currentPlayerPot = computed(() => {
-  if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
-    return gameStore.playerPots[gameStore.currentPlayerIndex]
-  }
-  return gameStore.pot
+  const playerPot = gameStore.playerPots[gameStore.currentPlayerIndex]
+  return playerPot !== undefined ? playerPot : 0
 })
 
-// Watch for changes in currentPlayerPot and revalidate addCredit
-watch(currentPlayerPot, (newValue) => {
-  console.log('player credit status : ', addCredit.value)
+// Function to update credit status
+function updateCreditStatus() {
+  const credits = currentPlayerPot.value
+  console.log('Updating credit status, current credits:', credits)
+  addCredit.value = credits > 0
+}
 
-  if (newValue >= 1) {
-    addCredit.value = true
-  } else {
-    addCredit.value = false
+// Check credits immediately on mount and after game start
+onMounted(() => {
+  if (!registrationStore.players.length) {
+    registrationStore.loadPlayersFromStorage()
   }
+  
+  // Initial credit status check with delay to ensure store is loaded
+  setTimeout(() => {
+    updateCreditStatus()
+    console.log('Initial credit status set to:', addCredit.value)
+  }, 200)
+})
+
+// Watch for changes in player credits
+watch(currentPlayerPot, (newValue) => {
+  console.log('Player credits changed:', newValue)
+  updateCreditStatus()
+})
+
+// Watch for game start
+watch(() => gameStore.gameStarted, (isStarted) => {
+  if (isStarted) {
+    setTimeout(() => {
+      updateCreditStatus()
+      console.log('Credit status after game start:', addCredit.value)
+    }, 200) // Delay to ensure player pots are updated
+  }
+})
+
+// Watch for changes in current player index
+watch(() => gameStore.currentPlayerIndex, () => {
+  setTimeout(() => {
+    updateCreditStatus()
+    console.log('Credit status after player change:', addCredit.value)
+  }, 100)
 })
 
 // Load players from localStorage if not already loaded
@@ -188,36 +219,18 @@ const currentPlayerDisplay = computed(() => {
     return 'Game not started'
   }
 
-  if (gameStore.isMultiplayer && players.value[gameStore.currentPlayerIndex]) {
+  if (players.value[gameStore.currentPlayerIndex]) {
     return players.value[gameStore.currentPlayerIndex].name
   }
 
-  // Default to Player 1 for single player mode
-  return players.value[0]?.name || 'Player 1'
+  return 'Player'
 })
-
-// const currentPlayerPot = computed(() => {
-//   if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
-//     return gameStore.playerPots[gameStore.currentPlayerIndex]
-//   }
-//   return gameStore.pot
-// })
-
-// // Current player's pot amount
-// const currentPlayerPot = computed(() => {
-//   if (gameStore.isMultiplayer && gameStore.playerPots.length > gameStore.currentPlayerIndex) {
-//     return gameStore.playerPots[gameStore.currentPlayerIndex]
-//   }
-//   return gameStore.pot
-// })
 
 // Helper to get player points for a specific position
 function getPlayerPoints(position: number): number {
   if (activePlayers.value[position]) {
-    if (gameStore.isMultiplayer && gameStore.playerPots[position] !== undefined) {
+    if (gameStore.playerPots[position] !== undefined) {
       return gameStore.playerPots[position]
-    } else if (!gameStore.isMultiplayer && position === 0) {
-      return gameStore.pot
     }
   }
   return 0
@@ -225,15 +238,15 @@ function getPlayerPoints(position: number): number {
 
 // Game actions
 function startNewGame() {
-  // Setup multiplayer if more than one active playeruseGameStore useGameStore
-  if (playerCount.value > 1) {
-    const activePlayers = players.value.slice(0, playerCount.value)
-    gameStore.setupMultiplayerGame(activePlayers)
-  } else {
-    gameStore.isMultiplayer = false
-  }
-
+  const activePlayers = players.value.slice(0, playerCount.value)
+  gameStore.setupGame(activePlayers)
   gameStore.startGame()
+  
+  // Update credit status after starting game with a delay
+  setTimeout(() => {
+    updateCreditStatus()
+    console.log('Credit status after game start:', addCredit.value)
+  }, 300)
 }
 
 function handleChoice(choice: 'higher' | 'lower') {
