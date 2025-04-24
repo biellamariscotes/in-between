@@ -42,6 +42,7 @@ declare module 'vue' {
     PlayerPosition: typeof import('./src/components/game-table/PlayerPosition.vue')['default']
     PlayingCard: typeof import('./src/components/game-table/PlayingCard.vue')['default']
     PlayingDeck: typeof import('./src/components/decks/PlayingDeck.vue')['default']
+    QuitGameDialog: typeof import('./src/components/dialog/QuitGameDialog.vue')['default']
     ResultModal: typeof import('./src/components/dialog/ResultModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

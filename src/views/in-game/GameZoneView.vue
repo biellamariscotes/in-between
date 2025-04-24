@@ -91,7 +91,12 @@
         </div>
       </div>
       <div style="width: 100%" v-else>
-        <GameCta :addCredit="addCredit" />
+        <div v-if="cashOutCredit">
+          <p>cashout</p>
+        </div>
+        <div v-else>
+          <GameCta :addCredit="addCredit" />
+        </div>
       </div>
     </div>
 
@@ -146,6 +151,7 @@ import {
 const gameStore = useGameStore()
 
 const addCredit = ref(false)
+const cashOutCredit = ref(false)
 
 // Current player's pot amount - simplified computation
 const currentPlayerPot = computed(() => {

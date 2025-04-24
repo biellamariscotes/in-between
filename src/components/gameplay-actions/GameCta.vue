@@ -47,12 +47,11 @@ const chooseBet = ref(false)
 const props = defineProps({
   addCredit: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const gameStore = useGameStore()
-const minBet = 100 // Minimum bet amount
 
 // Player's available credits - simplified to use only playerPots
 const playerCredits = computed(() => {
@@ -64,7 +63,7 @@ onMounted(() => {
   console.log('GameCta mounted, credits:', playerCredits.value, 'addCredit:', props.addCredit)
 })
 
-// Watch for changes to player credits 
+// Watch for changes to player credits
 watch(playerCredits, (newValue) => {
   console.log('Player credits changed:', newValue)
   if (newValue <= 0 && chooseBet.value) {
@@ -73,14 +72,17 @@ watch(playerCredits, (newValue) => {
 })
 
 // Watch the addCredit prop to log changes
-watch(() => props.addCredit, (newValue) => {
-  console.log('addCredit prop changed to:', newValue)
-})
+watch(
+  () => props.addCredit,
+  (newValue) => {
+    console.log('addCredit prop changed to:', newValue)
+  },
+)
 
 const handleAllIn = () => {
   // Use the minimum of player's credits or communal pot
   const allInAmount = Math.min(playerCredits.value, gameStore.communalPot)
-  
+
   if (allInAmount > 0) {
     gameStore.placeBet(allInAmount)
     gameStore.drawThirdCard()
