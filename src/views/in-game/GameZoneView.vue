@@ -91,7 +91,12 @@
         </div>
       </div>
       <div style="width: 100%" v-else>
-        <GameCta :addCredit="addCredit" />
+        <div v-if="cashOutCredit">
+          <p>cashout</p>
+        </div>
+        <div v-else>
+          <GameCta :addCredit="addCredit" />
+        </div>
       </div>
     </div>
 
@@ -142,6 +147,7 @@ import { isCurrentPlayer, getActivePlayers, calculatePlayerCards } from '@/utils
 const gameStore = useGameStore()
 
 const addCredit = ref(false)
+const cashOutCredit = ref(false)
 
 // Current player's pot amount - simplified computation
 const currentPlayerPot = computed(() => {
@@ -161,7 +167,7 @@ onMounted(() => {
   if (!registrationStore.players.length) {
     registrationStore.loadPlayersFromStorage()
   }
-  
+
   // Initial credit status check with delay to ensure store is loaded
   setTimeout(() => {
     updateCreditStatus()
@@ -176,22 +182,28 @@ watch(currentPlayerPot, (newValue) => {
 })
 
 // Watch for game start
-watch(() => gameStore.gameStarted, (isStarted) => {
-  if (isStarted) {
-    setTimeout(() => {
-      updateCreditStatus()
-      console.log('Credit status after game start:', addCredit.value)
-    }, 200) // Delay to ensure player pots are updated
-  }
-})
+watch(
+  () => gameStore.gameStarted,
+  (isStarted) => {
+    if (isStarted) {
+      setTimeout(() => {
+        updateCreditStatus()
+        console.log('Credit status after game start:', addCredit.value)
+      }, 200) // Delay to ensure player pots are updated
+    }
+  },
+)
 
 // Watch for changes in current player index
-watch(() => gameStore.currentPlayerIndex, () => {
-  setTimeout(() => {
-    updateCreditStatus()
-    console.log('Credit status after player change:', addCredit.value)
-  }, 100)
-})
+watch(
+  () => gameStore.currentPlayerIndex,
+  () => {
+    setTimeout(() => {
+      updateCreditStatus()
+      console.log('Credit status after player change:', addCredit.value)
+    }, 100)
+  },
+)
 
 // Load players from localStorage if not already loaded
 const playerStore = usePlayerStore()
@@ -241,7 +253,7 @@ function startNewGame() {
   const activePlayers = players.value.slice(0, playerCount.value)
   gameStore.setupGame(activePlayers)
   gameStore.startGame()
-  
+
   // Update credit status after starting game with a delay
   setTimeout(() => {
     updateCreditStatus()

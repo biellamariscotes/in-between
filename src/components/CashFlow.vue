@@ -3,6 +3,13 @@
   <div class="credit-display">
     <img src="../assets/img/buttons/cashin.png" alt="all-in-png" class="cash-in-cta" />
     <p class="credit">₱ {{ currentPlayerPot }}</p>
+
+    <!-- <img
+      src="../assets/img/cash-out/cash-out.png"
+      alt="all-in-png"
+      class="cash-out-cta"
+      @click="handleCashOut"
+    /> -->
   </div>
 </template>
 
@@ -14,16 +21,22 @@ const props = defineProps(['gameStore'])
 // Current player's pot amount
 const currentPlayerPot = computed(() => {
   if (!props.gameStore.gameStarted) return 0
-  
+
   // Make sure we have a valid index and value
-  if (props.gameStore.playerPots && 
-      props.gameStore.currentPlayerIndex >= 0 &&
-      props.gameStore.playerPots.length > props.gameStore.currentPlayerIndex) {
+  if (
+    props.gameStore.playerPots &&
+    props.gameStore.currentPlayerIndex >= 0 &&
+    props.gameStore.playerPots.length > props.gameStore.currentPlayerIndex
+  ) {
     return props.gameStore.playerPots[props.gameStore.currentPlayerIndex]
   }
-  
+
   return 0
 })
+
+// const handleCashOut = () => {
+//   console.log('hello cash out')
+// }
 </script>
 
 <style scoped>
@@ -34,7 +47,6 @@ const currentPlayerPot = computed(() => {
   border-radius: 5px;
   font-weight: bold;
   z-index: 900;
-  cursor: pointer;
 }
 
 .credit {
@@ -51,8 +63,20 @@ const currentPlayerPot = computed(() => {
   font-size: 14px;
 }
 
+.cash-out-cta {
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .cash-in-cta {
   width: 100%;
   height: 100%;
+}
+
+.cash-out-cta {
+  width: 140px;
+  cursor: pointer;
 }
 </style>

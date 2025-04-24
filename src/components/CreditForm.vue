@@ -1,4 +1,5 @@
 <template>
+  <!-- credit form -->
   <div v-if="creditForm" class="credit-form-wrapper">
     <el-form>
       <img
@@ -25,6 +26,7 @@
     </el-form>
   </div>
 
+  <!-- credit homepage -->
   <div v-else class="insufficient-wrapper">
     <div class="credit-wrapper">
       <img src="../assets/img/buttons/insufficient.png" alt="all-in-png" class="insufficient" />
@@ -43,6 +45,34 @@
         class="insufficient"
         @click="handleCancelCredit"
       />
+
+      <!-- dialog box -->
+      <el-dialog v-model="isCancelDialog" title="Warning" width="500" align-center>
+        <div class="dialog-msg">
+          <img src="../assets/img/cash-out/quit-title.png" alt="quit-img" class="quit-btn" />
+
+          <img src="../assets/img/cash-out/quit-description.png" alt="no-img" class="no-btn" />
+        </div>
+
+        <!-- controls -->
+        <template #footer>
+          <div class="dialog-footer">
+            <img
+              src="../assets/img/cash-out/quit-game.png"
+              alt="quit-img"
+              class="quit-btn"
+              @click="isQuitPlayer"
+            />
+
+            <img
+              src="../assets/img/cash-out/no-add.png"
+              alt="no-img"
+              class="no-btn"
+              @click="isCancelDialog = false"
+            />
+          </div>
+        </template>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -58,6 +88,7 @@ const gameStore = useGameStore()
 const playerStore = usePlayerRegistration()
 
 const creditForm = ref(false)
+const isCancelDialog = ref(false)
 
 const handleAddCredit = () => {
   creditForm.value = true
@@ -68,9 +99,30 @@ const handleBackToAddCredit = () => {
 }
 
 const handleCancelCredit = () => {
-  // Close or navigate away from the credit form
-  const emit = defineEmits(['close-credit'])
-  emit('close-credit')
+  isCancelDialog.value = true
+}
+
+const isQuitPlayer = () => {
+  try {
+    const index = gameStore.currentPlayerIndex
+    const playerId = gameStore.players[index]?.id
+
+    if (playerId) {
+      playerStore.players = playerStore.players.filter((p) => p.id !== playerId)
+
+      localStorage.setItem('players', JSON.stringify(playerStore.players))
+
+      gameStore.players.splice(index, 1)
+
+      gameStore.saveStateToLocalStorage()
+
+      isCancelDialog.value = false
+
+      // gameStore.currentPlayerIndex = null
+    }
+  } catch (error) {
+    console.error('Error removing player:', error)
+  }
 }
 
 const handleSubmitCredit = () => {
@@ -79,17 +131,17 @@ const handleSubmitCredit = () => {
 
   try {
     const index = gameStore.currentPlayerIndex
-    
+
     // Update in-game credits
     if (!gameStore.playerPots[index]) {
       gameStore.playerPots[index] = 0
     }
     gameStore.playerPots[index] += Number(creditValue.value)
-    
+
     // Update player registration store
     const playerId = gameStore.players[index]?.id
     if (playerId) {
-      const playerIndex = playerStore.players.findIndex(p => p.id === playerId)
+      const playerIndex = playerStore.players.findIndex((p) => p.id === playerId)
       if (playerIndex !== -1) {
         const currentCredits = playerStore.players[playerIndex].credits || 0
         playerStore.players[playerIndex].credits = currentCredits + Number(creditValue.value)
@@ -98,14 +150,13 @@ const handleSubmitCredit = () => {
 
     // Save updated player data to localStorage
     localStorage.setItem('players', JSON.stringify(playerStore.players))
-    
+
     // Update game state in localStorage
     gameStore.saveStateToLocalStorage()
-    
+
     // Reset the form and hide it
     creditValue.value = 0
     creditForm.value = false
-    
   } catch (error) {
     console.error('Error adding credits:', error)
   }
@@ -169,6 +220,31 @@ const handleSubmitCredit = () => {
 .credit-actions img {
   width: 280px;
   height: 80px;
+  cursor: pointer;
+}
+
+.dialog-msg {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dialog-msg img {
+  width: 100%;
+  height: 60px;
+}
+
+.dialog-footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog-footer img {
+  width: 250px;
+  height: 90px;
   cursor: pointer;
 }
 
