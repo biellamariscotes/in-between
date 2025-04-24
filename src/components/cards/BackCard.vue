@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import BackCard from '../assets/img/back-card.png'
+import BackCard from '@/assets/img/cards/special-cards/back-card.png'
 </script>
 
 <style scoped></style>

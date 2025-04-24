@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game-store'
 import { onMounted } from 'vue'
-import timer from '../CountdownTimer.vue'
+import timer from '../utilities/CountdownTimer.vue'
 const game = useGameStore()
 
 onMounted(() => {

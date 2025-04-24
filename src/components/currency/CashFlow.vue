@@ -1,7 +1,7 @@
 <template>
   <!-- Replace game message with player credit display -->
   <div class="credit-display">
-    <img src="../assets/img/buttons/cashin.png" alt="all-in-png" class="cash-in-cta" />
+    <img src="../../assets/img/buttons/credits/cashin.png" alt="all-in-png" class="cash-in-cta" />
     <p class="credit">₱ {{ currentPlayerPot }}</p>
 
     <!-- <img

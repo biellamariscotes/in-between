@@ -11,10 +11,15 @@
       />
     </div>
 
-    <img src="../assets/img/buttons/ekis.png" alt="back-btn" class="back-cta" @click="closeBet" />
+    <img
+      src="../../assets/img/buttons/actions/ekis.png"
+      alt="back-btn"
+      class="back-cta"
+      @click="closeBet"
+    />
 
     <img
-      src="../assets/img/buttons/deal-now.png"
+      src="../../assets/img/buttons/actions/deal-now.png"
       alt="deal-now-btn"
       class="deal-cta"
       @click="handleDealNow"

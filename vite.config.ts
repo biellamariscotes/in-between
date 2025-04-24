@@ -20,6 +20,7 @@ export default defineConfig({
     }),
     Components({
       resolvers: [ElementPlusResolver()],
+      dirs: ['src/components'],
     }),
   ],
   css: {
