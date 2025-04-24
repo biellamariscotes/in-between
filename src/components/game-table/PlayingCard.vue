@@ -1,9 +1,24 @@
+<!-- Playing Card Component
+  Displays a single playing card with front and back images.
+
+  Props:
+    - cardId: string — ID of the card to display.
+    - faceUp: boolean — Whether the card is face up.
+    - customClass: string — Custom class for card image styling.
+    
+  Uses:
+    - useDataFetcher composable to load card data from JSON.
+    - Dynamically loads image paths based on card ID.
+-->
+
 <template>
   <div class="card-container">
     <div class="playing-card" :class="{ 'is-flipped': faceUp }">
+      <!-- Card Back Face -->
       <div class="card-face card-back">
         <el-image :src="BackCard" class="card-image" :draggable="false" :class="customClass" />
       </div>
+      <!-- Card Front Face -->
       <div class="card-face card-front">
         <el-image
           v-if="cardData"
@@ -20,9 +35,12 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import BackCard from '@/assets/img/cards/special-cards/back-card.png'
-import { useDataFetcher } from '@/composables/useDataFetcher'
+import { useDataFetcher } from '@/composables/utilities/useDataFetcher'
 import type { Card } from '@/interface/card'
 
+/**
+ * Props: cardId (string), faceUp (boolean), customClass (string)
+ */
 const props = defineProps({
   cardId: {
     type: String,
@@ -38,14 +56,34 @@ const props = defineProps({
   },
 })
 
+// ─────────────────────────────
+// Data Fetching
+// ─────────────────────────────
+
+/**
+ * Fetches card data from local JSON file.
+ */
 const { data: cardsData } = useDataFetcher<Card[]>('/src/data/cards.json')
 
+// ─────────────────────────────
+// Computed Properties
+// ─────────────────────────────
+
+/**
+ * Finds the card data based on cardId prop.
+ */
 const cardData = computed<Card | undefined>(() => {
   if (!props.cardId || !cardsData.value) return undefined
   return cardsData.value.find((card) => card.id === props.cardId)
 })
 
-// Debug logging
+// ─────────────────────────────
+// Debug Logging
+// ─────────────────────────────
+
+/**
+ * Logs image path whenever cardData changes (for debugging purposes)
+ */
 watchEffect(() => {
   if (cardData.value) {
     const imagePath = getCardImagePath(cardData.value.id)
@@ -53,6 +91,13 @@ watchEffect(() => {
   }
 })
 
+// ─────────────────────────────
+// Private Helpers
+// ─────────────────────────────
+
+/**
+ * Returns the image path for a given card ID.
+ */
 function getCardImagePath(id: string | undefined): string {
   if (!id) return ''
   return new URL(`../../assets/img/cards/${id}.svg`, import.meta.url).href

@@ -1,43 +1,83 @@
-<!-- eslint-disable vue/multi-word-component-names -->
+<!-- Button Component
+  A reusable button component with variant styling and event handling.
+
+  Props:
+    - btnType (optional): 'button' | 'submit' | 'reset' — Defaults to 'button'.
+    - variant (optional): 'primary' | 'secondary' | 'danger' | 'delete' — Controls button styling.
+    - disabled (optional): boolean — Disables button if true.
+
+  Emits:
+    - 'click': Triggered when the button is clicked (if not disabled).
+
+  Features:
+    - Dynamic classes based on variant and disabled state.
+
+  Uses:
+    - Default slot for button content.
+-->
+
 <template>
+  <!-- Button Element -->
   <button :type="btnType" :class="classes" :disabled="disabled" @click="handleClick">
     <slot />
   </button>
 </template>
 
 <script setup lang="ts">
+/**
+ * Script setup section
+ */
 import { computed } from 'vue'
 
-// define props btnType controls button behavior
-// variant controls the style, and disabled is optional
+/**
+ * Props
+ */
 const props = defineProps<{
   btnType?: 'button' | 'submit' | 'reset'
   variant?: 'primary' | 'secondary' | 'danger' | 'delete'
   disabled?: boolean
 }>()
 
-// provide default value for btnType
+// ─────────────────────────────
+// Computed Properties
+// ─────────────────────────────
+
+/**
+ * Provides default value for btnType prop.
+ */
 const btnType = computed(() => props.btnType ?? 'button')
 
-// compute CSS classes based on the variant prop.
+/**
+ * Computes button CSS classes based on variant and disabled state.
+ */
 const classes = computed(() => {
   return [
-    'my-button', // base button class
+    'my-button', // base class
     {
       'my-button--primary': !props.variant || props.variant === 'primary',
       'my-button--secondary': props.variant === 'secondary',
       'my-button--danger': props.variant === 'danger' || props.variant === 'delete',
     },
-    // optionally add styles for disabled
     { 'my-button--disabled': props.disabled },
   ]
 })
 
-// setup event emitter
+// ─────────────────────────────
+// Emits
+// ─────────────────────────────
+
+/**
+ * Emits:
+ * - 'click' event when button is clicked and not disabled.
+ */
 const emit = defineEmits<{
   (e: 'click', event: MouseEvent): void
 }>()
 
+/**
+ * Handles button click events.
+ * Emits 'click' only if button is not disabled.
+ */
 function handleClick(event: MouseEvent) {
   if (!props.disabled) {
     emit('click', event)

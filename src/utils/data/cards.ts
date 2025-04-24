@@ -1,3 +1,7 @@
+/**
+ * All Cards values.
+ */
+
 export const cards = [
   {
     suit: 'hearts',

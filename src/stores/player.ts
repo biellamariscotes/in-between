@@ -1,39 +1,55 @@
+/**
+ * Handles player registration, storage, and retrieval.
+ */
+
 import type { Player } from '@/interface/player'
 import { defineStore } from 'pinia'
 
 export const usePlayerRegistration = defineStore('playerRegistrationStore', {
+  // ─────────────────────────────
+  // STATES
+  // ─────────────────────────────
   state: () => ({
     players: [] as Player[],
   }),
+
+  // ─────────────────────────────
+  // GETTERS
+  // ─────────────────────────────
   getters: {
-    // function for modifying / manipulating state
+    // No getters implemented yet
   },
 
+  // ─────────────────────────────
+  // ACTIONS
+  // ─────────────────────────────
   actions: {
-    // actions such as crud implementation function
-
-    // to create a new player
+    /**
+     * Registers a new player by adding them to the state and localStorage.
+     * @param {Player} player - The player object to be registered.
+     */
     registerPlayer(player: Player) {
-      // Retrieve the existing array from localStorage
       const existingData = localStorage.getItem('players')
-      const players = existingData ? JSON.parse(existingData) : [] // Parse or initialize as empty array
+      const players = existingData ? JSON.parse(existingData) : []
 
-      // Append the new student to the array unshift to add the item at the start of an array
       players.unshift(player)
 
-      // Save the updated array back to localStorage
       localStorage.setItem('players', JSON.stringify(players))
 
-      // Update the local state
       this.players = players
     },
 
+    /**
+     * Clears all registered players from the state and localStorage.
+     */
     clearPlayers() {
-      // Clear both the state and localStorage
       this.players = []
       localStorage.removeItem('players')
     },
 
+    /**
+     * Loads player data from localStorage into the state.
+     */
     loadPlayersFromStorage() {
       const existingData = localStorage.getItem('players')
       this.players = existingData ? JSON.parse(existingData) : []

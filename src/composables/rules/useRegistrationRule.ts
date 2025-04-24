@@ -1,7 +1,16 @@
+/**
+ * Managing form validation rules for registration.
+ *
+ * @returns {Object} - An object containing the form validation rules for `name` and `credits`.
+ */
+
 import { reactive } from 'vue'
 import type { FormRules, FormItemRule } from 'element-plus'
 
-// This makes TypeScript understand the validator function
+// ─────────────────────────────
+// Types
+// ─────────────────────────────
+
 type ValidatorCallback = (error?: Error) => void
 type ValidatorRule = FormItemRule & {
   validator?: (rule: FormItemRule, value: number, callback: ValidatorCallback) => void

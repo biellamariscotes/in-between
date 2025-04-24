@@ -1,5 +1,5 @@
 /**
- * Composable for managing the game lifecycle.
+ * Managing the game lifecycle.
  *
  * @returns {Object} - An object containing the `startNewGame` function.
  */
@@ -10,6 +10,10 @@ import { useRouter } from 'vue-router'
 export function useGameLifeCycle() {
   const router = useRouter()
   const gameStore = useGameStore()
+
+  // ─────────────────────────────
+  // Game Logic
+  // ─────────────────────────────
 
   const startNewGame = () => {
     localStorage.clear()

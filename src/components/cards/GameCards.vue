@@ -1,11 +1,30 @@
+<!-- Game Zone Component
+  Renders the main card display area during a game round.
+
+  Props:
+    - leftCard: string — Card ID for the left face-up card.
+    - middleCard: string — Card ID for the middle card.
+    - rightCard: string — Card ID for the right face-up card.
+    - showMiddleCard: boolean — Controls visibility of middle card.
+    - playerCredit: number — Current player’s credit (unused in template but passed in).
+    
+  Features:
+    - Dynamically displays PlayerHand components for face-up cards.
+    - Displays placeholder when middle card is hidden.
+    - Integrates CashFlow component for credit display.
+-->
+
 <template>
   <div class="game-zone">
     <div class="card-table">
+      <!-- Card display area -->
       <div class="game-cards">
+        <!-- Left face-up card -->
         <div class="face-up-card" v-if="leftCard">
           <PlayerHand :cards="[leftCard]" :show-cards="true" orientation="normal" />
         </div>
 
+        <!-- Middle face-up card or placeholder -->
         <div class="face-up-card" v-if="showMiddleCard">
           <PlayerHand :cards="[middleCard]" :show-cards="true" orientation="normal" />
         </div>
@@ -13,23 +32,34 @@
           <div class="card-placeholder"></div>
         </div>
 
+        <!-- Right face-up card -->
         <div class="face-up-card" v-if="rightCard">
           <PlayerHand :cards="[rightCard]" :show-cards="true" orientation="normal" />
         </div>
       </div>
 
+      <!-- CashFlow component for credit display -->
       <CashFlow :gameStore="gameStore" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+/**
+ * Script setup section
+ */
 import { defineProps } from 'vue'
 import { useGameStore } from '@/stores/game-store'
-import PlayerHand from '@/components/PlayerHand.vue'
+import PlayerHand from '@/components/game-table/PlayerHand.vue'
 
+/**
+ * Inject game store for shared state access.
+ */
 const gameStore = useGameStore()
 
+/**
+ * Props
+ */
 defineProps<{
   leftCard: string
   middleCard: string

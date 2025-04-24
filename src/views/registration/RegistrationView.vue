@@ -1,5 +1,6 @@
 <template>
   <div class="registation-wrapper">
+    <!-- Calls the Player Form component -->
     <Form />
   </div>
 </template>

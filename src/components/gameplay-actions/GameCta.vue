@@ -1,10 +1,24 @@
+<!-- Game Call-to-Action Component
+  Displays game action buttons like "All-In", "Bet", "Fold", and "Credit Form".
+  The component shows different options based on whether the player is adding credit or choosing a bet.
+
+  Props:
+    - addCredit: boolean — Controls whether the "Credit Form" should be shown.
+
+  Emits:
+    - close-bet: event — Emitted when the bet form is closed.
+
+-->
+
 <template>
   <div v-if="chooseBet" class="actions-wrapper">
+    <!-- Bet form component shown when chooseBet is true -->
     <BetForm @close-bet="handeBackOption" v-model:chooseBet="chooseBet" />
   </div>
 
   <div v-else class="actions-wrapper">
     <div v-if="props.addCredit" class="btn-wrapper">
+      <!-- All-in option button -->
       <img
         src="../../assets/img/buttons/cta/all-in.png"
         alt="all-in-png"
@@ -12,7 +26,7 @@
         @click="handleAllIn"
       />
 
-      <!-- Bet -->
+      <!-- Bet option button -->
       <img
         src="../../assets/img/buttons/cta/bet.png"
         alt="bet-btn"
@@ -20,7 +34,7 @@
         @click="handleBetOption"
       />
 
-      <!-- Fold -->
+      <!-- Fold option button -->
       <img
         src="../../assets/img/buttons/cta/fold.png"
         alt="fold-btn"
@@ -29,7 +43,7 @@
       />
     </div>
 
-    <!--  CashIn/CashOut -->
+    <!-- Credit form section shown when addCredit is false -->
     <div v-else class="credit">
       <CreditForm />
     </div>
@@ -40,11 +54,19 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useGameStore } from '@/stores/game-store'
 
-// This will track whether to show the bet form
+/**
+ * Flagger whether to show the bet form
+ */
 const chooseBet = ref(false)
 
-// Props from parent component
+/**
+ * Props from parent component
+ */
 const props = defineProps({
+  /**
+   * Controls whether the "Credit Form" should be shown.
+   * If `true`, the credit form is displayed instead of betting options.
+   */
   addCredit: {
     type: Boolean,
     default: false,
@@ -53,7 +75,9 @@ const props = defineProps({
 
 const gameStore = useGameStore()
 
-// Player's available credits - simplified to use only playerPots
+/**
+ * Player's available credits - simplified to use only playerPots
+ */
 const playerCredits = computed(() => {
   return gameStore.playerPots[gameStore.currentPlayerIndex] || 0
 })
@@ -63,7 +87,47 @@ onMounted(() => {
   console.log('GameCta mounted, credits:', playerCredits.value, 'addCredit:', props.addCredit)
 })
 
-// Watch for changes to player credits
+/**
+ * Handle all-in bet action
+ */
+const handleAllIn = () => {
+  const allInAmount = Math.min(playerCredits.value, gameStore.communalPot)
+  if (allInAmount > 0) {
+    gameStore.placeBet(allInAmount)
+    gameStore.drawThirdCard()
+  }
+}
+
+/**
+ * Handle opening the bet form
+ */
+const handleBetOption = () => {
+  console.log('Opening bet form, playerCredits:', playerCredits.value)
+  if (playerCredits.value > 0) {
+    chooseBet.value = true
+  }
+}
+
+/**
+ * Handle closing the bet form
+ */
+const handeBackOption = () => {
+  console.log('Closing bet form')
+  chooseBet.value = false
+}
+
+/**
+ * Handle folding action
+ */
+const handleFold = () => {
+  gameStore.fold()
+}
+
+// ─────────────────────────────
+// Watchers
+// ─────────────────────────────
+
+// Watch: Changes to player credits
 watch(playerCredits, (newValue) => {
   console.log('Player credits changed:', newValue)
   if (newValue <= 0 && chooseBet.value) {
@@ -71,40 +135,13 @@ watch(playerCredits, (newValue) => {
   }
 })
 
-// Watch the addCredit prop to log changes
+// Watch: addCredit prop to log changes
 watch(
   () => props.addCredit,
   (newValue) => {
     console.log('addCredit prop changed to:', newValue)
   },
 )
-
-const handleAllIn = () => {
-  // Use the minimum of player's credits or communal pot
-  const allInAmount = Math.min(playerCredits.value, gameStore.communalPot)
-
-  if (allInAmount > 0) {
-    gameStore.placeBet(allInAmount)
-    gameStore.drawThirdCard()
-  }
-}
-
-const handleBetOption = () => {
-  console.log('Opening bet form, playerCredits:', playerCredits.value)
-  // Only show bet form if player has credits
-  if (playerCredits.value > 0) {
-    chooseBet.value = true
-  }
-}
-
-const handeBackOption = () => {
-  console.log('Closing bet form')
-  chooseBet.value = false
-}
-
-const handleFold = () => {
-  gameStore.fold()
-}
 </script>
 
 <style lang="css" scoped>

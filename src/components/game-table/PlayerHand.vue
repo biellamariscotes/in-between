@@ -1,3 +1,19 @@
+<!-- Player Hand Component
+  Displays a set of playing cards for a player.
+  
+  Props:
+    - cards: string[] — Array of card IDs in the player's hand.
+    - showCards: boolean — Whether to display cards face-up.
+    - orientation: string — Layout orientation: 'normal' | 'left' | 'right'.
+
+  Uses:
+    - PlayingCard component to render each individual card.
+
+  Features:
+    - Dynamic CSS custom property for card count.
+    - Optional orientation-based class for hand alignment.
+-->
+
 <template>
   <div
     class="player-hand"
@@ -6,6 +22,7 @@
     ]"
     :style="handStyle"
   >
+    <!-- Card Slot -->
     <div class="card-wrapper" v-for="(cardId, index) in cards" :key="index">
       <PlayingCard :card-id="cardId" :face-up="showCards" class="player-card" />
     </div>
@@ -13,9 +30,15 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Script setup section
+ */
 import { defineProps, computed } from 'vue'
 import PlayingCard from '../game-table/PlayingCard.vue'
 
+/**
+ * Props
+ */
 const props = defineProps({
   cards: {
     type: Array as () => string[],
@@ -32,7 +55,14 @@ const props = defineProps({
   },
 })
 
-// Create dynamic styles based on card count
+// ─────────────────────────────
+// Computed Properties
+// ─────────────────────────────
+
+/**
+ * Generates dynamic inline styles based on card count.
+ * Sets a CSS custom property (--card-count) for layout adjustments.
+ */
 const handStyle = computed(() => ({
   '--card-count': props.cards.length,
 }))
