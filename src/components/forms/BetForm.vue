@@ -38,21 +38,20 @@ import { ref, computed } from 'vue'
 import { useGameStore } from '@/stores/game-store'
 import { ElMessage } from 'element-plus'
 
+// Define emit events with consistent names
+const emit = defineEmits(['update:chooseBet', 'close-bet'])
+
 const gameStore = useGameStore()
 const minBet = 100 // Minimum bet amount
-// const { getCurrentPlayer } = usePlayerRandomizer()
-const emit = defineEmits(['closeBet', 'update:chooseBet'])
 
 const closeBet = () => {
-  emit('closeBet')
+  emit('close-bet')
+  emit('update:chooseBet', false)
 }
 
-// Player's available credits
+// Player's available credits - simplified calculation
 const playerCredits = computed(() => {
-  if (gameStore.isMultiplayer) {
-    return gameStore.playerPots[gameStore.currentPlayerIndex] || 0
-  }
-  return gameStore.pot || 0
+  return gameStore.playerPots[gameStore.currentPlayerIndex] || 0
 })
 
 const maxAllowedBet = computed(() => {
@@ -70,13 +69,14 @@ const handleMin = () => {
 }
 
 const handleHalf = () => {
-  // Use only the first value in the playerPots array
-  betAmount.value = Math.floor(gameStore.communalPot / 2)
+  // Calculate half of player's credits and half of communal pot
+  const halfPlayerCredits = Math.floor(playerCredits.value / 2)
+  const halfPotAmount = Math.floor(gameStore.communalPot / 2)
+  
+  // Use the smaller value between half of player credits and half of pot
+  betAmount.value = Math.min(halfPlayerCredits, halfPotAmount)
 
-  if (betAmount.value > playerCredits.value) {
-    betAmount.value = playerCredits.value
-  }
-
+  // Ensure bet is not below minimum
   if (betAmount.value < minBet) {
     betAmount.value = minBet
   }

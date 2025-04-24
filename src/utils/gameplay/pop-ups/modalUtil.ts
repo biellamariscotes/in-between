@@ -3,6 +3,13 @@ import { useGameStore } from '@/stores/game-store'
 import YouWinImage from '@/assets/img/game-zone/you-win.png'
 import YouLoseImage from '@/assets/img/game-zone/you-lose.png'
 import YouFoldImage from '@/assets/img/game-zone/you-fold.png'
+import YouWinSound from '@/assets/sfx/voices/you-win.wav'
+import YouLoseSound from '@/assets/sfx/voices/you-lose.wav'
+import YouFoldSound from '@/assets/sfx/outcomes/lose_1.wav'
+const youWinSound = new Audio(YouWinSound)
+const youLoseSound = new Audio(YouLoseSound)
+const youFoldSound = new Audio(YouFoldSound)
+
 export const showResultModal = ref(false)
 export const resultModalImage = ref('')
 
@@ -17,7 +24,11 @@ export function showFoldModal() {
 
   resultModalImage.value = YouFoldImage
   showResultModal.value = true
-
+  // Play the fold sound
+  youFoldSound.currentTime = 0 // Reset the sound to the beginning
+  youFoldSound.play().catch((error) => {
+    console.error('Error playing sound:', error)
+  })
   // Auto-close after 2 seconds and only then process the next turn
   setTimeout(() => {
     showResultModal.value = false
@@ -43,6 +54,11 @@ export function showWinModal() {
 
   resultModalImage.value = YouWinImage
   showResultModal.value = true
+  // Play the win sound
+  youWinSound.currentTime = 0 // Reset the sound to the beginning
+  youWinSound.play().catch((error) => {
+    console.error('Error playing sound:', error)
+  })
 
   // Auto-close after 2 seconds and only then process the next turn
   setTimeout(() => {
@@ -66,6 +82,11 @@ export function showLoseModal() {
 
   resultModalImage.value = YouLoseImage
   showResultModal.value = true
+  // Play the lose sound
+  youLoseSound.currentTime = 0 // Reset the sound to the beginning
+  youLoseSound.play().catch((error) => {
+    console.error('Error playing sound:', error)
+  })
 
   // Auto-close after 2 seconds and only then process the next turn
   setTimeout(() => {

@@ -37,37 +37,66 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useGameStore } from '@/stores/game-store'
 
+// This will track whether to show the bet form
 const chooseBet = ref(false)
-// const showAllInConfirmation = ref(false)
-const props = defineProps(['addCredit'])
+
+// Props from parent component
+const props = defineProps({
+  addCredit: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const gameStore = useGameStore()
 const minBet = 100 // Minimum bet amount
 
-// Player's available credits
+// Player's available credits - simplified to use only playerPots
 const playerCredits = computed(() => {
-  if (gameStore.isMultiplayer) {
-    return gameStore.playerPots[gameStore.currentPlayerIndex] || 0
+  return gameStore.playerPots[gameStore.currentPlayerIndex] || 0
+})
+
+// Debug on mount
+onMounted(() => {
+  console.log('GameCta mounted, credits:', playerCredits.value, 'addCredit:', props.addCredit)
+})
+
+// Watch for changes to player credits 
+watch(playerCredits, (newValue) => {
+  console.log('Player credits changed:', newValue)
+  if (newValue <= 0 && chooseBet.value) {
+    chooseBet.value = false
   }
-  return gameStore.pot || 0
+})
+
+// Watch the addCredit prop to log changes
+watch(() => props.addCredit, (newValue) => {
+  console.log('addCredit prop changed to:', newValue)
 })
 
 const handleAllIn = () => {
-  gameStore.placeBet(playerCredits.value)
-  gameStore.drawThirdCard()
+  // Use the minimum of player's credits or communal pot
+  const allInAmount = Math.min(playerCredits.value, gameStore.communalPot)
+  
+  if (allInAmount > 0) {
+    gameStore.placeBet(allInAmount)
+    gameStore.drawThirdCard()
+  }
 }
 
-const betAmount = ref(minBet)
-
 const handleBetOption = () => {
-  chooseBet.value = true
-  betAmount.value = minBet
+  console.log('Opening bet form, playerCredits:', playerCredits.value)
+  // Only show bet form if player has credits
+  if (playerCredits.value > 0) {
+    chooseBet.value = true
+  }
 }
 
 const handeBackOption = () => {
+  console.log('Closing bet form')
   chooseBet.value = false
 }
 
