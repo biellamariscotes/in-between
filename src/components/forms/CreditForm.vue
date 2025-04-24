@@ -2,7 +2,7 @@
   <div v-if="creditForm" class="credit-form-wrapper">
     <el-form>
       <img
-        src="../assets/img/buttons/input-credits.png"
+        src="../../assets/img/buttons/input-credits.png"
         alt="input-text"
         class="input-credits-text"
       />
@@ -10,14 +10,14 @@
       <el-input size="large" v-model="creditValue" />
 
       <img
-        src="../assets/img/buttons/add-credits.png"
+        src="../../assets/img/buttons/add-credits.png"
         alt="add-btn"
         class="add-credits-cta"
         @click="handleSubmitCredit"
       />
 
       <img
-        src="../assets/img/buttons/ekis.png"
+        src="../../assets/img/buttons/ekis.png"
         alt="ekis-btn"
         class="back-cta"
         @click="handleBackToAddCredit"
@@ -27,18 +27,18 @@
 
   <div v-else class="insufficient-wrapper">
     <div class="credit-wrapper">
-      <img src="../assets/img/buttons/insufficient.png" alt="all-in-png" class="insufficient" />
+      <img src="../../assets/img/buttons/insufficient.png" alt="all-in-png" class="insufficient" />
     </div>
 
     <div class="credit-actions">
       <img
-        src="../assets/img/buttons/add.png"
+        src="../../assets/img/buttons/add.png"
         alt="all-in-png"
         class="insufficient"
         @click="handleAddCredit"
       />
       <img
-        src="../assets/img/buttons/no.png"
+        src="../../assets/img/buttons/no.png"
         alt="all-in-png"
         class="insufficient"
         @click="handleCancelCredit"

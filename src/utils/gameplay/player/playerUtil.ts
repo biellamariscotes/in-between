@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { usePlayerStore } from '@/stores/player-count'
 import { useGameStore } from '@/stores/game-store'
-import { cardToDisplayId } from './cardUtils'
+import { cardToDisplayId } from '../deck/cardUtil'
 
 /**
  * Check if a player position is the current player

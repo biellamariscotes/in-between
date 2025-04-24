@@ -29,16 +29,16 @@
         ></div>
       </div>
 
-      <div style="display: flex; flex-direction: column; justify-items: center; align-items: center">
+      <div
+        style="display: flex; flex-direction: column; justify-items: center; align-items: center"
+      >
         <h1 class="player-name">
           <template v-if="isActive && playerName">
             {{ playerName }}
           </template>
           <template v-else> Empty </template>
         </h1>
-        <h1 class="player-points">
-          P {{ playerPoints || 0 }}
-        </h1>
+        <h1 class="player-points">P {{ playerPoints || 0 }}</h1>
       </div>
       <PlayerHand
         :cards="cards"
@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
-import PlayerHand from '@/components/PlayerHand.vue'
+import PlayerHand from '../game-table/PlayerHand.vue'
 
 defineProps<{
   position: number

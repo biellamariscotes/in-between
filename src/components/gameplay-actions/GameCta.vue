@@ -6,7 +6,7 @@
   <div v-else class="actions-wrapper">
     <div v-if="props.addCredit" class="btn-wrapper">
       <img
-        src="../assets/img/buttons/all-in.png"
+        src="../../assets/img/buttons/all-in.png"
         alt="all-in-png"
         class="all-in-cta"
         @click="handleAllIn"
@@ -14,7 +14,7 @@
 
       <!-- Bet -->
       <img
-        src="../assets/img/buttons/bet.png"
+        src="../../assets/img/buttons/bet.png"
         alt="bet-btn"
         class="bet-cta"
         @click="handleBetOption"
@@ -22,7 +22,7 @@
 
       <!-- Fold -->
       <img
-        src="../assets/img/buttons/fold.png"
+        src="../../assets/img/buttons/fold.png"
         alt="fold-btn"
         class="fold-cta"
         @click="handleFold"
@@ -39,8 +39,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useGameStore } from '@/stores/game-store'
-import BetForm from './BetForm.vue'
-import CreditForm from './CreditForm.vue'
 
 const chooseBet = ref(false)
 // const showAllInConfirmation = ref(false)

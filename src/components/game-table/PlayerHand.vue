@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { defineProps, computed } from 'vue'
-import PlayingCard from './PlayingCard.vue'
+import PlayingCard from '../game-table/PlayingCard.vue'
 
 const props = defineProps({
   cards: {

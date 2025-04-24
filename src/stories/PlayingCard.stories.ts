@@ -1,5 +1,5 @@
 import { defineComponent, h, provide, ref } from 'vue'
-import PlayingCard from '@/components/PlayingCard.vue'
+import PlayingCard from '@/components/game-table/PlayingCard.vue'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
 interface StoryCard {
