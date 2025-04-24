@@ -1,5 +1,24 @@
+<!-- BetDialog Component
+  Displays a betting interface with slider and quick bet options.
+  
+  Emits:
+    - update:chooseBet: boolean — Controls the visibility of the betting dialog.
+    - close-bet: void — Triggered when dialog should be closed.
+
+  Uses:
+    - Element Plus components for form and slider UI.
+    - Custom Button component for quick bet options.
+    - Game store for player data and game state management.
+
+  Features:
+    - Slider-based bet amount selection with input field.
+    - Quick betting options (Min, Half, Max).
+    - Validation to ensure bets are within allowed limits.
+-->
+
 <template>
   <el-form>
+    <!-- Slider -->
     <div class="slider-demo-block">
       <el-slider
         v-model="betAmount"
@@ -11,6 +30,7 @@
       />
     </div>
 
+    <!-- Close Button -->
     <img
       src="../../assets/img/buttons/actions/ekis.png"
       alt="back-btn"
@@ -18,6 +38,7 @@
       @click="closeBet"
     />
 
+    <!-- Automatic Deal Now -->
     <img
       src="../../assets/img/buttons/actions/deal-now.png"
       alt="deal-now-btn"
@@ -26,6 +47,7 @@
     />
   </el-form>
 
+  <!-- CTA Buttons: Min, Half, Max -->
   <div class="btn-wrapper">
     <Button variant="secondary" @click="handleMin">Min</Button>
     <Button variant="secondary" @click="handleHalf">Half</Button>
@@ -34,45 +56,83 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Script setup section
+ */
 import { ref, computed } from 'vue'
 import { useGameStore } from '@/stores/game-store'
 import { ElMessage } from 'element-plus'
 
-// Define emit events with consistent names
+/**
+ * Emits
+ */
 const emit = defineEmits(['update:chooseBet', 'close-bet'])
 
+/**
+ * Store
+ */
 const gameStore = useGameStore()
 const minBet = 100 // Minimum bet amount
 
+// ─────────────────────────────
+// Event Handlers
+// ─────────────────────────────
+
+/**
+ * Closes the betting dialog and updates parent component state
+ */
 const closeBet = () => {
   emit('close-bet')
   emit('update:chooseBet', false)
 }
 
-// Player's available credits - simplified calculation
+// ─────────────────────────────
+// Computed Properties
+// ─────────────────────────────
+
+/**
+ * Player's available credits - simplified calculation
+ */
 const playerCredits = computed(() => {
   return gameStore.playerPots[gameStore.currentPlayerIndex] || 0
 })
 
+/**
+ * Calculates the maximum allowed bet based on player credits and communal pot
+ * Returns the smaller of the two limits
+ */
 const maxAllowedBet = computed(() => {
   const potLimit = gameStore.communalPot || 0
   const creditLimit = playerCredits.value
 
-  // Return the smaller of the two limits
   return Math.min(potLimit, creditLimit)
 })
 
+/**
+ * Reactive Refs
+ */
 const betAmount = ref(minBet)
 
+// ─────────────────────────────
+// Quick Bet Methods
+// ─────────────────────────────
+
+/**
+ * Sets bet amount to minimum allowed value
+ */
 const handleMin = () => {
   betAmount.value = minBet
 }
 
+/**
+ * Sets bet amount to half of player credits or half of pot (whichever is smaller)
+ * Ensures the bet isn't below minimum
+ */
 const handleHalf = () => {
   // Calculate half of player's credits and half of communal pot
   const halfPlayerCredits = Math.floor(playerCredits.value / 2)
   const halfPotAmount = Math.floor(gameStore.communalPot / 2)
-  
+
   // Use the smaller value between half of player credits and half of pot
   betAmount.value = Math.min(halfPlayerCredits, halfPotAmount)
 
@@ -82,10 +142,17 @@ const handleHalf = () => {
   }
 }
 
+/**
+ * Sets bet amount to maximum allowed value
+ */
 const handleMax = () => {
   betAmount.value = maxAllowedBet.value
 }
 
+/**
+ * Handles the deal now action with validation
+ * Places bet and draws card if valid, otherwise shows error message
+ */
 const handleDealNow = () => {
   if (betAmount.value <= 0) {
     ElMessage.warning('Please enter a valid bet amount')

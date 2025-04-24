@@ -1,28 +1,57 @@
+<!-- Credit Display Component
+  Displays the current player's credit (pot) amount.
+
+  Props:
+    - gameStore: Game store instance (Pinia store)
+
+  Features:
+    - Cash-in/Cash-out
+
+  Uses:
+    - Computed property to safely retrieve player's pot amount.
+-->
+
 <template>
-  <!-- Replace game message with player credit display -->
+  <!-- Credit Display Container -->
   <div class="credit-display">
-    <img src="../../assets/img/buttons/credits/cashin.png" alt="all-in-png" class="cash-in-cta" />
+    <!-- Cash-in CTA Image -->
+    <img src="../../assets/img/buttons/credits/cashin.png" alt="cash-in-png" class="cash-in-cta" />
+
+    <!-- Current Player Pot Amount -->
     <p class="credit">₱ {{ currentPlayerPot }}</p>
 
-    <!-- <img
+    <!-- Future cash-out button -->
+    <!--
+    <img
       src="../assets/img/cash-out/cash-out.png"
-      alt="all-in-png"
+      alt="cash-out-png"
       class="cash-out-cta"
       @click="handleCashOut"
-    /> -->
+    />
+    -->
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 
+/**
+ * Props:
+ */
 const props = defineProps(['gameStore'])
 
-// Current player's pot amount
+// ─────────────────────────────
+// Computed Properties
+// ─────────────────────────────
+
+/**
+ * Retrieves the current player's pot amount.
+ * Returns 0 if game isn't started or index is invalid.
+ */
 const currentPlayerPot = computed(() => {
   if (!props.gameStore.gameStarted) return 0
 
-  // Make sure we have a valid index and value
+  // Validate index and player pots array
   if (
     props.gameStore.playerPots &&
     props.gameStore.currentPlayerIndex >= 0 &&
@@ -33,6 +62,10 @@ const currentPlayerPot = computed(() => {
 
   return 0
 })
+
+// ─────────────────────────────
+// Event Handlers (for future use)
+// ─────────────────────────────
 
 // const handleCashOut = () => {
 //   console.log('hello cash out')

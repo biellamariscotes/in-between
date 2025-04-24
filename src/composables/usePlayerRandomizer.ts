@@ -1,5 +1,5 @@
 /**
- * Composable for turns reactivity.
+ * Turns reactivity.
  *
  * Documentation: docs/composables/usePlayerRandomizer.md
  *

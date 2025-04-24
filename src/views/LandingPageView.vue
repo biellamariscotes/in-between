@@ -18,7 +18,11 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+// ─────────────────────────────
+// Route Redirection
+// ─────────────────────────────
+
 function redirectToRoute() {
-  router.push('/choose-player') // Replace '/target-route' with your desired route path.
+  router.push('/choose-player')
 }
 </script>

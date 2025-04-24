@@ -1,6 +1,8 @@
 import type { Card } from '@/interface/card'
 
-// Utility function to create a full deck.
+/**
+ * Creating full deck.
+ */
 export function createDeck(): Card[] {
   const suits: Card['suit'][] = ['hearts', 'diamonds', 'clubs', 'spades']
   const ranks = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king']
