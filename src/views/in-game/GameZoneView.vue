@@ -73,7 +73,7 @@
     <div class="actions-container">
       <div v-if="!gameStore.gameStarted">
         <img
-          src="../../assets/img/buttons/start-game.png"
+          src="../../assets/img/buttons/actions/start-game.png"
           alt="fold-btn"
           class="start-cta"
           @click="startNewGame"
