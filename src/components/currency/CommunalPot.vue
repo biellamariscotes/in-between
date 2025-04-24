@@ -1,6 +1,22 @@
+<!-- Pot Amount Display Component
+  Displays the current total pot amount in the game.
+  Props:
+    - potAmount: number — The current amount in the pot.
+    - currentBet: number — The current bet amount (currently unused in template).
+
+  Features:
+    - Shows a pot image and the total pot value.
+    
+  Uses:
+    - Static image asset for the pot visual.
+-->
+
 <template>
   <div class="pot-amount">
+    <!-- Pot Image -->
     <img class="pot-amount__img" :src="PotAmount" alt="Pot Amount" />
+
+    <!-- Pot Value Display -->
     <div class="pot-amount__value">
       <span class="pot-amount__value--total">{{ potAmount }}</span>
     </div>
@@ -10,11 +26,16 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 import PotAmount from '@/assets/img/game-zone/currency/pot-amount.png'
+
+/**
+ * Props
+ */
 defineProps<{
   potAmount: number
   currentBet: number
 }>()
 </script>
+
 <style scoped lang="scss">
 .pot-amount {
   display: flex;
