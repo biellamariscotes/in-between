@@ -3,9 +3,9 @@
     <Form />
   </div>
 </template>
-  
+
 <script setup lang="ts">
-import Form from '@/components/Form.vue'
+import Form from '@/components/forms/PlayerForm.vue'
 </script>
 
 <style lang="css" scoped></style>

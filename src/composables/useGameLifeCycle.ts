@@ -1,6 +1,7 @@
 /**
- * Composable for ending the game.
+ * Composable for managing the game lifecycle.
  *
+ * @returns {Object} - An object containing the `startNewGame` function.
  */
 
 import { useGameStore } from '@/stores/game-store'

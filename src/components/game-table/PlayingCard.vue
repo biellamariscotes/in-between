@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
-import BackCard from '@/assets/img/back-card.png'
+import BackCard from '@/assets/img/cards/special-cards/back-card.png'
 import { useDataFetcher } from '@/composables/useDataFetcher'
 import type { Card } from '@/interface/card'
 
@@ -55,7 +55,7 @@ watchEffect(() => {
 
 function getCardImagePath(id: string | undefined): string {
   if (!id) return ''
-  return new URL(`../assets/img/cards/${id}.svg`, import.meta.url).href
+  return new URL(`../../assets/img/cards/${id}.svg`, import.meta.url).href
 }
 </script>
 

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { createDeck } from '@/utils/createDeck'
-import { shuffle } from '@/utils/shuffleDeck'
+import { createDeck } from '@/utils/gameplay/deck/createDeckUtil'
+import { shuffle } from '@/utils/gameplay/deck/shuffleDeck'
 import { cards } from '@/utils/data/cards'
 import type { Card, GameState } from '@/interface/card'
 import type { Player } from '@/interface/player'

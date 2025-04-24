@@ -3,7 +3,7 @@
     <el-row justify="end" :gutter="24">
       <el-col :span="4">
         <img
-          src="../../assets/img/buttons/ekis.png"
+          src="../../assets/img/buttons/actions/ekis.png"
           alt="back-btn"
           class="close-btn"
           @click="closeMainMenu"

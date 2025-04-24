@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
-import PotAmount from '@/assets/img/game-zone/pot-amount.png'
+import PotAmount from '@/assets/img/game-zone/currency/pot-amount.png'
 defineProps<{
   potAmount: number
   currentBet: number

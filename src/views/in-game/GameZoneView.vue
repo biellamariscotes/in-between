@@ -32,7 +32,7 @@
               :show-cards="true"
               orientation="normal"
             />
-            <img v-else :src="Shadowquestion" alt="Shadow Question" class="shadowquestion" />
+            <img v-else :src="MysteryCard" alt="Shadow Question" class="mystery-card" />
           </div>
 
           <div class="face-up-card" v-else>
@@ -73,7 +73,7 @@
     <div class="actions-container">
       <div v-if="!gameStore.gameStarted">
         <img
-          src="../../assets/img/buttons/start-game.png"
+          src="../../assets/img/buttons/actions/start-game.png"
           alt="fold-btn"
           class="start-cta"
           @click="startNewGame"
@@ -115,28 +115,32 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import GameTable from '@/assets/img/game-zone/Game-Table.svg'
-import Shadowquestion from '@/assets/img/game-zone/shadowquestion.svg'
-import PlayerHand from '@/components/PlayerHand.vue'
-import GameCta from '@/components/GameCta.vue'
+import GameTable from '@/assets/img/game-zone/table.svg'
+import MysteryCard from '@/assets/img/cards/special-cards/mystery-card.svg'
+import GameCta from '@/components/gameplay-actions/GameCta.vue'
 import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
 import eventBus from '@/eventBus'
-import CountdownTimer from '@/components/CountdownTimer.vue'
+import CountdownTimer from '@/components/utilities/CountdownTimer.vue'
 import MainMenuDialog from '@/components/dialog/MainMenuDialog.vue'
-import CashFlow from '@/components/CashFlow.vue'
+import CashFlow from '@/components/currency/CashFlow.vue'
+import PlayerHand from '@/components/game-table/PlayerHand.vue'
 
 // Import utility functions
-import { cardToDisplayId } from '@/utils/cardUtils'
+import { cardToDisplayId } from '@/utils/gameplay/deck/cardUtil'
 import {
   showResultModal,
   resultModalImage,
   showWinModal,
   showLoseModal,
   showFoldModal,
-} from '@/utils/modalUtils'
-import { isCurrentPlayer, getActivePlayers, calculatePlayerCards } from '@/utils/playerUtils'
+} from '@/utils/gameplay/pop-ups/modalUtil'
+import {
+  isCurrentPlayer,
+  getActivePlayers,
+  calculatePlayerCards,
+} from '@/utils/gameplay/player/playerUtil'
 
 // --- Initialize game store ---
 const gameStore = useGameStore()
@@ -161,7 +165,7 @@ onMounted(() => {
   if (!registrationStore.players.length) {
     registrationStore.loadPlayersFromStorage()
   }
-  
+
   // Initial credit status check with delay to ensure store is loaded
   setTimeout(() => {
     updateCreditStatus()
@@ -176,22 +180,28 @@ watch(currentPlayerPot, (newValue) => {
 })
 
 // Watch for game start
-watch(() => gameStore.gameStarted, (isStarted) => {
-  if (isStarted) {
-    setTimeout(() => {
-      updateCreditStatus()
-      console.log('Credit status after game start:', addCredit.value)
-    }, 200) // Delay to ensure player pots are updated
-  }
-})
+watch(
+  () => gameStore.gameStarted,
+  (isStarted) => {
+    if (isStarted) {
+      setTimeout(() => {
+        updateCreditStatus()
+        console.log('Credit status after game start:', addCredit.value)
+      }, 200) // Delay to ensure player pots are updated
+    }
+  },
+)
 
 // Watch for changes in current player index
-watch(() => gameStore.currentPlayerIndex, () => {
-  setTimeout(() => {
-    updateCreditStatus()
-    console.log('Credit status after player change:', addCredit.value)
-  }, 100)
-})
+watch(
+  () => gameStore.currentPlayerIndex,
+  () => {
+    setTimeout(() => {
+      updateCreditStatus()
+      console.log('Credit status after player change:', addCredit.value)
+    }, 100)
+  },
+)
 
 // Load players from localStorage if not already loaded
 const playerStore = usePlayerStore()
@@ -241,7 +251,7 @@ function startNewGame() {
   const activePlayers = players.value.slice(0, playerCount.value)
   gameStore.setupGame(activePlayers)
   gameStore.startGame()
-  
+
   // Update credit status after starting game with a delay
   setTimeout(() => {
     updateCreditStatus()
