@@ -1,143 +1,268 @@
-<!-- PlayerRegistrationForm Component
-  Handles player registration with dynamic form fields based on player count.
-  
-  Props:
-    None - Uses localStorage for player count configuration.
-  
-  Features:
-    - Dynamic form fields generation based on player count.
-    - Form validation using Element Plus rules.
-    - Responsive layout with special handling for odd number of players.
-    - Player data persistence using store.
-  
-  Uses:
-    - Element Plus form components.
-    - Vue Router for navigation.
-    - Player registration store for state management.
-    - Custom validation rules.
--->
-
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <el-form
-    ref="ruleFormRef"
-    :model="dynamicInputFields"
-    :rules="useRegistrationRule"
-    label-width="auto"
-    class="demo-ruleForm"
-    :label-position="labelPosition"
-    :size="formSize"
-    status-icon
-    @submit.prevent="onSubmit"
-  >
-    <!-- Dynamic Player Input Fields -->
-    <div
-      v-for="(field, index) in dynamicInputFields"
-      :key="index"
-      :class="['item-wrapper', isLastInOddArray(index) ? 'center-item' : '']"
-    >
-      <el-form-item
-        :label="'Name:'"
-        :prop="'[' + index + '].name'"
-        :rules="useRegistrationRule.name"
-      >
-        <el-input size="small" v-model="dynamicInputFields[index].name" />
-      </el-form-item>
+  <!-- credit form -->
+  <div v-if="creditForm" class="credit-form-wrapper">
+    <el-form>
+      <img
+        src="../../assets/img/buttons/credits/input-credits.png"
+        alt="input-text"
+        class="input-credits-text"
+      />
 
-      <el-form-item
-        :label="'Credits:'"
-        :prop="'[' + index + '].credits'"
-        :rules="useRegistrationRule.credits"
-      >
-        <el-input size="small" v-model.number="dynamicInputFields[index].credits" />
-      </el-form-item>
+      <el-input size="large" v-model="creditValue" />
+
+      <img
+        src="../../assets/img/buttons/credits/add-credits.png"
+        alt="add-btn"
+        class="add-credits-cta"
+        @click="handleSubmitCredit"
+      />
+
+      <img
+        src="../../assets/img/buttons/actions/ekis.png"
+        alt="ekis-btn"
+        class="back-cta"
+        @click="handleBackToAddCredit"
+      />
+    </el-form>
+  </div>
+
+  <!-- credit homepage -->
+  <div v-else class="insufficient-wrapper">
+    <div class="credit-wrapper">
+      <img
+        src="../../assets/img/buttons/credits/insufficient.png"
+        alt="all-in-png"
+        class="insufficient"
+      />
     </div>
 
-    <!-- Form Controls -->
-    <div class="btn-group">
-      <Button btnType="submit" variant="secondary">Start Game</Button>
+    <div class="credit-actions">
+      <img
+        src="../../assets/img/buttons/credits/add.png"
+        alt="all-in-png"
+        class="insufficient"
+        @click="handleAddCredit"
+      />
+      <img
+        src="../../assets/img/buttons/credits/no.png"
+        alt="all-in-png"
+        class="insufficient"
+        @click="handleCancelCredit"
+      />
+
+      <!-- dialog box -->
+      <el-dialog v-model="isCancelDialog" title="Warning" width="500" align-center>
+        <div class="dialog-msg">
+          <img src="../../assets/img/cash-out/quit-title.png" alt="quit-img" class="quit-btn" />
+
+          <img src="../../assets/img/cash-out/quit-description.png" alt="no-img" class="no-btn" />
+        </div>
+
+        <!-- controls -->
+        <template #footer>
+          <div class="dialog-footer">
+            <img
+              src="../../assets/img/cash-out/quit-game.png"
+              alt="quit-img"
+              class="quit-btn"
+              @click="isQuitPlayer"
+            />
+
+            <img
+              src="../../assets/img/cash-out/no-add.png"
+              alt="no-img"
+              class="no-btn"
+              @click="isCancelDialog = false"
+            />
+          </div>
+        </template>
+      </el-dialog>
     </div>
-  </el-form>
+  </div>
 </template>
 
 <script setup lang="ts">
-/**
- * Script setup section
- */
 import { ref } from 'vue'
-import type { ComponentSize, FormInstance, FormProps } from 'element-plus'
-import type { Player } from '@/interface/player'
-import { useRegistrationRule } from '@/composables/rules/useRegistrationRule'
+import { useGameStore } from '@/stores/game-store'
 import { usePlayerRegistration } from '@/stores/player'
-import { useRouter } from 'vue-router'
 
-/**
- * Form configuration
- */
-const labelPosition = ref<FormProps['labelPosition']>('left')
-const formSize = ref<ComponentSize>('default')
-const ruleFormRef = ref<FormInstance>()
+// const showAllInConfirmation = ref(false)
+const creditValue = ref(0)
+const gameStore = useGameStore()
+const playerStore = usePlayerRegistration()
 
-/**
- * Store and router
- */
-const playerRegistration = usePlayerRegistration()
-const router = useRouter()
+const creditForm = ref(false)
+const isCancelDialog = ref(false)
 
-/**
- * Initialize dynamic form fields
- */
-const numberOfPlayers = Number(localStorage.getItem('playerCount')) || 0
+const handleAddCredit = () => {
+  creditForm.value = true
+}
 
-// Initialize dynamicInputFields as an array
-const dynamicInputFields = ref<Player[]>(
-  Array.from({ length: numberOfPlayers }, () => ({ name: '', credits: null })),
-)
+const handleBackToAddCredit = () => {
+  creditForm.value = false
+}
 
-// ─────────────────────────────
-// Form Methods
-// ─────────────────────────────
+const handleCancelCredit = () => {
+  isCancelDialog.value = true
+}
 
-/**
- * Handles form submission with validation
- * Registers valid players and navigates to game zone
- */
-const onSubmit = async () => {
+const isQuitPlayer = () => {
   try {
-    const isValid = await ruleFormRef.value?.validate()
-    if (isValid) {
-      // Filter out empty entries
-      const validPlayers = dynamicInputFields.value.filter(
-        (player) => player.name && player.credits,
-      )
+    const index = gameStore.currentPlayerIndex
+    const playerId = gameStore.players[index]?.id
 
-      // Clear existing players first
-      playerRegistration.clearPlayers()
+    if (playerId) {
+      playerStore.players = playerStore.players.filter((p) => p.id !== playerId)
 
-      // Register each valid player individually
-      validPlayers.forEach((player) => {
-        playerRegistration.registerPlayer({
-          id: Math.floor(Math.random() * 10000),
-          name: player.name,
-          credits: player.credits,
-        })
-      })
-      // Reset the form fields
-      ruleFormRef.value?.resetFields()
+      localStorage.setItem('players', JSON.stringify(playerStore.players))
 
-      // Go to GameZone
-      router.push('/game-zone')
+      gameStore.players.splice(index, 1)
+
+      gameStore.saveStateToLocalStorage()
+
+      isCancelDialog.value = false
+
+      // gameStore.currentPlayerIndex = null
     }
   } catch (error) {
-    console.error('Error during form submission:', error)
+    console.error('Error removing player:', error)
   }
 }
 
-/**
- * Determines if the item is the last one in an odd-length array
- * Used for special styling of the last item when there's an odd number of players
- */
-const isLastInOddArray = (index: number): boolean => {
-  return dynamicInputFields.value.length % 2 !== 0 && index === dynamicInputFields.value.length - 1
+const handleSubmitCredit = () => {
+  // Ensure a valid amount is entered
+  if (creditValue.value <= 0) return
+
+  try {
+    const index = gameStore.currentPlayerIndex
+
+    // Update in-game credits
+    if (!gameStore.playerPots[index]) {
+      gameStore.playerPots[index] = 0
+    }
+    gameStore.playerPots[index] += Number(creditValue.value)
+
+    // Update player registration store
+    const playerId = gameStore.players[index]?.id
+    if (playerId) {
+      const playerIndex = playerStore.players.findIndex((p) => p.id === playerId)
+      if (playerIndex !== -1) {
+        const currentCredits = playerStore.players[playerIndex].credits || 0
+        playerStore.players[playerIndex].credits = currentCredits + Number(creditValue.value)
+      }
+    }
+
+    // Save updated player data to localStorage
+    localStorage.setItem('players', JSON.stringify(playerStore.players))
+
+    // Update game state in localStorage
+    gameStore.saveStateToLocalStorage()
+
+    // Reset the form and hide it
+    creditValue.value = 0
+    creditForm.value = false
+  } catch (error) {
+    console.error('Error adding credits:', error)
+  }
 }
 </script>
+
+<style scoped>
+.el-form {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-credits-text {
+  width: 250px;
+  height: 50px;
+}
+
+.back-cta {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.add-credits-cta {
+  position: absolute;
+  top: 30%;
+  right: -20%;
+  width: 190px;
+  height: 60px;
+  cursor: pointer;
+}
+
+.insufficient-wrapper {
+  width: 100%;
+}
+
+.credit-wrapper {
+  width: 100%;
+}
+
+.insufficient {
+  width: 100%;
+  height: 40px;
+}
+
+.credit-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.credit-actions img {
+  width: 280px;
+  height: 80px;
+  cursor: pointer;
+}
+
+.dialog-msg {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dialog-msg img {
+  width: 100%;
+  height: 60px;
+}
+
+.dialog-footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog-footer img {
+  width: 250px;
+  height: 90px;
+  cursor: pointer;
+}
+
+:deep(.el-input) {
+  width: 150px;
+}
+
+:deep(.el-input__wrapper) {
+  box-shadow: none;
+  background-color: black;
+}
+
+:deep(.el-input__inner) {
+  color: white;
+  font-family: 'Baumans';
+}
+</style>
