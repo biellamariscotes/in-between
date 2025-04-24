@@ -53,23 +53,23 @@
       <!-- dialog box -->
       <el-dialog v-model="isCancelDialog" title="Warning" width="500" align-center>
         <div class="dialog-msg">
-          <img src="../assets/img/cash-out/quit-title.png" alt="quit-img" class="quit-btn" />
+          <img src="../../assets/img/cash-out/quit-title.png" alt="quit-img" class="quit-btn" />
 
-          <img src="../assets/img/cash-out/quit-description.png" alt="no-img" class="no-btn" />
+          <img src="../../assets/img/cash-out/quit-description.png" alt="no-img" class="no-btn" />
         </div>
 
         <!-- controls -->
         <template #footer>
           <div class="dialog-footer">
             <img
-              src="../assets/img/cash-out/quit-game.png"
+              src="../../assets/img/cash-out/quit-game.png"
               alt="quit-img"
               class="quit-btn"
               @click="isQuitPlayer"
             />
 
             <img
-              src="../assets/img/cash-out/no-add.png"
+              src="../../assets/img/cash-out/no-add.png"
               alt="no-img"
               class="no-btn"
               @click="isCancelDialog = false"

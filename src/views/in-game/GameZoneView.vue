@@ -9,6 +9,12 @@
 
     <!-- Result Modal Component -->
     <ResultModal :show="showResultModal" :image="resultModalImage" />
+    
+    <!-- Game Over Modal -->
+    <GameOverModal 
+      :show="showGameOverModal" 
+      @close="showGameOverModal = false" 
+    />
 
     <div class="turn-container">
       <h1>{{ currentPlayerDisplay }}'s Turn</h1>
@@ -76,12 +82,11 @@
           src="../../assets/img/buttons/actions/start-game.png"
           alt="fold-btn"
           class="start-cta"
-          @click="startNewGame"
+          @click="startGameLocally"
         />
       </div>
       <div v-else-if="gameStore.gameOver">
-        <button class="game-button primary-button" @click="startNewGame">New Game</button>
-        <h2 class="game-over-text">Game Over!</h2>
+        <!-- No buttons here anymore, using modal instead -->
       </div>
       <div v-else-if="gameStore.awaitingEqualChoice">
         <h3 class="choice-prompt">Cards are equal! Choose:</h3>
@@ -126,9 +131,11 @@ import GameCta from '@/components/gameplay-actions/GameCta.vue'
 import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
+import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
 import eventBus from '@/eventBus'
 import CountdownTimer from '@/components/utilities/CountdownTimer.vue'
 import MainMenuDialog from '@/components/dialog/MainMenuDialog.vue'
+import GameOverModal from '@/components/dialog/GameOverModal.vue'
 import CashFlow from '@/components/currency/CashFlow.vue'
 import PlayerHand from '@/components/game-table/PlayerHand.vue'
 
@@ -147,8 +154,12 @@ import {
   calculatePlayerCards,
 } from '@/utils/gameplay/player/playerUtil'
 
+// Add game over modal state
+const showGameOverModal = ref(false)
+
 // --- Initialize game store ---
 const gameStore = useGameStore()
+const { startNewGame } = useGameLifeCycle()
 
 const addCredit = ref(false)
 const cashOutCredit = ref(false)
@@ -252,8 +263,8 @@ function getPlayerPoints(position: number): number {
   return 0
 }
 
-// Game actions
-function startNewGame() {
+// Game actions - Rename to avoid conflict with imported startNewGame
+function startGameLocally() {
   const activePlayers = players.value.slice(0, playerCount.value)
   gameStore.setupGame(activePlayers)
   gameStore.startGame()
@@ -343,4 +354,14 @@ watch(playerCount, () => {
     setupGameDisplay()
   }
 })
+
+// Watch for game over state
+watch(
+  () => gameStore.gameOver,
+  (isGameOver) => {
+    if (isGameOver) {
+      showGameOverModal.value = true
+    }
+  }
+)
 </script>

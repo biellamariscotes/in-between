@@ -32,6 +32,7 @@ declare module 'vue' {
     GameCards: typeof import('./src/components/cards/GameCards.vue')['default']
     GameControls: typeof import('./src/components/game/GameControls.vue')['default']
     GameCta: typeof import('./src/components/gameplay-actions/GameCta.vue')['default']
+    GameOverModal: typeof import('./src/components/dialog/GameOverModal.vue')['default']
     Input: typeof import('./src/components/Input.vue')['default']
     InputLabel: typeof import('./src/components/Input-Label.vue')['default']
     Inputs: typeof import('./src/components/Inputs.vue')['default']

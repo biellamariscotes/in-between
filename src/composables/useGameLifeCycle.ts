@@ -5,6 +5,7 @@
  */
 
 import { useGameStore } from '@/stores/game-store'
+import { useRouter } from 'vue-router'
 
 export function useGameLifeCycle() {
   const router = useRouter()
@@ -16,9 +17,12 @@ export function useGameLifeCycle() {
     router.push('/')
   }
 
+  const reshuffleDeck = () => {
+    gameStore.reshuffleDeck()
+  }
+
   return {
     startNewGame,
+    reshuffleDeck,
   }
 }
-
-import { useRouter } from 'vue-router'

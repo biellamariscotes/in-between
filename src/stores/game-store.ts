@@ -612,5 +612,36 @@ export const useGameStore = defineStore('game', {
         })),
       }
     },
+
+    // Add a new reshuffleDeck action
+    reshuffleDeck() {
+      // Create and shuffle a new deck
+      const createdDeck = createDeck()
+      this.deck = shuffle(createdDeck)
+
+      // Reset only the necessary state for continuation
+      this.gameOver = false
+      this.message = 'Deck has been reshuffled! Game continues.'
+
+      // Draw new face-up cards
+      if (this.deck.length >= 2) {
+        const card1 = this.deck.pop()
+        const card2 = this.deck.pop()
+
+        if (card1 && card2) {
+          this.faceUpCards = [this.ensureCardHasId(card1), this.ensureCardHasId(card2)]
+        }
+      }
+
+      // Reset the current player's state
+      this.currentCard = null
+      this.currentBet = 0
+
+      // Start the turn timer again
+      this.startTurnTimer()
+
+      // Save state to localStorage
+      this.saveStateToLocalStorage()
+    },
   },
 })
