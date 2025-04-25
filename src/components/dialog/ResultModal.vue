@@ -1,5 +1,18 @@
+<!-- Result Modal Component
+  Displays a modal showing the result of a game, with an image to indicate the outcome.
+
+  Features:
+    - Condition to show the modal based on the `show` prop.
+    - Displays an image corresponding to the `image` prop.
+
+  Props:
+    - show (boolean) — Controls the visibility of the modal.
+    - image (string) — The source URL of the image to display within the modal, representing the game result.
+-->
+
 <template>
   <div v-if="show" class="result-modal">
+    <!-- Modal content displaying the result image -->
     <div class="modal-content">
       <img :src="image" alt="Game Result" />
     </div>
@@ -9,6 +22,9 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 
+/**
+ * Props
+ */
 defineProps<{
   show: boolean
   image: string

@@ -1,11 +1,6 @@
 <template>
   <div class="registation-wrapper">
-    <!-- registration-title.png -->
-    <img
-      src="../../assets/img/landing-assets/registration-title.png"
-      alt="registration-title"
-      class="registration-title"
-    />
+    <!-- Calls the Player Form component -->
     <Form />
   </div>
 </template>

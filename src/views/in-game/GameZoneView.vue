@@ -1,5 +1,6 @@
 <template>
   <div class="game-zone-container">
+    <!-- Main game table background -->
     <el-image
       :src="GameTable"
       style="height: 85%; width: 85%; position: absolute; user-select: none; z-index: 10"
@@ -7,16 +8,22 @@
       :draggable="false"
     />
 
-    <!-- Result Modal Component -->
+    <!-- Modal for displaying game results -->
     <ResultModal :show="showResultModal" :image="resultModalImage" />
 
+    <!-- Main menu dialog component -->
+    <MainMenuDialog></MainMenuDialog>
+
+    <!-- ////// CURRENT PLAYER TURN DISPLAY ////// -->
     <div class="turn-container">
       <h1>{{ currentPlayerDisplay }}'s Turn</h1>
     </div>
 
+    <!-- ////// CARD DISPLAY AREA ////// -->
     <div class="game-zone">
       <div class="card-table">
         <div class="game-cards">
+          <!-- First face-up card display -->
           <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
             <PlayerHand
               :cards="[cardToDisplayId(gameStore.faceUpCards[0])]"
@@ -25,6 +32,7 @@
             />
           </div>
 
+          <!-- Current card being played display -->
           <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
             <PlayerHand
               v-if="gameStore.currentCard"
@@ -35,10 +43,12 @@
             <img v-else :src="MysteryCard" alt="Shadow Question" class="mystery-card" />
           </div>
 
+          <!-- Placeholder for card space when empty -->
           <div class="face-up-card" v-else>
             <div class="card-placeholder"></div>
           </div>
 
+          <!-- Second face-up card display -->
           <div class="face-up-card" v-if="gameStore.faceUpCards[1]">
             <PlayerHand
               :cards="[cardToDisplayId(gameStore.faceUpCards[1])]"
@@ -48,12 +58,14 @@
           </div>
         </div>
 
+        <!-- Cash flow component for betting visualization -->
         <CashFlow :gameStore="gameStore" />
       </div>
     </div>
 
+    <!-- ////// PLAYER POSITIONS ////// -->
     <div class="table-container">
-      <!-- Player Position Components -->
+      <!-- Render player positions around the table -->
       <PlayerPosition
         v-for="position in 6"
         :key="position"
@@ -65,12 +77,13 @@
         :cards="playerCards[position - 1] || []"
       />
 
-      <!-- Communal Pot Component -->
+      <!-- Communal pot display -->
       <CommunalPot :potAmount="gameStore.communalPot" :currentBet="gameStore.currentBet" />
     </div>
 
-    <!-- Actions Container -->
+    <!-- ////// GAME ACTIONS ////// -->
     <div class="actions-container">
+      <!-- Game start button - shown when game hasn't started -->
       <div v-if="!gameStore.gameStarted">
         <img
           src="../../assets/img/buttons/actions/start-game.png"
@@ -79,10 +92,14 @@
           @click="startNewGame"
         />
       </div>
+
+      <!-- Game over state - show new game button -->
       <div v-else-if="gameStore.gameOver">
         <button class="game-button primary-button" @click="startNewGame">New Game</button>
         <h2 class="game-over-text">Game Over!</h2>
       </div>
+
+      <!-- Equal cards choice buttons (higher/lower) -->
       <div v-else-if="gameStore.awaitingEqualChoice">
         <h3 class="choice-prompt">Cards are equal! Choose:</h3>
         <div class="button-group">
@@ -90,6 +107,8 @@
           <button class="game-button choice-button" @click="handleChoice('lower')">Lower</button>
         </div>
       </div>
+
+      <!-- Normal gameplay actions -->
       <div style="width: 100%" v-else>
         <div v-if="cashOutCredit">
           <p>cashout</p>
@@ -100,11 +119,12 @@
       </div>
     </div>
 
+    <!-- ////// TIMER ////// -->
     <div class="timer-container">
       <CountdownTimer />
     </div>
 
-    <!-- Main Menu -->
+    <!-- ////// MAIN MENU BUTTON ////// -->
     <div class="settings-container">
       <img
         src="../../assets/img/buttons/main-menu/menu-btn.png"
@@ -113,8 +133,6 @@
         @click="toggleMainMenu"
       />
     </div>
-
-    <MainMenuDialog></MainMenuDialog>
   </div>
 </template>
 
@@ -127,10 +145,6 @@ import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
 import eventBus from '@/eventBus'
-import CountdownTimer from '@/components/utilities/CountdownTimer.vue'
-import MainMenuDialog from '@/components/dialog/MainMenuDialog.vue'
-import CashFlow from '@/components/currency/CashFlow.vue'
-import PlayerHand from '@/components/game-table/PlayerHand.vue'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/gameplay/deck/cardUtil'
@@ -147,89 +161,58 @@ import {
   calculatePlayerCards,
 } from '@/utils/gameplay/player/playerUtil'
 
-// --- Initialize game store ---
+// ─────────────────────────────
+// Store Intialization
+// ─────────────────────────────
 const gameStore = useGameStore()
 
+// Credit management flags
 const addCredit = ref(false)
 const cashOutCredit = ref(false)
 
-// Current player's pot amount - simplified computation
+// ─────────────────────────────
+// Computed Properties
+// ─────────────────────────────
+
+// Compute current player's pot amount
 const currentPlayerPot = computed(() => {
   const playerPot = gameStore.playerPots[gameStore.currentPlayerIndex]
   return playerPot !== undefined ? playerPot : 0
 })
 
-// Function to update credit status
+// ─────────────────────────────
+// Credit Management
+// ─────────────────────────────
+
+/**
+ * Updates the credit status for the current player
+ * Used to determine if player needs to add more credits or can cash out
+ */
 function updateCreditStatus() {
   const credits = currentPlayerPot.value
   console.log('Updating credit status, current credits:', credits)
   addCredit.value = credits > 99
 }
 
-// Check credits immediately on mount and after game start
-onMounted(() => {
-  if (!registrationStore.players.length) {
-    registrationStore.loadPlayersFromStorage()
-  }
+// ─────────────────────────────
+// Player Management
+// ─────────────────────────────
 
-  // Initial credit status check with delay to ensure store is loaded
-  setTimeout(() => {
-    updateCreditStatus()
-    console.log('Initial credit status set to:', addCredit.value)
-  }, 200)
-})
-
-// Watch for changes in player credits
-watch(currentPlayerPot, (newValue) => {
-  console.log('Player credits changed:', newValue)
-  updateCreditStatus()
-})
-
-// Watch for game start
-watch(
-  () => gameStore.gameStarted,
-  (isStarted) => {
-    if (isStarted) {
-      setTimeout(() => {
-        updateCreditStatus()
-        console.log('Credit status after game start:', addCredit.value)
-      }, 200) // Delay to ensure player pots are updated
-    }
-  },
-)
-
-// Watch for changes in current player index
-watch(
-  () => gameStore.currentPlayerIndex,
-  () => {
-    setTimeout(() => {
-      updateCreditStatus()
-      console.log('Credit status after player change:', addCredit.value)
-    }, 100)
-  },
-)
-
-// Load players from localStorage if not already loaded
+// Access player stores
 const playerStore = usePlayerStore()
 const registrationStore = usePlayerRegistration()
 
-onMounted(() => {
-  if (!registrationStore.players.length) {
-    registrationStore.loadPlayersFromStorage()
-  }
-})
-
-// Use player count from store if available, otherwise fallback to 6
+// Get player count from store or default to 6
 const playerCount = computed(() => playerStore.playerCount ?? 6)
 const players = computed(() => registrationStore.players)
 
-// Get player cards from utility
+// Get player cards from utility function
 const playerCards = calculatePlayerCards()
 
-// Active players computation
+// Determine which player positions are active
 const activePlayers = computed(() => getActivePlayers(playerCount.value))
 
-// Current player name display
+// Display name for current player
 const currentPlayerDisplay = computed(() => {
   if (!gameStore.gameStarted) {
     return 'Game not started'
@@ -242,7 +225,11 @@ const currentPlayerDisplay = computed(() => {
   return 'Player'
 })
 
-// Helper to get player points for a specific position
+/**
+ * Gets points for a specific player position
+ * @param position - The position index of the player (0-based)
+ * @returns The player's points or 0 if player doesn't exist
+ */
 function getPlayerPoints(position: number): number {
   if (activePlayers.value[position]) {
     if (gameStore.playerPots[position] !== undefined) {
@@ -252,7 +239,13 @@ function getPlayerPoints(position: number): number {
   return 0
 }
 
-// Game actions
+// ─────────────────────────────
+// Game Actions
+// ─────────────────────────────
+
+/**
+ * Starts a new game with currently registered players
+ */
 function startNewGame() {
   const activePlayers = players.value.slice(0, playerCount.value)
   gameStore.setupGame(activePlayers)
@@ -265,17 +258,99 @@ function startNewGame() {
   }, 300)
 }
 
+/**
+ * Handles player choice when cards are equal
+ * @param choice - 'higher' or 'lower' choice made by player
+ */
 function handleChoice(choice: 'higher' | 'lower') {
   gameStore.handleEqualCardsChoice(choice)
 }
 
-// Define the setupGameDisplay function to prevent errors
+/**
+ * Resets game display when player count changes
+ */
 function setupGameDisplay() {
-  // This is called when player count changes
   console.log('Game display reset due to player count change')
 }
 
-// When user's turn is active, ensure timer is running
+// ─────────────────────────────
+// Main Menu Management
+// ─────────────────────────────
+
+const mainMenuVisible = ref(false)
+
+/**
+ * Toggles main menu visibility via event bus
+ */
+const toggleMainMenu = () => {
+  eventBus.emit('toggle-main-menu')
+}
+
+// ─────────────────────────────
+// Lifecycle Hooks
+// ─────────────────────────────
+
+onMounted(() => {
+  // Load players from storage if not already loaded
+  if (!registrationStore.players.length) {
+    registrationStore.loadPlayersFromStorage()
+  }
+
+  // Initial credit status check with delay to ensure store is loaded
+  setTimeout(() => {
+    updateCreditStatus()
+    console.log('Initial credit status set to:', addCredit.value)
+  }, 200)
+
+  // Set up event listener for main menu toggle
+  eventBus.on('untoggle-main-menu', (newValue) => {
+    mainMenuVisible.value = newValue
+    console.log(mainMenuVisible.value)
+  })
+})
+
+onUnmounted(() => {
+  // Clean up timer when component is unmounted
+  if (gameStore.turnTimerInterval) {
+    clearInterval(gameStore.turnTimerInterval)
+  }
+})
+
+// ─────────────────────────────
+// Watchers
+// ─────────────────────────────
+
+// Watch: Changes in player credits
+watch(currentPlayerPot, (newValue) => {
+  console.log('Player credits changed:', newValue)
+  updateCreditStatus()
+})
+
+// Watch: Game start to update credit status
+watch(
+  () => gameStore.gameStarted,
+  (isStarted) => {
+    if (isStarted) {
+      setTimeout(() => {
+        updateCreditStatus()
+        console.log('Credit status after game start:', addCredit.value)
+      }, 200) // Delay to ensure player pots are updated
+    }
+  },
+)
+
+// Watch: Changes in current player
+watch(
+  () => gameStore.currentPlayerIndex,
+  () => {
+    setTimeout(() => {
+      updateCreditStatus()
+      console.log('Credit status after player change:', addCredit.value)
+    }, 100)
+  },
+)
+
+// Watch: Player turn changes to manage timer
 watch(
   () => gameStore.currentPlayerIndex,
   () => {
@@ -286,28 +361,7 @@ watch(
   },
 )
 
-// Clean up timer when component is unmounted
-onUnmounted(() => {
-  if (gameStore.turnTimerInterval) {
-    clearInterval(gameStore.turnTimerInterval)
-  }
-})
-
-// ------- MAIN MENU LOGIC ---------
-
-const mainMenuVisible = ref(false)
-
-const toggleMainMenu = () => {
-  eventBus.emit('toggle-main-menu')
-}
-
-onMounted(() => {
-  eventBus.on('untoggle-main-menu', (newValue) => {
-    mainMenuVisible.value = newValue
-    console.log(mainMenuVisible.value)
-  })
-})
-
+// Watch: Menu visibility to pause timer when menu is open
 watch(mainMenuVisible, (newValue) => {
   if (newValue) {
     gameStore.haltTurnTimer()
@@ -316,6 +370,7 @@ watch(mainMenuVisible, (newValue) => {
   }
 })
 
+// Watch: Game messages to display appropriate modals
 watch(
   () => gameStore.message,
   (newMessage, oldMessage) => {
@@ -336,7 +391,7 @@ watch(
   },
 )
 
-// Reset game when player count changes
+// Watch: Reset game when player count changes
 watch(playerCount, () => {
   // Only reset if game is not in progress
   if (!gameStore.gameStarted || gameStore.gameOver) {

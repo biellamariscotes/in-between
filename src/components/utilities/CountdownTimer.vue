@@ -1,5 +1,8 @@
+<!-- Timer Component -->
+
 <template>
   <div class="circle" :class="{ 'time-warning': timeRunningLow }">
+    <!-- Timer Container -->
     <div class="image-container">
       <img class="time-img" :src="getSvgSrc(gameStore.turnTimeRemaining)" alt="Timer Digit" />
       <div class="time-text">{{ formattedTimeRemaining }}</div>
@@ -8,14 +11,15 @@
 </template>
 
 <script setup lang="ts">
+// Script setup section
 import { ref, onMounted, computed, watch } from 'vue'
 import { useGameStore } from '@/stores/game-store'
-// Initialize the game store
 const gameStore = useGameStore()
 
-// Also need to define showResultModal if referenced in the code
-const showResultModal = ref(false) // Adjust based on where this value should come from
+// Modal visibility state
+const showResultModal = ref(false)
 
+// Maps numbers to SVG image paths for timer display
 const numberSvgs: Record<number, string> = {
   0: '/src/assets/img/game-zone/timer/0.svg',
   1: '/src/assets/img/game-zone/timer/1.1.svg',
@@ -30,21 +34,37 @@ const numberSvgs: Record<number, string> = {
   10: '/src/assets/img/game-zone/timer/10.svg',
 }
 
+// Local timer state
 const timeRemaining = ref(10)
 
+/**
+ * Returns appropriate SVG path based on time remaining
+ */
 const getSvgSrc = (number: number): string =>
   numberSvgs[number] || '/src/assets/img/game-zone/timer/10.svg'
 
+/**
+ * Displayed time text (currently empty)
+ */
 const formattedTimeRemaining = computed(() => {
   if (!gameStore.gameStarted || gameStore.gameOver) {
     return ''
   }
   return ``
 })
+
+/**
+ * Determines when to apply warning style (≤ 3 seconds and timer active)
+ */
 const timeRunningLow = computed(() => {
   return gameStore.turnTimeRemaining <= 3 && gameStore.turnTimerActive
 })
 
+// ─────────────────────────────
+// Watchers
+// ─────────────────────────────
+
+// Watch: for player changes to restart timer
 watch(
   () => gameStore.currentPlayerIndex,
   () => {
@@ -54,6 +74,11 @@ watch(
   },
 )
 
+// ─────────────────────────────
+// Hooks
+// ─────────────────────────────
+
+// Local timer countdown logic
 onMounted(() => {
   const interval = setInterval(() => {
     if (timeRemaining.value > 0) {
