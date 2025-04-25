@@ -21,7 +21,12 @@ export function useGameLifeCycle() {
     router.push('/')
   }
 
+  const reshuffleDeck = () => {
+    gameStore.reshuffleDeck()
+  }
+
   return {
     startNewGame,
+    reshuffleDeck,
   }
 }

@@ -11,6 +11,9 @@
     <!-- Modal for displaying game results -->
     <ResultModal :show="showResultModal" :image="resultModalImage" />
 
+    <!-- Game Over Modal -->
+    <GameOverModal :show="showGameOverModal" @close="showGameOverModal = false" />
+
     <!-- Main menu dialog component -->
     <MainMenuDialog></MainMenuDialog>
 
@@ -89,22 +92,53 @@
           src="../../assets/img/buttons/actions/start-game.png"
           alt="fold-btn"
           class="start-cta"
-          @click="startNewGame"
+          @click="startGameLocally"
         />
       </div>
 
       <!-- Game over state - show new game button -->
       <div v-else-if="gameStore.gameOver">
-        <button class="game-button primary-button" @click="startNewGame">New Game</button>
-        <h2 class="game-over-text">Game Over!</h2>
+        <!-- No buttons here anymore, using modal instead -->
       </div>
 
       <!-- Equal cards choice buttons (higher/lower) -->
-      <div v-else-if="gameStore.awaitingEqualChoice">
-        <h3 class="choice-prompt">Cards are equal! Choose:</h3>
-        <div class="button-group">
-          <button class="game-button choice-button" @click="handleChoice('higher')">Higher</button>
-          <button class="game-button choice-button" @click="handleChoice('lower')">Lower</button>
+      <div
+        v-else-if="gameStore.awaitingEqualChoice"
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background-color: rgba(0, 0, 0, 0.3);
+          border-radius: 15px;
+        "
+      >
+        <img
+          src="../../assets/img/buttons/cta/pick-side.png"
+          alt="question-text"
+          style="height: 80%; width: 80%; margin-bottom: 3%; margin-top: 3%"
+        />
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            gap: 10%;
+            align-items: center;
+            flex-direction: row;
+          "
+        >
+          <img
+            src="../../assets/img/buttons/cta/higher-button.png"
+            alt="Higher"
+            @click="gameStore.handleEqualCardsChoice('higher')"
+            style="height: 30%; width: 30%; margin-bottom: 3%"
+          />
+          <img
+            src="../../assets/img/buttons/cta/lower-button.png"
+            alt="Lower"
+            @click="gameStore.handleEqualCardsChoice('lower')"
+            style="height: 30%; width: 30%; margin-bottom: 3%"
+          />
         </div>
       </div>
 
@@ -144,6 +178,8 @@ import GameCta from '@/components/gameplay-actions/GameCta.vue'
 import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
+import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
+import GameOverModal from '@/components/dialog/GameOverModal.vue'
 import eventBus from '@/eventBus'
 
 // Import utility functions
@@ -161,10 +197,14 @@ import {
   calculatePlayerCards,
 } from '@/utils/gameplay/player/playerUtil'
 
+// Add game over modal state
+const showGameOverModal = ref(false)
+
 // ─────────────────────────────
 // Store Intialization
 // ─────────────────────────────
 const gameStore = useGameStore()
+const { startNewGame } = useGameLifeCycle()
 
 // Credit management flags
 const addCredit = ref(false)
@@ -239,14 +279,8 @@ function getPlayerPoints(position: number): number {
   return 0
 }
 
-// ─────────────────────────────
-// Game Actions
-// ─────────────────────────────
-
-/**
- * Starts a new game with currently registered players
- */
-function startNewGame() {
+// Game actions - Rename to avoid conflict with imported startNewGame
+function startGameLocally() {
   const activePlayers = players.value.slice(0, playerCount.value)
   gameStore.setupGame(activePlayers)
   gameStore.startGame()
@@ -398,4 +432,14 @@ watch(playerCount, () => {
     setupGameDisplay()
   }
 })
+
+// Watch for game over state
+watch(
+  () => gameStore.gameOver,
+  (isGameOver) => {
+    if (isGameOver) {
+      showGameOverModal.value = true
+    }
+  },
+)
 </script>
