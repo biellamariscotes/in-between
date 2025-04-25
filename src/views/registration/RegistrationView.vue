@@ -9,4 +9,9 @@
 import Form from '@/components/forms/PlayerForm.vue'
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+.registration-title {
+  width: 45%;
+  height: 80px;
+}
+</style>
