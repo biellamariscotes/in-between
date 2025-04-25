@@ -1,7 +1,7 @@
 <template>
   <div class="modal">
     <!-- Title of the player selection -->
-    <h2 class="title">CHOOSE NUMBER<br />OF PLAYERS</h2>
+    <img src="../../assets/img/landing-assets/choose-player-title.png" class="registration-title" />
 
     <!-- Grid of player number options -->
     <div class="number-grid">

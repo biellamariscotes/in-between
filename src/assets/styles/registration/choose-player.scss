@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Baumans&display=swap');
+
 .modal {
   position: absolute;
   top: 50%;
@@ -20,8 +22,8 @@
 }
 
 .title {
-  font-family: 'Grand-Casino', sans-serif;
-  font-size: 40px;
+  font-family: 'Baumans', sans-serif;
+  font-size: 45px;
   color: white;
   margin-bottom: 30px;
   text-shadow: 0 0 4px #000;
@@ -79,4 +81,3 @@
 //   opacity: 0.5;
 //   cursor: not-allowed;
 // }
-
