@@ -37,9 +37,17 @@
 
   <!-- Equal card choice UI -->
   <div v-if="game.awaitingEqualChoice">
-    <p>Cards are equal! Choose your bet:</p>
-    <button @click="game.handleEqualCardsChoice('higher')">Higher</button>
-    <button @click="game.handleEqualCardsChoice('lower')">Lower</button>
+    <p>YOUR CARDS ARE A PAIR: PICK SIDE:</p>
+    <img
+      src="../../assets/img/buttons/cta/higher-button.png"
+      alt="Higher"
+      @click="game.handleEqualCardsChoice('higher')"
+    />
+    <img
+      src="../../assets/img/buttons/cta/lower-button.png"
+      alt="Lower"
+      @click="game.handleEqualCardsChoice('lower')"
+    />
   </div>
 </template>
 

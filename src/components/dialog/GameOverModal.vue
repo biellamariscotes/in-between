@@ -1,12 +1,8 @@
 <template>
   <div v-if="show" class="game-over-modal">
     <div class="modal-content">
-      <img 
-        src="@/assets/img/game-zone/game-over.png" 
-        alt="Game Over" 
-        class="game-over-image" 
-      />
-      
+      <img src="@/assets/img/game-zone/game-over.png" alt="Game Over" class="game-over-image" />
+
       <div class="button-container">
         <button class="game-button new-game-btn" @click="onNewGame">Start New Game</button>
         <button class="game-button reshuffle-btn" @click="onReshuffle">Reshuffle Deck</button>
@@ -16,9 +12,9 @@
 </template>
 
 <script setup lang="ts">
-import { useGameLifeCycle } from '@/composables/useGameLifeCycle';
+import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
 
-const { startNewGame, reshuffleDeck } = useGameLifeCycle();
+const { startNewGame, reshuffleDeck } = useGameLifeCycle()
 
 // Props and emits
 const props = defineProps<{
@@ -48,7 +44,6 @@ const onReshuffle = () => {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
-  justify-content: center;
   align-items: center;
   z-index: 9999;
 }
@@ -58,12 +53,14 @@ const onReshuffle = () => {
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
+  position: relative;
+  top: -80px;
   max-width: 90%;
   text-align: center;
 }
 
 .game-over-image {
-  max-width: 100%;
+  max-width: 80%;
   height: auto;
   margin-bottom: 20px;
 }
@@ -72,7 +69,7 @@ const onReshuffle = () => {
   display: flex;
   flex-direction: row;
   gap: 20px;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 .game-button {
