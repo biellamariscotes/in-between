@@ -1,45 +1,85 @@
 <template>
-  <!-- <el-space>
-    <el-button id="btn1">Upload</el-button>
-    <el-button id="btn2" type="primary">Save</el-button>
-    <el-button ref="btnRef" :icon="MoreFilled" />
-  </el-space> -->
-
   <el-tour v-model="open">
-    <el-tour-step
-      target="#btn1"
-      title="START GAME"
-      description="Press this button to kick off the game and begin the fun!"
-    />
-    <el-tour-step
-      target="#btn2"
-      title="CREDITS"
-      description="Here you can view your available credits or balance for the game."
-    />
+    <!-- START GAME -->
+    <template v-if="isElementVisible('#btn1')">
+      <el-tour-step
+        target="#btn1"
+        title="START GAME"
+        description="Press this button to kick off the game and begin the fun!"
+      />
+    </template>
 
-    <el-tour-step
-      target="#btn3"
-      title="PLAYER"
-      description="This is where your cards are displayed for easy viewing and strategic gameplay."
-    />
+    <!-- CREDITS -->
+    <template v-if="isElementVisible('#btn2')">
+      <el-tour-step
+        target="#btn2"
+        title="CREDITS"
+        description="Here you can view your available credits or balance for the game."
+      />
+    </template>
 
-    <el-tour-step
-      target="#btn4"
-      title="PLAYER CARD"
-      description="This is where your cards are prominently displayed with an enhanced user interface for better visibility and interaction."
-    />
+    <!-- PLAYER -->
+    <template v-if="isElementVisible('#btn3')">
+      <el-tour-step
+        target="#btn3"
+        title="PLAYER"
+        description="This is where your cards are displayed for easy viewing and strategic gameplay."
+      />
+    </template>
 
-    <el-tour-step
-      target="#btn5"
-      title="POT"
-      description="This shows the total pot amount that every player is required to contribute to before gameplay proceeds."
-    />
+    <!-- PLAYER CARD -->
+    <template v-if="isElementVisible('#btn4')">
+      <el-tour-step
+        target="#btn4"
+        title="PLAYER CARD"
+        description="This is where your cards are prominently displayed with an enhanced user interface for better visibility and interaction."
+      />
+    </template>
 
-    <el-tour-step
-      target="#btn6"
-      title="TIMER"
-      description="This 20-second timer allows you to carefully plan your next strategic move. If you don't make a decision within the time limit, the game will automatically fold your hand."
-    />
+    <!-- POT -->
+    <template v-if="isElementVisible('#btn5')">
+      <el-tour-step
+        target="#btn5"
+        title="POT"
+        description="This shows the total pot amount that every player is required to contribute to before gameplay proceeds."
+      />
+    </template>
+
+    <!-- TIMER -->
+    <template v-if="isElementVisible('#btn6')">
+      <el-tour-step
+        target="#btn6"
+        title="TIMER"
+        description="This 20-second timer allows you to carefully plan your next strategic move. If you don't make a decision within the time limit, the game will automatically fold your hand."
+      />
+    </template>
+
+    <!-- ALL IN -->
+    <template v-if="isElementVisible('#btn7')">
+      <el-tour-step
+        target="#btn7"
+        title="ALL IN"
+        description="This function places an all-in bet equal to the total pot amount, committing all your available credits to the game. It's a high-risk, high-reward move that could turn the tides of the gameplay."
+      />
+    </template>
+
+    <!-- BET -->
+    <template v-if="isElementVisible('#btn8')">
+      <el-tour-step
+        target="#btn8"
+        title="BET"
+        description="This function allows you to place a bet, whether it's half the maximum amount or any specific amount of your choice, giving you flexibility in your gameplay strategy."
+      />
+    </template>
+
+    <!-- FOLD -->
+    <template v-if="isElementVisible('#btn9')">
+      <el-tour-step
+        target="#btn9"
+        title="FOLD"
+        description="This is where you can choose to fold your cards, exit the current round, and patiently wait for the next one to begin."
+      />
+    </template>
   </el-tour>
 </template>
 
@@ -52,6 +92,10 @@ const props = defineProps({
     default: true,
   },
 })
+
+const isElementVisible = (selector: string): boolean => {
+  return !!document.querySelector(selector);
+};
 
 const open = ref(false)
 

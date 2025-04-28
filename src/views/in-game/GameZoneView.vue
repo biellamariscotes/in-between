@@ -25,7 +25,7 @@
     <!-- ////// CARD DISPLAY AREA ////// -->
     <div class="game-zone">
       <div class="card-table">
-        <div class="game-cards">
+        <div id="btn4" class="game-cards">
           <!-- First face-up card display -->
           <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
             <PlayerHand
@@ -47,7 +47,7 @@
           </div>
 
           <!-- Placeholder for card space when empty -->
-          <div id="btn4" class="face-up-card" v-else>
+          <div class="face-up-card" v-else>
             <div class="card-placeholder"></div>
           </div>
 

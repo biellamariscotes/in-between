@@ -24,6 +24,7 @@
         alt="all-in-png"
         class="all-in-cta"
         @click="handleAllIn"
+        id="btn7"
       />
 
       <!-- Bet option button -->
@@ -32,6 +33,7 @@
         alt="bet-btn"
         class="bet-cta"
         @click="handleBetOption"
+        id="btn8"
       />
 
       <!-- Fold option button -->
@@ -40,6 +42,7 @@
         alt="fold-btn"
         class="fold-cta"
         @click="handleFold"
+        id="btn9"
       />
     </div>
 
