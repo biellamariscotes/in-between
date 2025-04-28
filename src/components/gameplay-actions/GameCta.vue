@@ -17,7 +17,7 @@
   </div>
 
   <div v-else class="actions-wrapper">
-    <div v-if="props.addCredit" class="btn-wrapper">
+    <div v-if="addCredit" class="btn-wrapper">
       <!-- All-in option button -->
       <img
         src="../../assets/img/buttons/cta/all-in.png"

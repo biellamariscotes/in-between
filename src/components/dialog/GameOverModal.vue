@@ -17,7 +17,7 @@ import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
 const { startNewGame, reshuffleDeck } = useGameLifeCycle()
 
 // Props and emits
-const props = defineProps<{
+defineProps<{
   show: boolean
 }>()
 
