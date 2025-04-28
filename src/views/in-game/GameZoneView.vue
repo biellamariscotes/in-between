@@ -47,7 +47,7 @@
           </div>
 
           <!-- Placeholder for card space when empty -->
-          <div class="face-up-card" v-else>
+          <div id="btn4" class="face-up-card" v-else>
             <div class="card-placeholder"></div>
           </div>
 
@@ -87,12 +87,14 @@
     <!-- ////// GAME ACTIONS ////// -->
     <div class="actions-container">
       <!-- Game start button - shown when game hasn't started -->
+
       <div v-if="!gameStore.gameStarted">
         <img
           src="../../assets/img/buttons/actions/start-game.png"
           alt="fold-btn"
           class="start-cta"
           @click="startGameLocally"
+          id="btn1"
         />
       </div>
 

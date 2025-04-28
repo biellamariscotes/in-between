@@ -15,7 +15,12 @@
   <!-- Credit Display Container -->
   <div class="credit-display">
     <!-- Cash-in CTA Image -->
-    <img src="../../assets/img/buttons/credits/cashin.png" alt="cash-in-png" class="cash-in-cta" />
+    <img
+      src="../../assets/img/buttons/credits/cashin.png"
+      alt="cash-in-png"
+      id="btn2"
+      class="cash-in-cta"
+    />
 
     <!-- Current Player Pot Amount -->
     <p class="credit">₱ {{ currentPlayerPot }}</p>
