@@ -14,6 +14,7 @@ declare module 'vue' {
     CardTable: typeof import('./src/components/game/CardTable.vue')['default']
     Carousel: typeof import('./src/components/Carousel.vue')['default']
     CashFlow: typeof import('./src/components/currency/CashFlow.vue')['default']
+    CashOut: typeof import('./src/components/currency/CashOut.vue')['default']
     CommunalPot: typeof import('./src/components/currency/CommunalPot.vue')['default']
     CountdownTimer: typeof import('./src/components/utilities/CountdownTimer.vue')['default']
     CreditForm: typeof import('./src/components/forms/CreditForm.vue')['default']

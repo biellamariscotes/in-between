@@ -62,7 +62,11 @@
         </div>
 
         <!-- Cash flow component for betting visualization -->
-        <CashFlow :gameStore="gameStore" />
+        <CashFlow
+          :gameStore="gameStore"
+          :cashOutCredit="cashOutCredit"
+          @update:cashOutCredit="cashOutCredit = $event"
+        />
       </div>
     </div>
 
@@ -145,10 +149,58 @@
       </div>
 
       <!-- Normal gameplay actions -->
+      <!-- Cash Out Form -->
       <div style="width: 100%" v-else>
         <div v-if="cashOutCredit">
-          <p>cashout</p>
+          <el-form>
+            <img
+              src="../../assets/img/cash-out/cashout-text.png "
+              alt="input-text"
+              class="input-credits-text"
+            />
+
+            <el-input size="large" v-model="cashOutAmout" />
+
+            <img
+              src="../../assets/img/cash-out/cashout-submit.png"
+              alt="add-btn"
+              class="add-credits-cta"
+              @click="isCashOutDialog = true"
+            />
+
+            <img
+              src="../../assets/img/buttons/actions/ekis.png"
+              alt="ekis-btn"
+              class="back-cta"
+              @click="handleBackCashOut"
+            />
+          </el-form>
+
+          <el-dialog v-model="isCashOutDialog" title="Warning" width="700" align-center>
+            <div class="dialog-title">
+              <h1>WITHDRAW CREDITS?</h1>
+              <P>You are going to cashout</P>
+              <p>amount</p>
+            </div>
+            <template #footer>
+              <div class="dialog-footer">
+                <img
+                  src="../../assets/img/cash-out/cash-out-continue.png"
+                  alt="ekis-btn"
+                  class="cashout-dialog-btn"
+                  @click="handleSubmitCashOut"
+                />
+                <img
+                  src="../../assets/img/cash-out/cash-out-quit.png"
+                  alt="ekis-btn"
+                  class="cashout-dialog-btn"
+                  @click="handleCashOutAndQuit"
+                />
+              </div>
+            </template>
+          </el-dialog>
         </div>
+
         <div v-else>
           <GameCta :addCredit="addCredit" />
         </div>
@@ -180,7 +232,7 @@ import GameCta from '@/components/gameplay-actions/GameCta.vue'
 import { usePlayerStore } from '@/stores/player-count'
 import { usePlayerRegistration } from '@/stores/player'
 import { useGameStore } from '@/stores/game-store'
-import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
+// import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
 import GameOverModal from '@/components/dialog/GameOverModal.vue'
 import eventBus from '@/eventBus'
 
@@ -206,11 +258,14 @@ const showGameOverModal = ref(false)
 // Store Intialization
 // ─────────────────────────────
 const gameStore = useGameStore()
-const { startNewGame } = useGameLifeCycle()
+// const { startNewGame } = useGameLifeCycle()
+const playerStoreRegistration = usePlayerRegistration()
 
 // Credit management flags
 const addCredit = ref(false)
 const cashOutCredit = ref(false)
+const cashOutAmout = ref(0)
+const isCashOutDialog = ref(false)
 
 // ─────────────────────────────
 // Computed Properties
@@ -298,9 +353,9 @@ function startGameLocally() {
  * Handles player choice when cards are equal
  * @param choice - 'higher' or 'lower' choice made by player
  */
-function handleChoice(choice: 'higher' | 'lower') {
-  gameStore.handleEqualCardsChoice(choice)
-}
+// function handleChoice(choice: 'higher' | 'lower') {
+//   gameStore.handleEqualCardsChoice(choice)
+// }
 
 /**
  * Resets game display when player count changes
@@ -444,4 +499,142 @@ watch(
     }
   },
 )
+
+const handleBackCashOut = () => {
+  cashOutCredit.value = false
+}
+
+const handleSubmitCashOut = () => {
+  if (cashOutAmout.value <= 0) return
+  try {
+    const index = gameStore.currentPlayerIndex
+
+    if (!gameStore.playerPots[index]) {
+      gameStore.playerPots[index] = 0
+    }
+
+    gameStore.playerPots[index] -= Number(cashOutAmout.value)
+
+    const playerId = gameStore.players[index]?.id
+
+    if (playerId) {
+      const playerIndex = playerStoreRegistration.players.findIndex((p) => p.id === playerId)
+      if (playerIndex !== -1) {
+        const currentCredits = playerStoreRegistration.players[playerIndex].credits || 0
+        playerStoreRegistration.players[playerIndex].credits =
+          currentCredits - Number(cashOutAmout.value)
+      }
+
+      cashOutAmout.value = 0
+      isCashOutDialog.value = false
+    }
+  } catch (error) {
+    console.error('Error adding credits:', error)
+  }
+}
+
+const handleCashOutAndQuit = () => {
+  handleSubmitCashOut()
+  try {
+    const index = gameStore.currentPlayerIndex
+    const playerId = gameStore.players[index]?.id
+
+    if (playerId) {
+      playerStoreRegistration.players = playerStoreRegistration.players.filter(
+        (p) => p.id !== playerId,
+      )
+
+      localStorage.setItem('players', JSON.stringify(playerStoreRegistration.players))
+
+      gameStore.players.splice(index, 1)
+
+      gameStore.saveStateToLocalStorage()
+
+      isCashOutDialog.value = false
+    }
+  } catch (error) {
+    console.error('Error removing player:', error)
+  }
+}
 </script>
+
+<style lang="css" scoped>
+.el-form {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-credits-text {
+  width: 250px;
+  height: 30px;
+}
+
+.back-cta {
+  position: absolute;
+  top: 0;
+  left: 13%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.add-credits-cta {
+  position: absolute;
+  top: 30%;
+  right: -5%;
+  width: 190px;
+  height: 65px;
+  cursor: pointer;
+}
+
+.dialog-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: black;
+}
+
+.dialog-title h1 {
+  font-size: 60px;
+}
+
+.dialog-title p {
+  font-size: 30px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.dialog-footer img {
+  cursor: pointer;
+}
+
+.cashout-dialog-btn {
+  width: 280px;
+  height: 90px;
+}
+
+:deep(.el-input) {
+  width: 170px;
+}
+
+:deep(.el-input__wrapper) {
+  box-shadow: none;
+  background-color: black;
+}
+
+:deep(.el-input__inner) {
+  color: white;
+  font-family: 'Baumans';
+}
+</style>

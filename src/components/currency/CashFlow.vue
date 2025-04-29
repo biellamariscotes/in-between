@@ -26,14 +26,13 @@
     <p class="credit">₱ {{ currentPlayerPot }}</p>
 
     <!-- Future cash-out button -->
-    <!--
+
     <img
-      src="../assets/img/cash-out/cash-out.png"
+      src="../../assets/img/cash-out/cash-out.png"
       alt="cash-out-png"
       class="cash-out-cta"
       @click="handleCashOut"
     />
-    -->
   </div>
 </template>
 
@@ -43,7 +42,9 @@ import { computed } from 'vue'
 /**
  * Props:
  */
-const props = defineProps(['gameStore'])
+const props = defineProps(['gameStore', 'cashOutCredit'])
+
+const emit = defineEmits(['update:cashOutCredit'])
 
 // ─────────────────────────────
 // Computed Properties
@@ -72,9 +73,10 @@ const currentPlayerPot = computed(() => {
 // Event Handlers (for future use)
 // ─────────────────────────────
 
-// const handleCashOut = () => {
-//   console.log('hello cash out')
-// }
+const handleCashOut = () => {
+  console.log('hello cash out', props.cashOutCredit)
+  emit('update:cashOutCredit', true)
+}
 </script>
 
 <style scoped>
