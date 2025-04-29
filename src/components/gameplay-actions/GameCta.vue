@@ -17,8 +17,8 @@
   </div>
 
   <div v-else class="actions-wrapper">
-    <div v-if="props.addCredit" class="btn-wrapper">
-      <!-- All-in option button with conditional disabled styling and tooltip -->
+    <div v-if="addCredit" class="btn-wrapper">
+      <!-- All-in option button -->
       <img
         src="../../assets/img/buttons/cta/all-in.png"
         alt="all-in-png"
@@ -89,7 +89,7 @@ const playerCredits = computed(() => {
  */
 const canGoAllIn = computed(() => {
   // Player can only go all-in if they have at least as much credit as the communal pot
-  return playerCredits.value >= gameStore.communalPot && gameStore.communalPot > 0;
+  return playerCredits.value >= gameStore.communalPot && gameStore.communalPot > 0
 })
 
 /**
@@ -97,9 +97,9 @@ const canGoAllIn = computed(() => {
  */
 const allInTooltipText = computed(() => {
   if (gameStore.communalPot <= 0) {
-    return "No pot available to go All-In";
+    return 'No pot available to go All-In'
   }
-  return `You need ${gameStore.communalPot} credits to match the pot for All-In`;
+  return `You need ${gameStore.communalPot} credits to match the pot for All-In`
 })
 
 /**
@@ -149,7 +149,6 @@ watch(playerCredits, (newValue) => {
     chooseBet.value = false
   }
 })
-
 </script>
 
 <style lang="css" scoped>
