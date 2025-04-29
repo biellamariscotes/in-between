@@ -51,9 +51,6 @@ export interface GameState {
   /** Array tracking total winnings for each player */
   winnings: number[]
 
-  /** Array tracking individual pot amounts for each player */
-  // playerPots: number[]
-
   /** Array tracking the bets placed by each player in current round */
   betsPlaced: number[]
 
