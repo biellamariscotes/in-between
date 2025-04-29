@@ -23,7 +23,9 @@
         src="../../assets/img/buttons/cta/all-in.png"
         alt="all-in-png"
         class="all-in-cta"
-        @click="handleAllIn"
+        :class="{ 'disabled-button': !canGoAllIn }"
+        :title="!canGoAllIn ? allInTooltipText : ''"
+        @click="canGoAllIn && handleAllIn()"
       />
 
       <!-- Bet option button -->
@@ -51,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useGameStore } from '@/stores/game-store'
 
 /**
@@ -82,9 +84,22 @@ const playerCredits = computed(() => {
   return gameStore.playerPots[gameStore.currentPlayerIndex] || 0
 })
 
-// Debug on mount
-onMounted(() => {
-  console.log('GameCta mounted, credits:', playerCredits.value, 'addCredit:', props.addCredit)
+/**
+ * Determines if player can go all-in based on available credits compared to communal pot
+ */
+const canGoAllIn = computed(() => {
+  // Player can only go all-in if they have at least as much credit as the communal pot
+  return playerCredits.value >= gameStore.communalPot && gameStore.communalPot > 0
+})
+
+/**
+ * Get tooltip text for disabled all-in button
+ */
+const allInTooltipText = computed(() => {
+  if (gameStore.communalPot <= 0) {
+    return 'No pot available to go All-In'
+  }
+  return `You need ${gameStore.communalPot} credits to match the pot for All-In`
 })
 
 /**
@@ -134,14 +149,6 @@ watch(playerCredits, (newValue) => {
     chooseBet.value = false
   }
 })
-
-// Watch: addCredit prop to log changes
-watch(
-  () => props.addCredit,
-  (newValue) => {
-    console.log('addCredit prop changed to:', newValue)
-  },
-)
 </script>
 
 <style lang="css" scoped>
@@ -292,6 +299,12 @@ watch(
 :deep(.el-slider__button) {
   background-color: black;
   border: none;
+}
+
+.disabled-button {
+  opacity: 0.5;
+  filter: grayscale(70%);
+  cursor: not-allowed !important;
 }
 
 /* Dialog styling enhancements */
