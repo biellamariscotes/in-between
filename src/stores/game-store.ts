@@ -12,6 +12,7 @@ import type { GameState } from '@/interface/game-state'
 import type { Player } from '@/interface/player'
 import { usePlayerRegistration } from '@/stores/player'
 import { usePlayerStore } from '@/stores/player-count'
+
 import {
   INITIAL_TURN_TIME,
   RAKE_AMOUNT,
@@ -73,6 +74,7 @@ export const useGameStore = defineStore('game', {
       return state.players[state.currentPlayerIndex]?.name || 'Player'
     },
     getCommunalPot: (state) => state.communalPot,
+    getCardsLeft: (state) => state.deck.length, // Returns the number of cards left in the deck
   },
 
   actions: {
@@ -604,6 +606,13 @@ export const useGameStore = defineStore('game', {
 
       // Save state to localStorage
       this.saveStateToLocalStorage()
+    },
+
+    removeCardFromDeck(card: Card) {
+      const cardIndex = this.deck.findIndex((deckCard) => deckCard.id === card.id)
+      if (cardIndex !== -1) {
+        this.deck.splice(cardIndex, 1) // Remove the card from the deck
+      }
     },
   },
 })
