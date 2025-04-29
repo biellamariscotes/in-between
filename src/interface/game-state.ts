@@ -19,9 +19,6 @@ export interface GameState {
   /** The currently active card in play */
   currentCard: Card | null
 
-  /** Total amount of money/points in the current pot */
-  pot: number
-
   /** The amount the player is currently betting */
   currentBet: number
 

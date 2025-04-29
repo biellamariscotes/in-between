@@ -29,7 +29,7 @@ const createInitialState = (): GameState => ({
   currentCard: null,
   currentBet: 0,
   message: '',
-  pot: 0,
+
   gameOver: false,
   equalCardsChoice: null,
   awaitingEqualChoice: false,
@@ -66,7 +66,6 @@ export const useGameStore = defineStore('game', {
   },
 
   getters: {
-    getTotalPot: (state) => state.playerPots.reduce((sum, pot) => sum + pot, 0),
     getCurrentPlayerPot: (state) => state.playerPots[state.currentPlayerIndex] || 0,
     canPlaceBet: (state) => !state.gameOver && !state.awaitingEqualChoice && state.currentBet === 0,
     canDrawCard: (state) => !state.gameOver && state.currentBet > 0 && !state.awaitingEqualChoice,
