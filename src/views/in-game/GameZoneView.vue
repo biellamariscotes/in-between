@@ -280,8 +280,11 @@ const isCashOutDialog = ref(false)
 // ─────────────────────────────
 
 // Compute current player's pot amount
+
 const currentPlayerPot = computed(() => {
-  const playerPot = gameStore.playerPots[gameStore.currentPlayerIndex]
+  const currentPlayer = gameStore.players[gameStore.currentPlayerIndex]
+  const playerPot = currentPlayer ? currentPlayer.credits : 0
+  console.log('Current player pot:', playerPot)
   return playerPot !== undefined ? playerPot : 0
 })
 
@@ -294,9 +297,14 @@ const currentPlayerPot = computed(() => {
  * Used to determine if player needs to add more credits or can cash out
  */
 function updateCreditStatus() {
-  const credits = currentPlayerPot.value
-  console.log('Updating credit status, current credits:', credits)
-  addCredit.value = credits > 99
+  // Assuming currentPlayerPot.value can be of type number, an object with credits property, or null
+  const credits: number | { credits: number } | null = currentPlayerPot.value
+
+  // Ensure credits is a number and handle null values
+  const playerCredits = typeof credits === 'number' ? credits : (credits?.credits ?? 0)
+
+  console.log('Updating credit status, current credits:', playerCredits)
+  addCredit.value = playerCredits > 99
 }
 
 // ─────────────────────────────
@@ -335,10 +343,12 @@ const currentPlayerDisplay = computed(() => {
  * @param position - The position index of the player (0-based)
  * @returns The player's points or 0 if player doesn't exist
  */
+
 function getPlayerPoints(position: number): number {
   if (activePlayers.value[position]) {
-    if (gameStore.playerPots[position] !== undefined) {
-      return gameStore.playerPots[position]
+    const player = gameStore.players[position]
+    if (player !== undefined) {
+      return player.credits ?? 0
     }
   }
   return 0
@@ -517,11 +527,21 @@ const handleSubmitCashOut = () => {
   try {
     const index = gameStore.currentPlayerIndex
 
-    if (!gameStore.playerPots[index]) {
-      gameStore.playerPots[index] = 0
+    // Ensure the player object exists
+    if (!gameStore.players[index]) {
+      gameStore.players[index] = {
+        id: '',
+        name: '',
+        credits: 0,
+        randomizedPosition: 0,
+        isTurn: false,
+        isTurnComplete: false,
+      }
     }
 
-    gameStore.playerPots[index] -= Number(cashOutAmout.value)
+    // Update in-game credits
+    gameStore.players[index].credits =
+      (gameStore.players[index].credits ?? 0) - Number(cashOutAmout.value)
 
     const playerId = gameStore.players[index]?.id
 

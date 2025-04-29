@@ -8,7 +8,7 @@ import type { Card } from '@/interface/card'
 
 export interface GameState {
   /** Indicates if the game is starting fresh (first-time launch) */
-  freshStart?: boolean
+  freshStart: boolean
 
   /** All cards in the current deck */
   deck: Card[]
@@ -52,7 +52,7 @@ export interface GameState {
   winnings: number[]
 
   /** Array tracking individual pot amounts for each player */
-  playerPots: number[]
+  // playerPots: number[]
 
   /** Array tracking the bets placed by each player in current round */
   betsPlaced: number[]

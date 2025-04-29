@@ -67,7 +67,7 @@ const chooseBet = ref(false)
 /**
  * Props from parent component
  */
-const props = defineProps({
+defineProps({
   /**
    * Controls whether the "Credit Form" should be shown.
    * If `true`, the credit form is displayed instead of betting options.
@@ -83,8 +83,10 @@ const gameStore = useGameStore()
 /**
  * Player's available credits - simplified to use only playerPots
  */
+
 const playerCredits = computed(() => {
-  return gameStore.playerPots[gameStore.currentPlayerIndex] || 0
+  const player = gameStore.players[gameStore.currentPlayerIndex]
+  return player?.credits ?? 0
 })
 
 /**
@@ -120,7 +122,6 @@ const handleAllIn = () => {
  * Handle opening the bet form
  */
 const handleBetOption = () => {
-  console.log('Opening bet form, playerCredits:', playerCredits.value)
   if (playerCredits.value > 0) {
     chooseBet.value = true
   }
