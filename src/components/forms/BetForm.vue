@@ -94,7 +94,7 @@ const closeBet = () => {
  * Player's available credits - simplified calculation
  */
 const playerCredits = computed(() => {
-  return gameStore.playerPots[gameStore.currentPlayerIndex] || 0
+  return gameStore.players[gameStore.currentPlayerIndex].credits || 0
 })
 
 /**

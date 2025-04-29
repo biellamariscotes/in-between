@@ -37,7 +37,7 @@ const createInitialState = (): GameState => ({
   currentPlayerIndex: 0,
   roundsPlayed: 0,
   winnings: [],
-  playerPots: [],
+  // playerPots: [],
   betsPlaced: [],
   gameStarted: false,
   communalPot: 0,
@@ -66,7 +66,10 @@ export const useGameStore = defineStore('game', {
   },
 
   getters: {
-    getCurrentPlayerPot: (state) => state.playerPots[state.currentPlayerIndex] || 0,
+    getTotalPot: (state) => {
+      return state.players.reduce((acc, player) => acc + (player.credits ?? 0), 0)
+    },
+    getCurrentPlayerPot: (state) => state.players[state.currentPlayerIndex]?.credits || 0,
     canPlaceBet: (state) => !state.gameOver && !state.awaitingEqualChoice && state.currentBet === 0,
     canDrawCard: (state) => !state.gameOver && state.currentBet > 0 && !state.awaitingEqualChoice,
     activePlayerName: (state) => {
@@ -124,12 +127,6 @@ export const useGameStore = defineStore('game', {
       const playerStore = usePlayerRegistration()
       playerStore.loadPlayersFromStorage()
 
-      // Initialize player pots with their stored credits
-      this.playerPots = players.map((player) => {
-        const registeredPlayer = playerStore.players.find((p) => p.id === player.id)
-        return registeredPlayer?.credits || 0
-      })
-
       this.betsPlaced = new Array(players.length).fill(0)
       this.winnings = new Array(players.length).fill(0)
       this.currentPlayerIndex = 0
@@ -148,10 +145,6 @@ export const useGameStore = defineStore('game', {
       // Load players
       const playerStore = usePlayerRegistration()
       playerStore.loadPlayersFromStorage()
-      this.playerPots = this.players.map((player) => {
-        const registeredPlayer = playerStore.players.find((p) => p.id === player.id)
-        return registeredPlayer?.credits || 0
-      })
 
       // Check deck has enough cards
       if (this.deck.length < 3) {
@@ -222,7 +215,7 @@ export const useGameStore = defineStore('game', {
     },
 
     placeBet(betAmount: number) {
-      const currentPot = this.playerPots[this.currentPlayerIndex] || 0
+      const currentPot = this.players[this.currentPlayerIndex].credits || 0
 
       if (betAmount > currentPot) {
         this.message = 'Bet exceeds the pot amount!'
@@ -445,8 +438,13 @@ export const useGameStore = defineStore('game', {
     },
 
     updatePlayerCredits(winAmount: number) {
+      const currentPlayer = this.players[this.currentPlayerIndex]
+
       // Update player's pot in the game
-      this.playerPots[this.currentPlayerIndex] += winAmount
+
+      if (currentPlayer) {
+        currentPlayer.credits = (currentPlayer.credits ?? 0) + winAmount
+      }
 
       // Update registered player's credits
       const playerStore = usePlayerRegistration()
@@ -490,7 +488,15 @@ export const useGameStore = defineStore('game', {
 
         const registeredPlayerIndex = playerStore.players.findIndex((p) => p.id === playerId)
         if (registeredPlayerIndex === -1) {
-          this.playerPots[i] = 0
+          // Ensure the player object exists and has the required properties
+          this.players[i] = {
+            id: '',
+            name: '',
+            credits: 0,
+            randomizedPosition: 0,
+            isTurn: false,
+            isTurnComplete: false,
+          }
           continue
         }
 
@@ -503,7 +509,8 @@ export const useGameStore = defineStore('game', {
         this.communalPot += collectedAmount
 
         // Update player's pot in the game
-        this.playerPots[i] = registeredPlayer.credits
+
+        this.players[i].credits = registeredPlayer.credits
       }
 
       // Save updated player data
@@ -569,7 +576,7 @@ export const useGameStore = defineStore('game', {
         roundsPlayed: this.roundsPlayed,
         playerStats: this.players.map((player, index) => ({
           name: player.name,
-          currentPot: this.playerPots[index],
+          currentPot: this.players[index].credits,
           totalWinnings: this.winnings[index],
         })),
       }
