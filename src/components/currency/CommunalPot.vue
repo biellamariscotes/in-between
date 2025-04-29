@@ -6,13 +6,13 @@
 
   Features:
     - Shows a pot image and the total pot value.
-    
+
   Uses:
     - Static image asset for the pot visual.
 -->
 
 <template>
-  <div class="pot-amount">
+  <div id="btn5" class="pot-amount">
     <!-- Pot Image -->
     <img class="pot-amount__img" :src="PotAmount" alt="Pot Amount" />
 

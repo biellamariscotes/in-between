@@ -34,6 +34,7 @@
         alt="bet-btn"
         class="bet-cta"
         @click="handleBetOption"
+        id="btn8"
       />
 
       <!-- Fold option button -->
@@ -42,6 +43,7 @@
         alt="fold-btn"
         class="fold-cta"
         @click="handleFold"
+        id="btn9"
       />
     </div>
 

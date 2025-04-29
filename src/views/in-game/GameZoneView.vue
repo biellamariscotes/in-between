@@ -25,7 +25,7 @@
     <!-- ////// CARD DISPLAY AREA ////// -->
     <div class="game-zone">
       <div class="card-table">
-        <div class="game-cards">
+        <div id="btn4" class="game-cards">
           <!-- First face-up card display -->
           <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
             <PlayerHand
@@ -91,12 +91,14 @@
     <!-- ////// GAME ACTIONS ////// -->
     <div class="actions-container">
       <!-- Game start button - shown when game hasn't started -->
+
       <div v-if="!gameStore.gameStarted">
         <img
           src="../../assets/img/buttons/actions/start-game.png"
           alt="fold-btn"
           class="start-cta"
           @click="startGameLocally"
+          id="btn1"
         />
       </div>
 

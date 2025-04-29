@@ -11,7 +11,7 @@
     - playerName: string — Name displayed in the slot
     - playerPoints: number — Player's current score
     - cards: string[] — Array of card IDs in player's hand
-    
+
   Uses:
     - PlayerHand component for displaying card hands
 -->
@@ -30,6 +30,7 @@
         { 'player-info-right': position === 5 },
         { 'player-info-reverse': position === 3 || position === 4 },
       ]"
+      id="btn3"
     >
       <!-- Turn Indicator Arrow -->
       <div v-if="isActive && isCurrentPlayer" class="turn-indicator">

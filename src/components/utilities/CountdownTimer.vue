@@ -1,7 +1,7 @@
 <!-- Timer Component -->
 
 <template>
-  <div class="circle" :class="{ 'time-warning': timeRunningLow }">
+  <div id="btn6" class="circle" :class="{ 'time-warning': timeRunningLow }">
     <!-- Timer Container -->
     <div class="image-container">
       <img class="time-img" :src="getSvgSrc(gameStore.turnTimeRemaining)" alt="Timer Digit" />
@@ -32,10 +32,20 @@ const numberSvgs: Record<number, string> = {
   8: '/src/assets/img/game-zone/timer/8.svg',
   9: '/src/assets/img/game-zone/timer/9.9.svg',
   10: '/src/assets/img/game-zone/timer/10.svg',
+  11: '/src/assets/img/game-zone/timer/11.svg',
+  12: '/src/assets/img/game-zone/timer/12.svg',
+  13: '/src/assets/img/game-zone/timer/13.svg',
+  14: '/src/assets/img/game-zone/timer/14.svg',
+  15: '/src/assets/img/game-zone/timer/15.svg',
+  16: '/src/assets/img/game-zone/timer/16.svg',
+  17: '/src/assets/img/game-zone/timer/17.svg',
+  18: '/src/assets/img/game-zone/timer/18.svg',
+  19: '/src/assets/img/game-zone/timer/19.svg',
+  20: '/src/assets/img/game-zone/timer/20.1.svg',
 }
 
 // Local timer state
-const timeRemaining = ref(10)
+const timeRemaining = ref(0)
 
 /**
  * Returns appropriate SVG path based on time remaining

@@ -4,7 +4,7 @@
  */
 
 /** Number of seconds for initial player turn */
-export const INITIAL_TURN_TIME = 10
+export const INITIAL_TURN_TIME = 20
 
 /** Default rake amount (in chips) taken from each pot */
 export const RAKE_AMOUNT = 100

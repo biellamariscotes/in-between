@@ -1,14 +1,5 @@
-<!-- Main Menu Component
-  Displays the main menu dialog.
-  
-  Features:
-    - Contains buttons for navigating the menu, closing the menu, and restarting the game.
-    - Uses event bus for showing and hiding the menu.
-    - Dynamically updates based on the visibility of the menu.
--->
-
 <template>
-  <el-dialog v-model="mainMenuVisible" title="Warning" width="500" align-center>
+  <el-dialog v-model="mainMenuVisible" title="Warning" width="400" align-center>
     <!-- Close button -->
     <el-row justify="end" :gutter="24">
       <el-col :span="4">
@@ -23,19 +14,21 @@
 
     <!-- Title section -->
     <el-row justify="center" :gutter="24">
-      <el-col :span="26"><p class="title-main-menu">Main Menu</p></el-col>
+      <el-col :span="30"><p class="title-main-menu">Main Menu</p></el-col>
     </el-row>
 
     <!-- Menu buttons -->
     <div class="menu-btn-cont">
       <img
         src="../../assets/img/buttons/main-menu/how-to-play.png"
-        alt="deal-now-btn"
+        alt="how-to-play-btn"
         class="main-menu-btns"
+        @click="toggleTour"
       />
+
       <img
         src="../../assets/img/buttons/main-menu/restart-game.png"
-        alt="how-to-play-btn"
+        alt="restart-game-btn"
         class="main-menu-btns"
         @click="startNewGame"
       />
@@ -46,36 +39,50 @@
       <div class="dialog-footer"></div>
     </template>
   </el-dialog>
+  <howtoplay :is-open="showTour" />
+
+  <!-- Additional 'How to Play' Dialog -->
 </template>
 
 <script lang="ts" setup>
-/**
- * Script setup section
- */
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
 import eventBus from '@/eventBus'
-
-/**
- * Reactive state to control the visibility of the main menu dialog.
- */
+import howtoplay from './howtoplay.vue'
 const mainMenuVisible = ref(false)
-
-/**
- * Game lifecycle management hook to handle restarting the game.
- */
 const { startNewGame } = useGameLifeCycle()
 
-/**
- * Closes the main menu dialog.
- */
 const closeMainMenu = () => {
   mainMenuVisible.value = false
 }
 
-/**
- * Event handling
- */
+const showTour = ref(false)
+const toggleTour = () => {
+  showTour.value = !showTour.value
+  mainMenuVisible.value = false
+}
+
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    default: true,
+  },
+})
+
+const open = ref(false)
+
+watch(
+  () => props.isOpen,
+  (newValue) => {
+    open.value = newValue
+  },
+  { immediate: true },
+)
+// Method to toggle 'How to Play' dialog visibility
+// const toggleHowToPlay = () => {
+//   howToPlayVisible.value = !howToPlayVisible.value
+// }
+
 onMounted(() => {
   eventBus.on('toggle-main-menu', () => {
     mainMenuVisible.value = true
@@ -86,9 +93,6 @@ onUnmounted(() => {
   eventBus.off('toggle-main-menu')
 })
 
-/**
- * Watches the visibility of the main menu and emits an event accordingly.
- */
 watch(mainMenuVisible, (newValue) => {
   eventBus.emit('untoggle-main-menu', newValue)
 })
@@ -122,5 +126,26 @@ watch(mainMenuVisible, (newValue) => {
 
 .el-dialog__header.show-close {
   padding-right: 0;
+}
+.test {
+  font-size: 50px;
+  font-weight: bold;
+}
+.el-carousel__item h3 {
+  color: #475669;
+  opacity: 0.75;
+  line-height: 300px;
+  margin: 0;
+  text-align: center;
+}
+
+.el-dialog__wrapper {
+  display: flex;
+  align-items: center; /* Vertically center the dialog */
+  justify-content: center; /* Horizontally center the dialog */
+}
+
+.test {
+  margin: 1em 0; /* Example styling for the guideline text */
 }
 </style>
