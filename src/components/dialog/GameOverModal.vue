@@ -54,7 +54,7 @@ const onReshuffle = () => {
   align-items: center;
   margin: 0 auto;
   position: relative;
-  top: -80px;
+  top: -40px;
   max-width: 90%;
   text-align: center;
 }
