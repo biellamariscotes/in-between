@@ -16,8 +16,13 @@ export const usePlayerRegistration = defineStore('playerRegistrationStore', {
   // ─────────────────────────────
   // GETTERS
   // ─────────────────────────────
+
   getters: {
-    // No getters implemented yet
+    getTotalCredits: (state) => {
+      return state.players.reduce((acc, player) => {
+        return acc + (player.credits ?? 0)
+      }, 0)
+    },
   },
 
   // ─────────────────────────────

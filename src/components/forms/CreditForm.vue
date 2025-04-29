@@ -136,11 +136,21 @@ const handleSubmitCredit = () => {
   try {
     const index = gameStore.currentPlayerIndex
 
-    // Update in-game credits
-    if (!gameStore.playerPots[index]) {
-      gameStore.playerPots[index] = 0
+    if (!gameStore.players[index]) {
+      gameStore.players[index] = {
+        id: '',
+        name: '',
+        credits: 0,
+        randomizedPosition: 0,
+        isTurn: false,
+        isTurnComplete: false,
+      }
     }
-    gameStore.playerPots[index] += Number(creditValue.value)
+
+    // Update in-game credits
+
+    gameStore.players[index].credits =
+      (gameStore.players[index].credits ?? 0) + Number(creditValue.value)
 
     // Update player registration store
     const playerId = gameStore.players[index]?.id

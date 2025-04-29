@@ -55,17 +55,27 @@ const emit = defineEmits(['update:cashOutCredit'])
  * Returns 0 if game isn't started or index is invalid.
  */
 const currentPlayerPot = computed(() => {
-  if (!props.gameStore.gameStarted) return 0
+  console.log('Game started:', props.gameStore.gameStarted)
+  console.log('Current player index:', props.gameStore.currentPlayerIndex)
+  console.log('Players:', props.gameStore.players)
 
-  // Validate index and player pots array
-  if (
-    props.gameStore.playerPots &&
-    props.gameStore.currentPlayerIndex >= 0 &&
-    props.gameStore.playerPots.length > props.gameStore.currentPlayerIndex
-  ) {
-    return props.gameStore.playerPots[props.gameStore.currentPlayerIndex]
+  if (!props.gameStore.gameStarted) {
+    console.log('Game not started, returning 0')
+    return 0
   }
 
+  const currentPlayer = props.gameStore.players[props.gameStore.currentPlayerIndex]
+  if (
+    currentPlayer &&
+    props.gameStore.currentPlayerIndex >= 0 &&
+    props.gameStore.players.length > props.gameStore.currentPlayerIndex
+  ) {
+    console.log('Current player:', currentPlayer)
+    console.log('Current player credit:', currentPlayer.credits)
+    return currentPlayer.credits !== undefined ? currentPlayer.credits : 0
+  }
+
+  console.log('Invalid player index or player data, returning 0')
   return 0
 })
 
