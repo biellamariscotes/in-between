@@ -68,6 +68,7 @@
         <CashFlow
           :gameStore="gameStore"
           :cashOutCredit="cashOutCredit"
+          :handleCashInCredit="handleCashInCredit"
           @update:cashOutCredit="cashOutCredit = $event"
         />
       </div>
@@ -159,14 +160,14 @@
       <!-- Cash Out Form -->
       <div style="width: 100%" v-else>
         <div v-if="cashOutCredit">
-          <el-form>
+          <el-form @keydown="preventEnter">
             <img
               src="../../assets/img/cash-out/cashout-text.png "
               alt="input-text"
               class="input-credits-text"
             />
 
-            <el-input size="large" v-model="cashOutAmout" />
+            <el-input size="large" v-model="cashOutAmout" placeholder="Cashout Amount..." />
 
             <img
               src="../../assets/img/cash-out/cashout-submit.png"
@@ -271,7 +272,8 @@ const playerStoreRegistration = usePlayerRegistration()
 // Credit management flags
 const addCredit = ref(false)
 const cashOutCredit = ref(false)
-const cashOutAmout = ref(0)
+const cashInCredit = ref(false)
+const cashOutAmout = ref()
 const isCashOutDialog = ref(false)
 
 // ─────────────────────────────
@@ -306,6 +308,12 @@ function updateCreditStatus() {
   addCredit.value = playerCredits > 99
 }
 
+const handleCashInCredit = () => {
+  addCredit.value = false
+  cashOutCredit.value = false
+  cashInCredit.value = true
+}
+
 // ─────────────────────────────
 // Player Management
 // ─────────────────────────────
@@ -337,6 +345,12 @@ const currentPlayerDisplay = computed(() => {
 
   return 'Player'
 })
+
+const preventEnter = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+  }
+}
 
 /**
  * Gets points for a specific player position
