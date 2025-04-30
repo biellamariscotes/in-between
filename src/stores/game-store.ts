@@ -12,6 +12,7 @@ import type { GameState } from '@/interface/game-state'
 import type { Player } from '@/interface/player'
 import { usePlayerRegistration } from '@/stores/player'
 import { usePlayerStore } from '@/stores/player-count'
+import { useGameHistory } from '@/composables/game/useGameHistory'
 import {
   INITIAL_TURN_TIME,
   RAKE_AMOUNT,
@@ -226,6 +227,13 @@ export const useGameStore = defineStore('game', {
       this.message = `${this.activePlayerName} bet placed: ${betAmount}`
 
       this.saveStateToLocalStorage()
+
+      // Entry to game history
+      const playerId = String(this.players[this.currentPlayerIndex].id)
+      const playerName = this.activePlayerName
+
+      const gameHistory = useGameHistory()
+      gameHistory.logBet(playerId, playerName, betAmount)
     },
 
     cancelBet() {
