@@ -164,6 +164,8 @@ const handleDealNow = () => {
     return
   }
 
+  gameStore.checkForEqualCardsAndProcess()
+
   // Place bet and draw card
   gameStore.placeBet(betAmount.value)
   gameStore.drawThirdCard()
