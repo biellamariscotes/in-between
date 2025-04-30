@@ -20,10 +20,11 @@
       alt="cash-in-png"
       id="btn2"
       class="cash-in-cta"
+      @click="handleCashInCredit"
     />
 
     <!-- Current Player Pot Amount -->
-    <p class="credit">₱ {{ currentPlayerPot }}</p>
+    <p class="credit">₱ {{ currentPlayerPot.toLocaleString() }}</p>
 
     <!-- Future cash-out button -->
 
@@ -42,7 +43,7 @@ import { computed } from 'vue'
 /**
  * Props:
  */
-const props = defineProps(['gameStore', 'cashOutCredit'])
+const props = defineProps(['gameStore', 'cashOutCredit', 'handleCashInCredit'])
 
 const emit = defineEmits(['update:cashOutCredit'])
 
@@ -102,31 +103,30 @@ const handleCashOut = () => {
 .credit {
   position: absolute;
   top: 48%;
-  left: 40%;
+  left: 35%;
   transform: translate(-50%, -50%);
 
   display: flex;
   justify-content: space-around;
   align-items: center;
-  width: 100%;
 
   font-size: 14px;
 }
 
 .cash-out-cta {
   position: absolute;
-  top: 80%;
+  top: 85%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%);
 }
 
 .cash-in-cta {
-  width: 100%;
-  height: 100%;
+  width: 120px;
+  cursor: pointer;
 }
 
 .cash-out-cta {
-  width: 140px;
+  width: 100px;
   cursor: pointer;
 }
 </style>

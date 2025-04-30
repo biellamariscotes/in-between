@@ -1,14 +1,14 @@
 <template>
   <!-- credit form -->
   <div v-if="creditForm" class="credit-form-wrapper">
-    <el-form>
+    <el-form @submit.prevent="handleSubmitCredit">
       <img
         src="../../assets/img/buttons/credits/input-credits.png"
         alt="input-text"
         class="input-credits-text"
       />
 
-      <el-input size="large" v-model="creditValue" />
+      <el-input size="large" placeholder="Input Credits..." v-model="creditValue" />
 
       <img
         src="../../assets/img/buttons/credits/add-credits.png"
@@ -36,48 +36,7 @@
       />
     </div>
 
-    <div class="credit-actions">
-      <img
-        src="../../assets/img/buttons/credits/add.png"
-        alt="all-in-png"
-        class="insufficient"
-        @click="handleAddCredit"
-      />
-      <img
-        src="../../assets/img/buttons/credits/no.png"
-        alt="all-in-png"
-        class="insufficient"
-        @click="handleCancelCredit"
-      />
-
-      <!-- dialog box -->
-      <el-dialog v-model="isCancelDialog" title="Warning" width="500" align-center>
-        <div class="dialog-msg">
-          <img src="../../assets/img/cash-out/quit-title.png" alt="quit-img" class="quit-btn" />
-
-          <img src="../../assets/img/cash-out/quit-description.png" alt="no-img" class="no-btn" />
-        </div>
-
-        <!-- controls -->
-        <template #footer>
-          <div class="dialog-footer">
-            <img
-              src="../../assets/img/cash-out/quit-game.png"
-              alt="quit-img"
-              class="quit-btn"
-              @click="isQuitPlayer"
-            />
-
-            <img
-              src="../../assets/img/cash-out/no-add.png"
-              alt="no-img"
-              class="no-btn"
-              @click="isCancelDialog = false"
-            />
-          </div>
-        </template>
-      </el-dialog>
-    </div>
+    <CreditActions :creditForm="creditForm" @update:credit-form="handleAddCredit" />
   </div>
 </template>
 
@@ -85,14 +44,15 @@
 import { ref } from 'vue'
 import { useGameStore } from '@/stores/game-store'
 import { usePlayerRegistration } from '@/stores/player'
+import CreditActions from '../currency/CreditActions.vue'
 
 // const showAllInConfirmation = ref(false)
-const creditValue = ref(0)
+const creditValue = ref()
 const gameStore = useGameStore()
 const playerStore = usePlayerRegistration()
 
 const creditForm = ref(false)
-const isCancelDialog = ref(false)
+// const isCancelDialog = ref(false)
 
 const handleAddCredit = () => {
   creditForm.value = true
@@ -100,33 +60,6 @@ const handleAddCredit = () => {
 
 const handleBackToAddCredit = () => {
   creditForm.value = false
-}
-
-const handleCancelCredit = () => {
-  isCancelDialog.value = true
-}
-
-const isQuitPlayer = () => {
-  try {
-    const index = gameStore.currentPlayerIndex
-    const playerId = gameStore.players[index]?.id
-
-    if (playerId) {
-      playerStore.players = playerStore.players.filter((p) => p.id !== playerId)
-
-      localStorage.setItem('players', JSON.stringify(playerStore.players))
-
-      gameStore.players.splice(index, 1)
-
-      gameStore.saveStateToLocalStorage()
-
-      isCancelDialog.value = false
-
-      // gameStore.currentPlayerIndex = null
-    }
-  } catch (error) {
-    console.error('Error removing player:', error)
-  }
 }
 
 const handleSubmitCredit = () => {
@@ -231,34 +164,12 @@ const handleSubmitCredit = () => {
   align-items: center;
 }
 
-.credit-actions img {
-  width: 280px;
-  height: 80px;
-  cursor: pointer;
-}
-
-.dialog-msg {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.dialog-msg img {
-  width: 100%;
-  height: 60px;
-}
-
-.dialog-footer {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.dialog-footer img {
-  width: 250px;
-  height: 90px;
+.back {
+  position: absolute;
+  top: 0;
+  left: -5%;
+  width: 30px !important;
+  height: 30px !important;
   cursor: pointer;
 }
 
