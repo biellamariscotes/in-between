@@ -1,5 +1,8 @@
 <template>
-  <div class="game-zone-container">
+  <div
+    class="game-zone-container"
+    :class="{ 'modal-active': showResultModal || showGameOverModal }"
+  >
     <!-- Main game table background -->
     <el-image
       :src="GameTable"
@@ -27,7 +30,7 @@
       <div class="card-table">
         <div id="btn4" class="game-cards">
           <!-- First face-up card display -->
-          <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
+          <div class="face-up-card card-draw-in" v-if="gameStore.faceUpCards[0]">
             <PlayerHand
               :cards="[cardToDisplayId(gameStore.faceUpCards[0])]"
               :show-cards="true"
@@ -42,17 +45,12 @@
               :cards="[cardToDisplayId(gameStore.currentCard)]"
               :show-cards="true"
               orientation="normal"
+              class="card-flip-reveal"
             />
-            <img v-else :src="MysteryCard" alt="Shadow Question" class="mystery-card" />
+            <img v-else :src="MysteryCard" alt="Shadow Question" class="mystery-card card-draw-mystery" />
           </div>
-
-          <!-- Placeholder for card space when empty -->
-          <div class="face-up-card" v-else>
-            <div class="card-placeholder"></div>
-          </div>
-
           <!-- Second face-up card display -->
-          <div class="face-up-card" v-if="gameStore.faceUpCards[1]">
+          <div class="face-up-card card-draw-in" v-if="gameStore.faceUpCards[1]">
             <PlayerHand
               :cards="[cardToDisplayId(gameStore.faceUpCards[1])]"
               :show-cards="true"
