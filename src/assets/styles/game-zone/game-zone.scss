@@ -315,14 +315,24 @@
 }
 
 /* Player text styling */
-.player-name,
-.player-points {
+.player-name {
   color: white;
-  width: 50px;
-  font-size: 15px;
+  font-size: 18px; /* Slightly larger font size for player name */
   text-align: center;
   margin: 2px 0;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  display: inline-block; /* Allows width to adjust based on content */
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.player-points {
+  color: white;
+  font-size: 15px; /* Original font size for player points */
+  text-align: center;
+  margin: 2px 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  display: inline-block; /* Allows width to adjust based on content */
+  white-space: nowrap; /* Prevents text from wrapping */
 }
 
 .player-info {
@@ -669,7 +679,7 @@
 }
 
 /* Apply the animations only once when cards appear */
-.face-up-card .player-hand, 
+.face-up-card .player-hand,
 .face-up-card .mystery-card {
   animation-fill-mode: forwards;
 }
@@ -682,7 +692,9 @@
   pointer-events: auto;
 }
 .modal-active .face-up-card {
-  box-shadow: 0 0 10px 2px #ffe066, 0 0 0 1px #fffbe7;
+  box-shadow:
+    0 0 10px 2px #ffe066,
+    0 0 0 1px #fffbe7;
   transition: box-shadow 0.2s;
 }
 .modal-active .player-hand,
