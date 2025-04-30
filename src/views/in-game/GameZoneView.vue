@@ -6,7 +6,7 @@
     <!-- Main game table background -->
     <el-image
       :src="GameTable"
-      style="height: 85%; width: 85%; position: absolute; user-select: none; z-index: 10"
+      style="height: 90%; width: 90%; position: absolute; user-select: none; z-index: 10"
       alt="Game Table"
       :draggable="false"
     />
@@ -47,7 +47,12 @@
               orientation="normal"
               class="card-flip-reveal"
             />
-            <img v-else :src="MysteryCard" alt="Shadow Question" class="mystery-card card-draw-mystery" />
+            <img
+              v-else
+              :src="MysteryCard"
+              alt="Shadow Question"
+              class="mystery-card card-draw-mystery"
+            />
           </div>
           <!-- Second face-up card display -->
           <div class="face-up-card card-draw-in" v-if="gameStore.faceUpCards[1]">
@@ -77,7 +82,11 @@
         :position="position"
         :isActive="activePlayers[position - 1]"
         :isCurrentPlayer="isCurrentPlayer(position - 1)"
-        :playerName="activePlayers[position - 1] ? (players[position - 1]?.name ?? '') : ''"
+        :playerName="
+          activePlayers[position - 1] && players[position - 1]?.name
+            ? players[position - 1]?.name.toUpperCase()
+            : ''
+        "
         :playerPoints="getPlayerPoints(position - 1)"
         :cards="playerCards[position - 1] || []"
       />
@@ -321,8 +330,9 @@ const currentPlayerDisplay = computed(() => {
     return 'Game not started'
   }
 
-  if (players.value[gameStore.currentPlayerIndex]) {
-    return players.value[gameStore.currentPlayerIndex].name
+  const player = players.value[gameStore.currentPlayerIndex]
+  if (player && player.name) {
+    return player.name.charAt(0).toUpperCase() + player.name.slice(1)
   }
 
   return 'Player'
