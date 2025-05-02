@@ -22,7 +22,7 @@
       <h1>{{ currentPlayerDisplay }}'s Turn</h1>
     </div>
 
-  <!--////// CARD COUNT //////  -->
+    <!--////// CARD COUNT //////  -->
     <div>
       <CardCount />
     </div>
