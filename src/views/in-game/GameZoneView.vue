@@ -30,6 +30,11 @@
       <h1>{{ currentPlayerDisplay }}'s Turn</h1>
     </div>
 
+  <!--////// CARD COUNT //////  -->
+    <div>
+      <CardCount />
+    </div>
+
     <!-- ////// CARD DISPLAY AREA ////// -->
     <div class="game-zone">
       <div class="card-table">
@@ -268,6 +273,7 @@ import {
   getActivePlayers,
   calculatePlayerCards,
 } from '@/utils/gameplay/player/playerUtil'
+import CardCount from '@/components/utilities/CardCount.vue'
 
 // Add game over modal state
 const showGameOverModal = ref(false)
