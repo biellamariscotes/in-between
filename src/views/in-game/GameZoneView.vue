@@ -5,7 +5,7 @@
       'modal-active': showResultModal || showGameOverModal,
       'modal-win': modalType === 'win',
       'modal-lose': modalType === 'lose',
-      'modal-fold': modalType === 'fold'
+      'modal-fold': modalType === 'fold',
     }"
   >
     <!-- Main game table background -->
@@ -239,6 +239,10 @@
         @click="toggleMainMenu"
       />
     </div>
+    <!-- ////// PLAYER HISTORY////// -->
+    <div class="player-history-container">
+      <h1>Player</h1>
+    </div>
   </div>
 </template>
 
@@ -262,7 +266,7 @@ import {
   showWinModal,
   showLoseModal,
   showFoldModal,
-  modalType // Import the new modalType ref
+  modalType, // Import the new modalType ref
 } from '@/utils/gameplay/pop-ups/modalUtil'
 import {
   isCurrentPlayer,
@@ -442,6 +446,7 @@ onMounted(() => {
     mainMenuVisible.value = newValue
     console.log(mainMenuVisible.value)
   })
+  gameStore.startTurnTimer()
 })
 
 onUnmounted(() => {
