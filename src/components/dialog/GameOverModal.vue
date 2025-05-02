@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
+import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 
 const { startNewGame, reshuffleDeck } = useGameLifeCycle()
 

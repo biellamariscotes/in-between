@@ -1,13 +1,14 @@
-import { onUnmounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
-
-type StyleFile = 'gameZone.css' | 'landing.css' | 'home.css' | 'registration.css'
-
 /**
  * Custom composable to manage dynamic style loading based on route metadata.
  *
  * @param {StyleFile | undefined} initialStyle - Optional initial style to load
  */
+
+import { onUnmounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+type StyleFile = 'gameZone.css' | 'landing.css' | 'home.css' | 'registration.css'
+
 export const useDynamicStyle = (initialStyle?: StyleFile) => {
   const route = useRoute()
 

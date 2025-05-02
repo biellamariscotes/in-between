@@ -35,6 +35,7 @@ declare module 'vue' {
     ElSpace: typeof import('element-plus/es')['ElSpace']
     ElTour: typeof import('element-plus/es')['ElTour']
     ElTourStep: typeof import('element-plus/es')['ElTourStep']
+    EventsHistory: typeof import('./src/components/utilities/EventsHistory.vue')['default']
     Form: typeof import('./src/components/Form.vue')['default']
     GameCards: typeof import('./src/components/cards/GameCards.vue')['default']
     GameControls: typeof import('./src/components/game/GameControls.vue')['default']
