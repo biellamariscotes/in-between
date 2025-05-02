@@ -9,12 +9,12 @@
       />
     </template>
 
-    <!-- CREDITS -->
+    <!-- CREDITS and CASHOUT -->
     <template v-if="isElementVisible('#btn2')">
       <el-tour-step
         target="#btn2"
-        title="CREDITS"
-        description="Here you can view your available credits or balance for the game."
+        title="Credits and Cashout"
+        description="View your available credits or balance for the game. Use the Cashout option to withdraw your in-game balance."
       />
     </template>
 
@@ -80,6 +80,16 @@
         description="This is where you can choose to fold your cards, exit the current round, and patiently wait for the next one to begin."
       />
     </template>
+
+    <!-- CARD COUNT SHOE -->
+
+    <template v-if="isElementVisible('#btn10')">
+      <el-tour-step
+        target="#btn10"
+        title="CARD SHOE"
+        description="This section provides real-time information on the total number of cards in the shoe and how many remain in play. It serves as a crucial reference for players, allowing them to track card depletion and strategize accordingly."
+      />
+    </template>
   </el-tour>
 </template>
 
@@ -94,8 +104,8 @@ const props = defineProps({
 })
 
 const isElementVisible = (selector: string): boolean => {
-  return !!document.querySelector(selector);
-};
+  return !!document.querySelector(selector)
+}
 
 const open = ref(false)
 

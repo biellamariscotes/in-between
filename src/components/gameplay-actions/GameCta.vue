@@ -26,6 +26,7 @@
         :class="{ 'disabled-button': !canGoAllIn }"
         :title="!canGoAllIn ? allInTooltipText : ''"
         @click="canGoAllIn && handleAllIn()"
+        id="btn7"
       />
 
       <!-- Bet option button -->

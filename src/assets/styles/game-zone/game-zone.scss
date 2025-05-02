@@ -47,6 +47,36 @@
   align-items: center;
   z-index: 1000;
 }
+.player-history-container {
+  width: 13%;
+  height: 20%;
+  position: absolute;
+  bottom: 25%;
+  right: 7%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  overflow: auto;
+  color: #fff;
+  background-color: rgb(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.history-title {
+  width: 15%;
+  height: 4%;
+  position: absolute;
+  bottom: 46%;
+  right: 1.4%;
+  display: flex;
+}
+
+.player-history-container h1 {
+  color: white;
+}
+
 .game-zone {
   width: 10%;
   height: 80%;
@@ -708,5 +738,53 @@
 .modal-active .player-hand,
 .modal-active .mystery-card {
   filter: brightness(1.04) drop-shadow(0 0 4px #fffbe7);
+  transition: filter 0.2s;
+}
+
+/* Default (yellow) highlight for win modal */
+.modal-win .game-zone {
+  filter: drop-shadow(0 0 8px #ffe066) brightness(1.03);
+}
+.modal-win .face-up-card {
+  box-shadow:
+    0 0 10px 2px #ffe066,
+    0 0 0 1px #fffbe7;
+  transition: box-shadow 0.2s;
+}
+.modal-win .player-hand,
+.modal-win .mystery-card {
+  filter: brightness(1.04) drop-shadow(0 0 4px #fffbe7);
+  transition: filter 0.2s;
+}
+
+/* Reddish highlight for lose modal */
+.modal-lose .game-zone {
+  filter: drop-shadow(0 0 8px #ff5252) brightness(1.02);
+}
+.modal-lose .face-up-card {
+  box-shadow:
+    0 0 10px 2px #ff5252,
+    0 0 0 1px #ffdddd;
+  transition: box-shadow 0.2s;
+}
+.modal-lose .player-hand,
+.modal-lose .mystery-card {
+  filter: brightness(1.03) drop-shadow(0 0 4px #ffdddd);
+  transition: filter 0.2s;
+}
+
+/* Light gray highlight for fold modal */
+.modal-fold .game-zone {
+  filter: drop-shadow(0 0 8px #c0c0c0) brightness(1.01);
+}
+.modal-fold .face-up-card {
+  box-shadow:
+    0 0 10px 2px #c0c0c0,
+    0 0 0 1px #e8e8e8;
+  transition: box-shadow 0.2s;
+}
+.modal-fold .player-hand,
+.modal-fold .mystery-card {
+  filter: brightness(1.02) drop-shadow(0 0 4px #e8e8e8);
   transition: filter 0.2s;
 }

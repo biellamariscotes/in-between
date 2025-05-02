@@ -39,16 +39,18 @@
       <div class="dialog-footer"></div>
     </template>
   </el-dialog>
-  <howtoplay :is-open="showTour" />
+  <HowToPlay :is-open="showTour" />
 
   <!-- Additional 'How to Play' Dialog -->
 </template>
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
+import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 import eventBus from '@/eventBus'
-import howtoplay from './howtoplay.vue'
+import { useGameStore } from '@/stores/game-store'
+
+const gameStore = useGameStore()
 const mainMenuVisible = ref(false)
 const { startNewGame } = useGameLifeCycle()
 
@@ -57,9 +59,18 @@ const closeMainMenu = () => {
 }
 
 const showTour = ref(false)
+
 const toggleTour = () => {
   showTour.value = !showTour.value
   mainMenuVisible.value = false
+  eventBus.emit('untoggle-main-menu', showTour.value) // 👈 Emits a unique event
+
+  if (showTour.value) {
+    console.log('nagpaused')
+    gameStore.haltTurnTimer()
+  } else {
+    gameStore.resumeTurnTimer()
+  }
 }
 
 const props = defineProps({

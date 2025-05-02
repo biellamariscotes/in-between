@@ -1,7 +1,12 @@
 <template>
   <div
     class="game-zone-container"
-    :class="{ 'modal-active': showResultModal || showGameOverModal }"
+    :class="{
+      'modal-active': showResultModal || showGameOverModal,
+      'modal-win': modalType === 'win',
+      'modal-lose': modalType === 'lose',
+      'modal-fold': modalType === 'fold',
+    }"
   >
     <!-- Main game table background -->
     <el-image
@@ -23,6 +28,11 @@
     <!-- ////// CURRENT PLAYER TURN DISPLAY ////// -->
     <div class="turn-container">
       <h1>{{ currentPlayerDisplay }}'s Turn</h1>
+    </div>
+
+    <!--////// CARD COUNT //////  -->
+    <div>
+      <CardCount />
     </div>
 
     <!-- ////// CARD DISPLAY AREA ////// -->
@@ -224,6 +234,9 @@
         @click="toggleMainMenu"
       />
     </div>
+
+    <!-- ////// PLAYER HISTORY////// -->
+    <EventsHistory></EventsHistory>
   </div>
 </template>
 
@@ -247,12 +260,15 @@ import {
   showWinModal,
   showLoseModal,
   showFoldModal,
+  modalType, // Import the new modalType ref
 } from '@/utils/gameplay/pop-ups/modalUtil'
 import {
   isCurrentPlayer,
   getActivePlayers,
   calculatePlayerCards,
 } from '@/utils/gameplay/player/playerUtil'
+import CardCount from '@/components/utilities/CardCount.vue'
+import EventsHistory from '@/components/utilities/EventsHistory.vue'
 
 // Add game over modal state
 const showGameOverModal = ref(false)
@@ -431,6 +447,7 @@ onMounted(() => {
     mainMenuVisible.value = newValue
     console.log(mainMenuVisible.value)
   })
+  gameStore.startTurnTimer()
 })
 
 onUnmounted(() => {
