@@ -38,7 +38,6 @@ const createInitialState = (): GameState => ({
   currentPlayerIndex: 0,
   roundsPlayed: 0,
   winnings: [],
-  // playerPots: [],
   betsPlaced: [],
   gameStarted: false,
   communalPot: 0,
@@ -262,11 +261,29 @@ export const useGameStore = defineStore('game', {
     },
 
     handleEqualCardsChoice(choice: 'higher' | 'lower') {
+      // Stop the timer only after the player chooses
       this.stopTurnTimer()
       this.equalCardsChoice = choice
       this.awaitingEqualChoice = false
+      // Now allow drawing the third card
       this.drawThirdCard()
       this.saveStateToLocalStorage()
+    },
+
+    /**
+     * Checks if the face-up cards are equal and handles the game flow accordingly
+     */
+    checkForEqualCardsAndProcess() {
+      const [card1, card2] = this.faceUpCards
+      if (card1 && card2 && card1.rank === card2.rank) {
+        // Cards are equal, set awaiting choice state
+        this.awaitingEqualChoice = true
+        this.message = 'Cards are equal! Choose to play higher or lower.'
+        // Don't draw the third card yet - wait for player choice
+      } else {
+        // Cards are not equal, proceed with drawing the third card
+        this.drawThirdCard()
+      }
     },
 
     // ─────────────────────────────
@@ -293,6 +310,12 @@ export const useGameStore = defineStore('game', {
     },
 
     drawThirdCard() {
+      // Only allow drawing if not awaiting equal choice
+      if (this.awaitingEqualChoice) {
+        this.message = 'Choose higher or lower before drawing the card.'
+        return
+      }
+
       this.stopTurnTimer()
 
       if (this.currentBet <= 0) {
@@ -342,11 +365,18 @@ export const useGameStore = defineStore('game', {
       // Handle equal cards case
       if (r1 === r2) {
         if (!this.equalCardsChoice && !this.awaitingEqualChoice) {
+          // Await player input, but DO NOT stop the timer
           this.awaitingEqualChoice = true
           this.message = 'Cards are equal! Choose to play higher or lower.'
+          // Do NOT draw or process further until player chooses
+          // Do NOT stopTurnTimer here!
           return
         }
-
+        // Only process result if player has made a choice
+        if (!this.equalCardsChoice) {
+          // Still waiting for player input, do not proceed
+          return
+        }
         winAmount = this.processEqualCardsResult(r1, r3)
         resultMessage = this.getEqualCardsMessage(card1?.rank, r1, r3)
       }

@@ -102,10 +102,10 @@ onMounted(() => {
 
 <style lang="css" scoped>
 .circle {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
-  background-color: rgb(8, 8, 8);
+  background-color: rgb(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,8 +120,8 @@ onMounted(() => {
 }
 
 .time-img {
-  width: 75%;
-  height: 75%;
+  width: 50%;
+  height: 50%;
   object-fit: contain;
   object-position: center;
 }

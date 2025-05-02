@@ -47,7 +47,7 @@ defineProps<{
 }
 
 .modal-content {
-  width: 80%;
+  width: 50%;
   animation: scaleIn 0.4s ease;
   z-index: 16000;
 }
