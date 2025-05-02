@@ -47,6 +47,23 @@
   align-items: center;
   z-index: 1000;
 }
+.player-history-container {
+  width: 10%;
+  height: 10%;
+  position: absolute;
+  bottom: 40%;
+  right: 7%;
+  border: 1px solid red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.player-history-container h1 {
+  color: white;
+}
+
 .game-zone {
   width: 10%;
   height: 80%;
