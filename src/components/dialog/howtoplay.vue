@@ -9,12 +9,12 @@
       />
     </template>
 
-    <!-- CREDITS -->
+    <!-- CREDITS and CASHOUT -->
     <template v-if="isElementVisible('#btn2')">
       <el-tour-step
         target="#btn2"
-        title="CREDITS"
-        description="Here you can view your available credits or balance for the game."
+        title="Credits and Cashout"
+        description="View your available credits or balance for the game. Use the Cashout option to withdraw your in-game balance."
       />
     </template>
 
@@ -94,8 +94,8 @@ const props = defineProps({
 })
 
 const isElementVisible = (selector: string): boolean => {
-  return !!document.querySelector(selector);
-};
+  return !!document.querySelector(selector)
+}
 
 const open = ref(false)
 
