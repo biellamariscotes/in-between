@@ -1,5 +1,5 @@
 <template>
-  <div class="CardCount">
+  <div id="btn10" class="CardCount">
     <h1>
       52 / {{ gameStore.getCardsLeft }} <br />
       CARDS

@@ -80,6 +80,16 @@
         description="This is where you can choose to fold your cards, exit the current round, and patiently wait for the next one to begin."
       />
     </template>
+
+    <!-- CARD COUNT SHOE -->
+
+    <template v-if="isElementVisible('#btn10')">
+      <el-tour-step
+        target="#btn10"
+        title="CARD SHOE"
+        description="This section provides real-time information on the total number of cards in the shoe and how many remain in play. It serves as a crucial reference for players, allowing them to track card depletion and strategize accordingly."
+      />
+    </template>
   </el-tour>
 </template>
 
