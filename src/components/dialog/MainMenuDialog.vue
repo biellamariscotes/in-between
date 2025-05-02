@@ -46,7 +46,7 @@
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
+import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 import eventBus from '@/eventBus'
 import { useGameStore } from '@/stores/game-store'
 

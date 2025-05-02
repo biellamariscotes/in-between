@@ -48,16 +48,29 @@
   z-index: 1000;
 }
 .player-history-container {
-  width: 10%;
-  height: 10%;
+  width: 13%;
+  height: 20%;
   position: absolute;
-  bottom: 40%;
+  bottom: 25%;
   right: 7%;
-  border: 1px solid red;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 100;
+  overflow: auto;
+  color: #fff;
+  background-color: rgb(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.history-title {
+  width: 15%;
+  height: 4%;
+  position: absolute;
+  bottom: 46%;
+  right: 1.4%;
+  display: flex;
 }
 
 .player-history-container h1 {

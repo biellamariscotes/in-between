@@ -241,10 +241,9 @@
         @click="toggleMainMenu"
       />
     </div>
+
     <!-- ////// PLAYER HISTORY////// -->
-    <div class="player-history-container">
-      <h1>Player</h1>
-    </div>
+    <EventsHistory></EventsHistory>
   </div>
 </template>
 
@@ -276,6 +275,7 @@ import {
   calculatePlayerCards,
 } from '@/utils/gameplay/player/playerUtil'
 import CardCount from '@/components/utilities/CardCount.vue'
+import EventsHistory from '@/components/utilities/EventsHistory.vue'
 
 // Add game over modal state
 const showGameOverModal = ref(false)

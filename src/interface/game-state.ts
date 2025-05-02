@@ -19,7 +19,7 @@ export interface GameState {
   /** The currently active card in play */
   currentCard: Card | null
 
-  /** The amount the player is currently betting */
+  /** The amount the player is currently betting  */
   currentBet: number
 
   /** Text message to display to the player */
