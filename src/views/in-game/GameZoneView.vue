@@ -1,9 +1,17 @@
 <template>
-  <div class="game-zone-container">
+  <div
+    class="game-zone-container"
+    :class="{
+      'modal-active': showResultModal || showGameOverModal,
+      'modal-win': modalType === 'win',
+      'modal-lose': modalType === 'lose',
+      'modal-fold': modalType === 'fold'
+    }"
+  >
     <!-- Main game table background -->
     <el-image
       :src="GameTable"
-      style="height: 85%; width: 85%; position: absolute; user-select: none; z-index: 10"
+      style="height: 90%; width: 90%; position: absolute; user-select: none; z-index: 10"
       alt="Game Table"
       :draggable="false"
     />
@@ -32,7 +40,7 @@
       <div class="card-table">
         <div id="btn4" class="game-cards">
           <!-- First face-up card display -->
-          <div class="face-up-card" v-if="gameStore.faceUpCards[0]">
+          <div class="face-up-card card-draw-in" v-if="gameStore.faceUpCards[0]">
             <PlayerHand
               :cards="[cardToDisplayId(gameStore.faceUpCards[0])]"
               :show-cards="true"
@@ -47,17 +55,17 @@
               :cards="[cardToDisplayId(gameStore.currentCard)]"
               :show-cards="true"
               orientation="normal"
+              class="card-flip-reveal"
             />
-            <img v-else :src="MysteryCard" alt="Shadow Question" class="mystery-card" />
+            <img
+              v-else
+              :src="MysteryCard"
+              alt="Shadow Question"
+              class="mystery-card card-draw-mystery"
+            />
           </div>
-
-          <!-- Placeholder for card space when empty -->
-          <div class="face-up-card" v-else>
-            <div class="card-placeholder"></div>
-          </div>
-
           <!-- Second face-up card display -->
-          <div class="face-up-card" v-if="gameStore.faceUpCards[1]">
+          <div class="face-up-card card-draw-in" v-if="gameStore.faceUpCards[1]">
             <PlayerHand
               :cards="[cardToDisplayId(gameStore.faceUpCards[1])]"
               :show-cards="true"
@@ -70,6 +78,7 @@
         <CashFlow
           :gameStore="gameStore"
           :cashOutCredit="cashOutCredit"
+          :handleCashInCredit="handleCashInCredit"
           @update:cashOutCredit="cashOutCredit = $event"
         />
       </div>
@@ -84,7 +93,11 @@
         :position="position"
         :isActive="activePlayers[position - 1]"
         :isCurrentPlayer="isCurrentPlayer(position - 1)"
-        :playerName="activePlayers[position - 1] ? (players[position - 1]?.name ?? '') : ''"
+        :playerName="
+          activePlayers[position - 1] && players[position - 1]?.name
+            ? players[position - 1]?.name.toUpperCase()
+            : ''
+        "
         :playerPoints="getPlayerPoints(position - 1)"
         :cards="playerCards[position - 1] || []"
       />
@@ -157,14 +170,14 @@
       <!-- Cash Out Form -->
       <div style="width: 100%" v-else>
         <div v-if="cashOutCredit">
-          <el-form>
+          <el-form @keydown="preventEnter">
             <img
               src="../../assets/img/cash-out/cashout-text.png "
               alt="input-text"
               class="input-credits-text"
             />
 
-            <el-input size="large" v-model="cashOutAmout" />
+            <el-input size="large" v-model="cashOutAmout" placeholder="Cashout Amount..." />
 
             <img
               src="../../assets/img/cash-out/cashout-submit.png"
@@ -249,6 +262,7 @@ import {
   showWinModal,
   showLoseModal,
   showFoldModal,
+  modalType // Import the new modalType ref
 } from '@/utils/gameplay/pop-ups/modalUtil'
 import {
   isCurrentPlayer,
@@ -270,7 +284,8 @@ const playerStoreRegistration = usePlayerRegistration()
 // Credit management flags
 const addCredit = ref(false)
 const cashOutCredit = ref(false)
-const cashOutAmout = ref(0)
+const cashInCredit = ref(false)
+const cashOutAmout = ref()
 const isCashOutDialog = ref(false)
 
 // ─────────────────────────────
@@ -305,6 +320,12 @@ function updateCreditStatus() {
   addCredit.value = playerCredits > 99
 }
 
+const handleCashInCredit = () => {
+  addCredit.value = false
+  cashOutCredit.value = false
+  cashInCredit.value = true
+}
+
 // ─────────────────────────────
 // Player Management
 // ─────────────────────────────
@@ -329,12 +350,19 @@ const currentPlayerDisplay = computed(() => {
     return 'Game not started'
   }
 
-  if (players.value[gameStore.currentPlayerIndex]) {
-    return players.value[gameStore.currentPlayerIndex].name
+  const player = players.value[gameStore.currentPlayerIndex]
+  if (player && player.name) {
+    return player.name.charAt(0).toUpperCase() + player.name.slice(1)
   }
 
   return 'Player'
 })
+
+const preventEnter = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+  }
+}
 
 /**
  * Gets points for a specific player position
