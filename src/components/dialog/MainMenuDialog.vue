@@ -39,7 +39,7 @@
       <div class="dialog-footer"></div>
     </template>
   </el-dialog>
-  <howtoplay :is-open="showTour" />
+  <HowToPlay :is-open="showTour" />
 
   <!-- Additional 'How to Play' Dialog -->
 </template>
@@ -48,7 +48,8 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 import eventBus from '@/eventBus'
-import howtoplay from './howtoplay.vue'
+import HowToPlay from './howtoplay.vue'
+
 const mainMenuVisible = ref(false)
 const { startNewGame } = useGameLifeCycle()
 
