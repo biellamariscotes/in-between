@@ -138,7 +138,7 @@ const handleSubmitCredit = () => {
 .add-credits-cta {
   position: absolute;
   top: 30%;
-  right: -20%;
+  right: -50%;
   width: 190px;
   height: 60px;
   cursor: pointer;
@@ -146,6 +146,9 @@ const handleSubmitCredit = () => {
 
 .insufficient-wrapper {
   width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  padding: 1rem 2rem;
 }
 
 .credit-wrapper {

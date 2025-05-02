@@ -50,7 +50,7 @@
 
     <!-- Credit form section shown when addCredit is false -->
     <div v-else class="credit">
-      <CreditForm />
+      <CreditForm :addCredit="addCredit" />
     </div>
   </div>
 </template>
@@ -169,7 +169,15 @@ watch(playerCredits, (newValue) => {
   z-index: 999;
 }
 
-.el-form,
+.el-form {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
 .btn-wrapper {
   position: relative;
   width: 100%;
@@ -185,10 +193,9 @@ watch(playerCredits, (newValue) => {
   display: flex;
   align-items: center;
   flex-direction: column;
-}
-
-.insufficient-wrapper {
-  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 1rem 2rem;
+  border-radius: 20px;
 }
 
 .input-credits-text {
