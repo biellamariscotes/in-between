@@ -197,6 +197,10 @@ export const useGameStore = defineStore('game', {
       this.freshStart = true
     },
 
+    // gameOver() {
+    //   //
+    // },
+
     // ─────────────────────────────
     // PLAYER TURN FUNCTIONS
     // ─────────────────────────────
