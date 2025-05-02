@@ -48,8 +48,9 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 import eventBus from '@/eventBus'
-import HowToPlay from './howtoplay.vue'
+import { useGameStore } from '@/stores/game-store'
 
+const gameStore = useGameStore()
 const mainMenuVisible = ref(false)
 const { startNewGame } = useGameLifeCycle()
 
@@ -58,9 +59,18 @@ const closeMainMenu = () => {
 }
 
 const showTour = ref(false)
+
 const toggleTour = () => {
   showTour.value = !showTour.value
   mainMenuVisible.value = false
+  eventBus.emit('untoggle-main-menu', showTour.value) // 👈 Emits a unique event
+
+  if (showTour.value) {
+    console.log('nagpaused')
+    gameStore.haltTurnTimer()
+  } else {
+    gameStore.resumeTurnTimer()
+  }
 }
 
 const props = defineProps({
