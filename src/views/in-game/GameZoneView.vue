@@ -120,11 +120,6 @@
         />
       </div>
 
-      <!-- Game over state - show new game button -->
-      <div v-else-if="gameStore.gameOver">
-        <!-- No buttons here anymore, using modal instead -->
-      </div>
-
       <!-- Equal cards choice buttons (higher/lower) -->
       <div
         v-else-if="gameStore.awaitingEqualChoice"
@@ -169,7 +164,7 @@
       <!-- Normal gameplay actions -->
       <!-- Cash Out Form -->
       <div style="width: 100%" v-else>
-        <div v-if="cashOutCredit">
+        <div v-if="cashOutCredit" class="cashout-container">
           <el-form @keydown="preventEnter">
             <img
               src="../../assets/img/cash-out/cashout-text.png "
@@ -219,7 +214,7 @@
           </el-dialog>
         </div>
 
-        <div v-else>
+        <div v-else class="gameCta-wrapper">
           <GameCta :addCredit="addCredit" />
         </div>
       </div>
@@ -246,7 +241,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, provide, readonly } from 'vue'
 import GameTable from '@/assets/img/game-zone/table.svg'
 import MysteryCard from '@/assets/img/cards/special-cards/mystery-card.svg'
 import GameCta from '@/components/gameplay-actions/GameCta.vue'
@@ -291,6 +286,12 @@ const cashOutCredit = ref(false)
 const cashInCredit = ref(false)
 const cashOutAmout = ref()
 const isCashOutDialog = ref(false)
+
+function handleBackToMainCta() {
+  addCredit.value = true
+}
+
+provide('addCredit', handleBackToMainCta)
 
 // ─────────────────────────────
 // Computed Properties
@@ -636,7 +637,7 @@ const handleCashOutAndQuit = () => {
 .back-cta {
   position: absolute;
   top: 0;
-  left: 13%;
+  left: 5%;
   width: 30px;
   height: 30px;
   cursor: pointer;
@@ -645,7 +646,7 @@ const handleCashOutAndQuit = () => {
 .add-credits-cta {
   position: absolute;
   top: 30%;
-  right: -5%;
+  right: -50%;
   width: 190px;
   height: 65px;
   cursor: pointer;

@@ -10,14 +10,14 @@
       src="../../assets/img/buttons/credits/no.png"
       alt="all-in-png"
       class="insufficient"
-      @click="isCancelDialog = true"
+      @click="noIllAdd"
     />
 
     <img
-      src="../../assets/img/buttons/credits/cashin-fold.png"
+      src="../../assets/img/buttons/actions/ekis.png"
       alt="ekis-btn"
-      class="insufficient"
-      @click="handleFoldTurn"
+      class="back-cta"
+      @click="handleBackToMainCta"
     />
 
     <!-- dialog box -->
@@ -26,31 +26,35 @@
 </template>
 
 <script setup lang="ts">
-import { useGameStore } from '@/stores/game-store'
 // import { usePlayerRegistration } from '@/stores/player'
 import { ref } from 'vue'
 import PlayerQuitDialog from '../dialog/PlayerQuitDialog.vue'
+import { inject } from 'vue'
 
-const gameStore = useGameStore()
 // const playerStore = usePlayerRegistration()
 
-const emit = defineEmits(['update:creditForm'])
+const emit = defineEmits(['update:creditForm', 'update:addCredit'])
 const isCancelDialog = ref(false)
+const handleBackToMainCta = inject('addCredit') as () => void
 
-const handleFoldTurn = () => {
-  gameStore.fold()
+const noIllAdd = () => {
+  isCancelDialog.value = true
 }
 </script>
 
 <style scoped>
 .insufficient {
-  width: 100%;
-  height: 40px;
-}
-
-.credit-actions img {
   width: 280px;
   height: 80px;
+  cursor: pointer;
+}
+
+.back-cta {
+  position: absolute;
+  top: 15%;
+  left: 3%;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
 }
 </style>
