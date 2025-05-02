@@ -5,11 +5,13 @@
  */
 
 import { useGameStore } from '@/stores/game-store'
+import { useGameHistory } from './useGameHistory'
 import { useRouter } from 'vue-router'
 
 export function useGameLifeCycle() {
   const router = useRouter()
   const gameStore = useGameStore()
+  const gameHistoryStore = useGameHistory()
 
   // ─────────────────────────────
   // Game Logic
@@ -18,6 +20,7 @@ export function useGameLifeCycle() {
   const startNewGame = () => {
     localStorage.clear()
     gameStore.resetGame()
+    gameHistoryStore.clearHistory()
     router.push('/')
   }
 

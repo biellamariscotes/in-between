@@ -30,7 +30,7 @@
       <h1>{{ currentPlayerDisplay }}'s Turn</h1>
     </div>
 
-  <!--////// CARD COUNT //////  -->
+    <!--////// CARD COUNT //////  -->
     <div>
       <CardCount />
     </div>
@@ -239,9 +239,10 @@
         @click="toggleMainMenu"
       />
     </div>
+
     <!-- ////// PLAYER HISTORY////// -->
     <div class="player-history-container">
-      <h1>Player</h1>
+      <EventsHistory></EventsHistory>
     </div>
   </div>
 </template>
@@ -274,6 +275,7 @@ import {
   calculatePlayerCards,
 } from '@/utils/gameplay/player/playerUtil'
 import CardCount from '@/components/utilities/CardCount.vue'
+import EventsHistory from '@/components/utilities/EventsHistory.vue'
 
 // Add game over modal state
 const showGameOverModal = ref(false)
