@@ -10,12 +10,17 @@
 -->
 
 <template>
-  <div ref="scrollContainer" class="scroll-container">
-    <ul>
-      <li v-for="(event, index) in gameHistory.allEvents.value" :key="index">
-        {{ toSentenceCase(event.message) }}
-      </li>
-    </ul>
+  <div class="history-title">
+    <img src="../../assets/img/game-zone/history/history.png" />
+  </div>
+  <div class="player-history-container">
+    <div ref="scrollContainer" class="scroll-container">
+      <ul>
+        <li v-for="(event, index) in gameHistory.allEvents.value" :key="index">
+          {{ toSentenceCase(event.message) }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 

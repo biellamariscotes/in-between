@@ -241,9 +241,7 @@
     </div>
 
     <!-- ////// PLAYER HISTORY////// -->
-    <div class="player-history-container">
-      <EventsHistory></EventsHistory>
-    </div>
+    <EventsHistory></EventsHistory>
   </div>
 </template>
 
