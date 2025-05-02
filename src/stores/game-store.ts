@@ -229,11 +229,9 @@ export const useGameStore = defineStore('game', {
       this.saveStateToLocalStorage()
 
       // Entry to game history
-      const playerId = String(this.players[this.currentPlayerIndex].id)
-      const playerName = this.activePlayerName
-
       const gameHistory = useGameHistory()
-      gameHistory.logBet(playerId, playerName, betAmount)
+      const { logBet } = gameHistory.getPlayerLogger(this.players[this.currentPlayerIndex])
+      logBet(betAmount)
     },
 
     cancelBet() {
@@ -248,6 +246,11 @@ export const useGameStore = defineStore('game', {
     fold() {
       this.stopTurnTimer()
       this.message = `${this.players[this.currentPlayerIndex].name} folded and skipped their turn.`
+
+      // Game history entry: FOLD
+      const gameHistory = useGameHistory()
+      const { logFold } = gameHistory.getPlayerLogger(this.players[this.currentPlayerIndex])
+      logFold()
 
       this.roundsPlayed++
       this.saveStateToLocalStorage()
@@ -375,7 +378,6 @@ export const useGameStore = defineStore('game', {
           this.awaitingEqualChoice = true
           this.message = 'Cards are equal! Choose to play higher or lower.'
           // Do NOT draw or process further until player chooses
-          // Do NOT stopTurnTimer here!
           return
         }
         // Only process result if player has made a choice
@@ -422,6 +424,17 @@ export const useGameStore = defineStore('game', {
       const playerName =
         this.players[this.currentPlayerIndex]?.name || `Player ${this.currentPlayerIndex + 1}`
       this.message = `${playerName}: ${resultMessage}`
+
+      // Get the player logger for the current player
+      const gameHistory = useGameHistory()
+      const { logWin, logLoss } = gameHistory.getPlayerLogger(this.players[this.currentPlayerIndex])
+
+      // Log the win or loss based on winAmount
+      if (winAmount > 0) {
+        logWin(winAmount)
+      } else {
+        logLoss(Math.abs(winAmount))
+      }
 
       this.roundsPlayed++
       this.currentBet = 0

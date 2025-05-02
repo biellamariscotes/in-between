@@ -39,6 +39,19 @@ export function useGameHistory() {
     return historyStore.getLatestEvents(count).value.map(formatEvent)
   }
 
+  const getPlayerLogger = (player: { id?: string | number; name?: string }) => {
+    // Ensure playerId and playerName are defined
+    const playerId = player.id ? String(player.id) : 'unknown-id' // Fallback value or throw an error
+    const playerName = player.name || 'unknown-name' // Fallback value or throw an error
+
+    return {
+      logBet: (amount: number) => historyStore.logBet(playerId, playerName, amount),
+      logWin: (amount: number) => historyStore.logWin(playerId, playerName, amount),
+      logLoss: (amount: number) => historyStore.logLoss(playerId, playerName, amount),
+      logFold: () => historyStore.logFold(playerId, playerName),
+    }
+  }
+
   // Log events using friendly methods (without card parameters)
   const logBet = historyStore.logBet
   const logWin = historyStore.logWin
@@ -61,5 +74,6 @@ export function useGameHistory() {
     logRake,
     logSystemEvent,
     clearHistory,
+    getPlayerLogger,
   }
 }
