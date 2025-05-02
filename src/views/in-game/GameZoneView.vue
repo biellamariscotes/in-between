@@ -1,7 +1,12 @@
 <template>
   <div
     class="game-zone-container"
-    :class="{ 'modal-active': showResultModal || showGameOverModal }"
+    :class="{
+      'modal-active': showResultModal || showGameOverModal,
+      'modal-win': modalType === 'win',
+      'modal-lose': modalType === 'lose',
+      'modal-fold': modalType === 'fold'
+    }"
   >
     <!-- Main game table background -->
     <el-image
@@ -252,6 +257,7 @@ import {
   showWinModal,
   showLoseModal,
   showFoldModal,
+  modalType // Import the new modalType ref
 } from '@/utils/gameplay/pop-ups/modalUtil'
 import {
   isCurrentPlayer,
