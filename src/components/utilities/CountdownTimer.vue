@@ -51,7 +51,7 @@ const timeRemaining = ref(0)
  * Returns appropriate SVG path based on time remaining
  */
 const getSvgSrc = (number: number): string =>
-  numberSvgs[number] || '/src/assets/img/game-zone/timer/10.svg'
+  numberSvgs[number] || '/src/assets/img/game-zone/timer/20.svg'
 
 /**
  * Displayed time text (currently empty)

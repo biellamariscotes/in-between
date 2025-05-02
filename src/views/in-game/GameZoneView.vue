@@ -22,10 +22,8 @@
       <h1>{{ currentPlayerDisplay }}'s Turn</h1>
     </div>
 
-    <div
-      class="card-counter-container"
-      style="position: absolute; top: 15%; left: 20%; z-index: 15; color: red; font-size: 25px"
-    >
+  <!--////// CARD COUNT //////  -->
+    <div>
       <CardCount />
     </div>
 
