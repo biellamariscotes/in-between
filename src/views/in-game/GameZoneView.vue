@@ -29,7 +29,7 @@
 
     <div class="turn-container">
       <h1 v-if="gameStore.gameStarted">{{ currentPlayerDisplay }}'s Turn</h1>
-      <h1 v-else>The Game Is Not Started</h1>
+      <h1 v-else>Game Not Started</h1>
     </div>
 
     <!--////// CARD COUNT //////  -->
