@@ -26,8 +26,10 @@
     <MainMenuDialog></MainMenuDialog>
 
     <!-- ////// CURRENT PLAYER TURN DISPLAY ////// -->
+
     <div class="turn-container">
-      <h1>{{ currentPlayerDisplay }}'s Turn</h1>
+      <h1 v-if="gameStore.gameStarted">{{ currentPlayerDisplay }}'s Turn</h1>
+      <h1 v-else>Game Not Started</h1>
     </div>
 
     <!--////// CARD COUNT //////  -->
@@ -350,11 +352,8 @@ const playerCards = calculatePlayerCards()
 const activePlayers = computed(() => getActivePlayers(playerCount.value))
 
 // Display name for current player
-const currentPlayerDisplay = computed(() => {
-  if (!gameStore.gameStarted) {
-    return 'Game not started'
-  }
 
+const currentPlayerDisplay = computed(() => {
   const player = players.value[gameStore.currentPlayerIndex]
   if (player && player.name) {
     return player.name.charAt(0).toUpperCase() + player.name.slice(1)
