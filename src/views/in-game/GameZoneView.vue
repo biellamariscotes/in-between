@@ -22,6 +22,12 @@
     <!-- Game Over Modal -->
     <GameOverModal :show="showGameOverModal" @close="showGameOverModal = false" />
 
+    <NotEnoughPlayers
+      v-if="showNotEnoughPlayersModal"
+      :message="'Minimum of 3 players required to continue playing.'"
+      @close="handleNotEnoughPlayersClose"
+    />
+
     <!-- Main menu dialog component -->
     <MainMenuDialog></MainMenuDialog>
 
@@ -271,6 +277,7 @@ import {
 } from '@/utils/gameplay/player/playerUtil'
 import CardCount from '@/components/utilities/CardCount.vue'
 import EventsHistory from '@/components/utilities/EventsHistory.vue'
+import router from '@/router'
 
 // Add game over modal state
 const showGameOverModal = ref(false)
@@ -288,6 +295,42 @@ const cashOutCredit = ref(false)
 const cashInCredit = ref(false)
 const cashOutAmout = ref()
 const isCashOutDialog = ref(false)
+
+// Add with other refs
+const showNotEnoughPlayersModal = ref(false)
+
+// Add with other methods
+const handleNotEnoughPlayersClose = () => {
+  showNotEnoughPlayersModal.value = false
+  // Force game reset when closing the modal
+  gameStore.resetGame()
+  router.push('/') // Redirect to setup page
+}
+
+// Modify your existing watcher to show the modal
+watch(
+  [() => gameStore.players.length, () => gameStore.gameStarted],
+  ([playerCount, isStarted]) => {
+    if (playerCount <= 2 && isStarted) {
+      showNotEnoughPlayersModal.value = true
+      gameStore.insufficientPlayers = true
+      gameStore.stopTurnTimer()
+      gameStore.saveStateToLocalStorage()
+    }
+  },
+  { immediate: true }, // This makes it run on component mount
+)
+
+// Add to your onMounted hook
+onMounted(() => {
+  // ...existing code...
+
+  // Check for insufficient players on page load
+  if (gameStore.insufficientPlayers || (gameStore.players.length <= 2 && gameStore.gameStarted)) {
+    showNotEnoughPlayersModal.value = true
+    gameStore.stopTurnTimer()
+  }
+})
 
 function handleBackToMainCta() {
   addCredit.value = true
