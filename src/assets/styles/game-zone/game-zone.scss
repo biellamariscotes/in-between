@@ -393,36 +393,31 @@
 /* Table card styling */
 .face-up-card,
 .current-card {
-  width: 100px;
-  height: 140px;
-  background-color: rgba(0, 0, 0, 0.2);
+  width: 55%;
+  height: 55%;
   border-radius: 10px;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
+  /* background-color: rgba(0, 0, 0, 0.2); */
+
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+.mystery-card {
+  width: 100%; 
+  height: 100%;
+}
+
 .card-placeholder {
   display: flex;
-  width: 100px;
-  height: 140px;
+  width: 55%;
+  height: 55%;
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   border: 2px dashed rgba(255, 255, 255, 0.3);
 }
 
-/* Credit display styling */
-.credit-display {
-  color: white;
-  text-align: center;
-  margin-top: 15px;
-  // background-color: rgba(0, 0, 0, 0.7);
-  padding: 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-}
+
 
 /* Card table container */
 .card-table {
@@ -531,8 +526,8 @@
 /* Adjust styling for table cards to match player hands */
 .face-up-card,
 .current-card {
-  width: 140px;
-  height: 220px;
+  width: 55%;
+  height: 55%;
   border-radius: 10px;
   /* background-color: rgba(0, 0, 0, 0.2); */
 
@@ -542,14 +537,14 @@
 }
 
 .mystery-card {
-  width: 1000px;
-  height: 250px;
+  width: 100%; 
+  height: 100%;
 }
 
 .card-placeholder {
   display: flex;
-  width: 100px;
-  height: 140px;
+  width: 55%;
+  height: 55%;
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   border: 2px dashed rgba(255, 255, 255, 0.3);
@@ -564,17 +559,6 @@
   height: 100%;
   width: 100%;
 }
-
-/* .timer {
-  color: white;
-  font-size: 1.5rem;
-  transition: color 0.3s ease;
-}
-
-.timer.warning {
-  color: #ff5252;
-  animation: pulse 1s infinite;
-} */
 
 @keyframes pulse {
   0% {

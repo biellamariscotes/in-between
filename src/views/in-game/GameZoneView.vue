@@ -96,10 +96,10 @@
         :isActive="activePlayers[position - 1]"
         :isCurrentPlayer="isCurrentPlayer(position - 1)"
         :playerName="
-          activePlayers[position - 1] && players[position - 1]?.name
-            ? players[position - 1]?.name.toUpperCase()
-            : ''
-        "
+  activePlayers[position - 1] && players[position - 1]?.name
+    ? players[position - 1]!.name!.toUpperCase()
+    : ''
+"
         :playerPoints="getPlayerPoints(position - 1)"
         :cards="playerCards[position - 1] || []"
       />
@@ -243,7 +243,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, provide, readonly } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, provide } from 'vue'
 import GameTable from '@/assets/img/game-zone/table.svg'
 import MysteryCard from '@/assets/img/cards/special-cards/mystery-card.svg'
 import GameCta from '@/components/gameplay-actions/GameCta.vue'
@@ -314,17 +314,20 @@ const currentPlayerPot = computed(() => {
 
 /**
  * Updates the credit status for the current player
- * Used to determine if player needs to add more credits or can cash out
+ * Used to determine if player can cash out (has enough credits) or needs to add more
  */
-function updateCreditStatus() {
-  // Assuming currentPlayerPot.value can be of type number, an object with credits property, or null
-  const credits: number | { credits: number } | null = currentPlayerPot.value
-
-  // Ensure credits is a number and handle null values
-  const playerCredits = typeof credits === 'number' ? credits : (credits?.credits ?? 0)
-
+ function updateCreditStatus() {
+  // Get player credits directly
+  const playerCredits = currentPlayerPot.value ?? 0
+  
+  // Set the threshold for showing cash out option (when player has enough credits)
+  const minimumCreditsForCashout = 100
+  
   console.log('Updating credit status, current credits:', playerCredits)
-  addCredit.value = playerCredits > 99
+  
+  // addCredit = true means "show cash out button" in your implementation
+  // So we set it to true when player has ENOUGH credits to cash out
+  addCredit.value = playerCredits >= minimumCreditsForCashout
 }
 
 const handleCashInCredit = () => {
