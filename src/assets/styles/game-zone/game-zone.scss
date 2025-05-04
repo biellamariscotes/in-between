@@ -27,8 +27,7 @@
   z-index: 100;
 }
 .timer-container {
-  width: 13%;
-  height: 13%;
+ 
   position: absolute;
   top: 7%;
   right: 7%;
@@ -99,7 +98,7 @@
   pointer-events: none;
 }
 .turn-container h1 {
-  font-size: 70px;
+  font-size:  4vw;
   color: white;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
@@ -347,7 +346,7 @@
 /* Player text styling */
 .player-name {
   color: white;
-  font-size: 18px; /* Slightly larger font size for player name */
+  font-size: 1.5vw; /* Slightly larger font size for player name */
   text-align: center;
   margin: 2px 0;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
@@ -357,7 +356,7 @@
 
 .player-points {
   color: white;
-  font-size: 15px; /* Original font size for player points */
+  font-size: 1vw; /* Original font size for player points */
   text-align: center;
   margin: 2px 0;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);

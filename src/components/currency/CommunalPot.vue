@@ -18,7 +18,7 @@
 
     <!-- Pot Value Display -->
     <div class="pot-amount__value">
-      <span class="pot-amount__value--total">{{ potAmount }}</span>
+      <h1 class="pot-amount__value--total">{{ potAmount }}</h1>
     </div>
   </div>
 </template>
@@ -42,7 +42,6 @@ defineProps<{
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 1rem;
 
   &__img {
     width: 100%;
@@ -59,7 +58,6 @@ defineProps<{
     justify-content: center;
     height: 100%;
     right: 30%;
-    top: -5%;
 
     &--total {
       color: #ffcc00;

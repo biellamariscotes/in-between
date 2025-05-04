@@ -206,15 +206,13 @@ watch(playerCredits, (newValue) => {
 .all-in-cta,
 .fold-cta {
   margin-top: 20px;
-  width: 250px;
-  height: 80px;
+  width: 40%;
   cursor: pointer;
 }
 
 .bet-cta {
   margin-top: 20px;
-  width: 250px;
-  height: 85px;
+  width: 40%;
   margin-bottom: 5px;
   cursor: pointer;
 }
