@@ -78,4 +78,6 @@ export interface GameState {
 
   /** Amount deducted from each pot as rake */
   rakeAmount: number
+
+  insufficientPlayers: boolean
 }
