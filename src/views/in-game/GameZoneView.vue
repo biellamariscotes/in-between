@@ -452,7 +452,6 @@ onMounted(() => {
     mainMenuVisible.value = newValue
     console.log(mainMenuVisible.value)
   })
-  gameStore.startTurnTimer()
 })
 
 onUnmounted(() => {
