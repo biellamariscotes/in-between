@@ -238,7 +238,7 @@
     </div>
 
     <!-- ////// PLAYER HISTORY////// -->
-    <EventsHistory></EventsHistory>
+    <EventsHistory v-if="!isHistoryEmpty"></EventsHistory>
   </div>
 </template>
 
@@ -253,6 +253,7 @@ import { useGameStore } from '@/stores/game-store'
 // import { useGameLifeCycle } from '@/composables/useGameLifeCycle'
 import GameOverModal from '@/components/dialog/GameOverModal.vue'
 import eventBus from '@/eventBus'
+import { useGameHistory } from '@/composables/game/useGameHistory'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/gameplay/deck/cardUtil'
@@ -288,6 +289,10 @@ const cashOutCredit = ref(false)
 const cashInCredit = ref(false)
 const cashOutAmout = ref()
 const isCashOutDialog = ref(false)
+
+// Checking of history
+
+const { isHistoryEmpty } = useGameHistory()
 
 function handleBackToMainCta() {
   addCredit.value = true
