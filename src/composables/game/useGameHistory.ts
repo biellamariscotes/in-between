@@ -94,6 +94,16 @@ export function useGameHistory() {
     }
   }
 
+  /**
+   * Check if the history store is empty.
+   *
+   * @returns {boolean} - True if the history store is empty, false otherwise.
+   */
+
+  const isHistoryEmpty = computed(() => {
+    return historyStore.events.length === 0
+  })
+
   // Log events using friendly methods (without card parameters)
   const logBet = historyStore.logBet
   const logWin = historyStore.logWin
@@ -116,6 +126,7 @@ export function useGameHistory() {
     logRake,
     logSystemEvent,
     clearHistory,
+    isHistoryEmpty,
     getPlayerLogger,
   }
 }
