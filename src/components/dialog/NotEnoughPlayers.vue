@@ -29,8 +29,8 @@ const emit = defineEmits<{
 const isVisible = ref(true)
 
 const handleNewGame = () => {
-  gameStore.resetGame()
   startNewGame()
+  gameStore.resetGame()
   isVisible.value = false
   emit('close')
 }

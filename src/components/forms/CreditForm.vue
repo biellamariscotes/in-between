@@ -101,8 +101,7 @@ const handleSubmitCredit = () => {
     // Update game state in localStorage
     gameStore.saveStateToLocalStorage()
 
-    // Reset the form and hide it
-    creditValue.value = 0
+    creditValue.value = null
     creditForm.value = false
   } catch (error) {
     console.error('Error adding credits:', error)
