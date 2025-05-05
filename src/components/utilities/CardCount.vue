@@ -1,9 +1,7 @@
 <template>
   <div id="btn10" class="CardCount">
-    <h1>
-      {{ gameStore.getCardsLeft }} / 52 <br />
-      CARDS
-    </h1>
+    <h1>{{ gameStore.getCardsLeft }} / 52</h1>
+    <h1>CARDS</h1>
   </div>
 </template>
 
@@ -23,5 +21,6 @@ const gameStore = useGameStore()
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 </style>
