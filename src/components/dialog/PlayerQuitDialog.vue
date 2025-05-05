@@ -29,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import { useNotification } from '@/composables/game/useNotification'
 import { useGameStore } from '@/stores/game-store'
 import { usePlayerRegistration } from '@/stores/player'
 import { computed } from 'vue'
@@ -36,6 +37,7 @@ import { inject } from 'vue'
 
 const gameStore = useGameStore()
 const playerStore = usePlayerRegistration()
+const { showNotification } = useNotification()
 
 const props = defineProps(['isCancelDialog'])
 const emit = defineEmits(['update:isCancelDialog'])
@@ -57,6 +59,7 @@ const isQuitPlayer = () => {
   try {
     const index = gameStore.currentPlayerIndex
     const playerId = gameStore.players[index]?.id
+    const playerName = gameStore.players[index]?.name
 
     if (playerId) {
       playerStore.players = playerStore.players.filter((p) => p.id !== playerId)
@@ -69,7 +72,11 @@ const isQuitPlayer = () => {
 
       emit('update:isCancelDialog', false)
 
-      gameStore.startTurnTimer()
+      showNotification({
+        title: 'Player Left',
+        message: `${playerName} has quit the game`,
+        type: 'success',
+      })
 
       handleBackToMainCta()
     }

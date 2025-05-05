@@ -1,7 +1,11 @@
 <template>
   <div v-if="isVisible" class="game-over-modal">
     <div class="modal-content">
-      <img src="@/assets/img/game-zone/game-over.png" alt="Game Over" class="game-over-image" />
+      <img
+        src="@/assets/img/buttons/actions/game-over-1.png"
+        alt="Game Over"
+        class="game-over-image"
+      />
 
       <div class="button-container">
         <button class="game-button new-game-btn" @click="handleNewGame">Start New Game</button>
@@ -61,7 +65,7 @@ const handleNewGame = () => {
 }
 
 .game-over-image {
-  max-width: 80%;
+  max-width: 50%;
   height: auto;
   margin-bottom: 20px;
 }
