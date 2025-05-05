@@ -61,9 +61,10 @@ const closeMainMenu = () => {
 const showTour = ref(false)
 
 const toggleTour = () => {
+  console.log('Clicked????')
   showTour.value = !showTour.value
   mainMenuVisible.value = false
-  eventBus.emit('untoggle-main-menu', showTour.value) // 👈 Emits a unique event
+  eventBus.emit('untoggle-main-menu', showTour.value)
 
   if (showTour.value) {
     console.log('nagpaused')
@@ -89,10 +90,6 @@ watch(
   },
   { immediate: true },
 )
-// Method to toggle 'How to Play' dialog visibility
-// const toggleHowToPlay = () => {
-//   howToPlayVisible.value = !howToPlayVisible.value
-// }
 
 onMounted(() => {
   eventBus.on('toggle-main-menu', () => {
