@@ -95,6 +95,7 @@ const toggleTour = () => {
   console.log('🖱️ How To Play button clicked')
   showTour.value = true
   eventBus.emit('toggle-tour', showTour.value)
+  mainMenuVisible.value = false // CAUSE OF BUG
 }
 </script>
 
