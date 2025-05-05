@@ -39,13 +39,14 @@
     </div>
 
     <!--////// CARD COUNT //////  -->
-    <div>
-      <CardCount />
-    </div>
 
     <!-- ////// CARD DISPLAY AREA ////// -->
     <div class="game-zone">
       <div class="card-table">
+        <div>
+          <CardCount />
+        </div>
+
         <div id="btn4" class="game-cards">
           <!-- First face-up card display -->
           <div class="face-up-card card-draw-in" v-if="gameStore.faceUpCards[0]">
@@ -101,7 +102,15 @@
         :position="position"
         :isActive="activePlayers[position - 1]"
         :isCurrentPlayer="isCurrentPlayer(position - 1)"
+
         :playerName="players[position - 1]?.name?.toUpperCase() ?? ''"
+
+        :playerName="
+          activePlayers[position - 1] && typeof players[position - 1]?.name === 'string'
+            ? players[position - 1]!.name!.toUpperCase()
+            : ''
+        "
+
         :playerPoints="getPlayerPoints(position - 1)"
         :cards="playerCards[position - 1] || []"
       />
@@ -367,7 +376,11 @@ function updateCreditStatus() {
   const credits: number | { credits: number } | null = currentPlayerPot.value
 
   // Ensure credits is a number and handle null values
+
   const playerCredits = typeof credits === 'number' ? credits : 0
+
+  const playerCredits = typeof credits === 'number' ? credits : (credits ?? 0)
+
 
   console.log('Updating credit status, current credits:', playerCredits)
   addCredit.value = playerCredits > 99
@@ -492,7 +505,6 @@ onMounted(() => {
     mainMenuVisible.value = newValue
     console.log(mainMenuVisible.value)
   })
-  gameStore.startTurnTimer()
 })
 
 onUnmounted(() => {

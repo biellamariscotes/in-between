@@ -113,6 +113,7 @@ const allInTooltipText = computed(() => {
 const handleAllIn = () => {
   const allInAmount = Math.min(playerCredits.value, gameStore.communalPot)
   if (allInAmount > 0) {
+    gameStore.checkForEqualCardsAndProcess()
     gameStore.placeBet(allInAmount)
     gameStore.drawThirdCard()
   }
