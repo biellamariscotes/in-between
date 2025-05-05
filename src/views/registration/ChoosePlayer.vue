@@ -20,11 +20,11 @@
     <Button
       btnType="submit"
       variant="secondary"
-      class="next-btn"
+      style="margin-top: 2rem"
       @click="onSubmit"
       :disabled="!playerStore.playerCount"
     >
-      Start Game
+      Submit
     </Button>
   </div>
 </template>
