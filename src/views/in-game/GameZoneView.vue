@@ -28,9 +28,6 @@
       @close="handleNotEnoughPlayersClose"
     />
 
-    <!-- Main menu dialog component -->
-    <MainMenuDialog></MainMenuDialog>
-
     <!-- ////// CURRENT PLAYER TURN DISPLAY ////// -->
 
     <div class="turn-container">
@@ -243,6 +240,9 @@
         @click="toggleMainMenu"
       />
     </div>
+
+    <!-- Main menu dialog component -->
+    <MainMenuDialog v-show="!showTour"></MainMenuDialog>
 
     <!-- ////// PLAYER HISTORY////// -->
     <EventsHistory v-if="!isHistoryEmpty"></EventsHistory>
@@ -468,6 +468,29 @@ function setupGameDisplay() {
 // ─────────────────────────────
 
 const mainMenuVisible = ref(false)
+
+const showTour = ref(false)
+
+onMounted(() => {
+  eventBus.on('toggle-tour', (value) => {
+    console.log('📢 EventBus received in GameZoneView — value:', value)
+    showTour.value = value
+  })
+})
+
+onUnmounted(() => {
+  showTour.value = false
+  console.log('🔥 GameZoneView unmounted, removing EventBus listener', showTour.value)
+  eventBus.off('toggle-tour')
+})
+
+watch(showTour, (newValue) => {
+  if (newValue) {
+    gameStore.haltTurnTimer()
+  } else {
+    gameStore.resumeTurnTimer()
+  }
+})
 
 /**
  * Toggles main menu visibility via event bus

@@ -99,7 +99,7 @@ import { ref, watch } from 'vue'
 const props = defineProps({
   isOpen: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 })
 

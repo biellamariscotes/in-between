@@ -48,30 +48,12 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 import eventBus from '@/eventBus'
-import { useGameStore } from '@/stores/game-store'
 
-const gameStore = useGameStore()
 const mainMenuVisible = ref(false)
 const { startNewGame } = useGameLifeCycle()
 
 const closeMainMenu = () => {
   mainMenuVisible.value = false
-}
-
-const showTour = ref(false)
-
-const toggleTour = () => {
-  console.log('Clicked????')
-  showTour.value = !showTour.value
-  mainMenuVisible.value = false
-  eventBus.emit('untoggle-main-menu', showTour.value)
-
-  if (showTour.value) {
-    console.log('nagpaused')
-    gameStore.haltTurnTimer()
-  } else {
-    gameStore.resumeTurnTimer()
-  }
 }
 
 const props = defineProps({
@@ -104,6 +86,16 @@ onUnmounted(() => {
 watch(mainMenuVisible, (newValue) => {
   eventBus.emit('untoggle-main-menu', newValue)
 })
+
+const showTour = ref(false)
+
+console.log('First state: ', showTour.value)
+
+const toggleTour = () => {
+  console.log('🖱️ How To Play button clicked')
+  showTour.value = true
+  eventBus.emit('toggle-tour', showTour.value)
+}
 </script>
 
 <style scoped>
