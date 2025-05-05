@@ -97,8 +97,8 @@
         :isActive="activePlayers[position - 1]"
         :isCurrentPlayer="isCurrentPlayer(position - 1)"
         :playerName="
-          activePlayers[position - 1] && players[position - 1]?.name
-            ? players[position - 1]?.name.toUpperCase()
+          activePlayers[position - 1] && typeof players[position - 1]?.name === 'string'
+            ? players[position - 1]!.name!.toUpperCase()
             : ''
         "
         :playerPoints="getPlayerPoints(position - 1)"
@@ -244,7 +244,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, provide, readonly } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, provide } from 'vue'
 import GameTable from '@/assets/img/game-zone/table.svg'
 import MysteryCard from '@/assets/img/cards/special-cards/mystery-card.svg'
 import GameCta from '@/components/gameplay-actions/GameCta.vue'
@@ -327,7 +327,7 @@ function updateCreditStatus() {
   const credits: number | { credits: number } | null = currentPlayerPot.value
 
   // Ensure credits is a number and handle null values
-  const playerCredits = typeof credits === 'number' ? credits : (credits?.credits ?? 0)
+  const playerCredits = typeof credits === 'number' ? credits : (credits ?? 0)
 
   console.log('Updating credit status, current credits:', playerCredits)
   addCredit.value = playerCredits > 99
