@@ -31,6 +31,7 @@ declare module 'vue' {
     GameOverModal: typeof import('./src/components/dialog/GameOverModal.vue')['default']
     Howtoplay: typeof import('./src/components/dialog/howtoplay.vue')['default']
     MainMenuDialog: typeof import('./src/components/dialog/MainMenuDialog.vue')['default']
+    NotEnoughPlayers: typeof import('./src/components/dialog/NotEnoughPlayers.vue')['default']
     PlayerForm: typeof import('./src/components/forms/PlayerForm.vue')['default']
     PlayerHand: typeof import('./src/components/game-table/PlayerHand.vue')['default']
     PlayerPosition: typeof import('./src/components/game-table/PlayerPosition.vue')['default']

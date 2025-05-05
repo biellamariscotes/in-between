@@ -22,6 +22,12 @@
     <!-- Game Over Modal -->
     <GameOverModal :show="showGameOverModal" @close="showGameOverModal = false" />
 
+    <NotEnoughPlayers
+      v-if="showNotEnoughPlayersModal"
+      :message="'Minimum of 3 players required to continue playing.'"
+      @close="handleNotEnoughPlayersClose"
+    />
+
     <!-- Main menu dialog component -->
     <MainMenuDialog></MainMenuDialog>
 
@@ -273,6 +279,7 @@ import {
 } from '@/utils/gameplay/player/playerUtil'
 import CardCount from '@/components/utilities/CardCount.vue'
 import EventsHistory from '@/components/utilities/EventsHistory.vue'
+import router from '@/router'
 
 // Add game over modal state
 const showGameOverModal = ref(false)
@@ -291,9 +298,41 @@ const cashInCredit = ref(false)
 const cashOutAmout = ref()
 const isCashOutDialog = ref(false)
 
+
+// Add with other refs
+const showNotEnoughPlayersModal = ref(false)
+
+// Add with other methods
+const handleNotEnoughPlayersClose = () => {
+  showNotEnoughPlayersModal.value = false
+  gameStore.resetGame()
+  router.push('/')
+}
+
+watch(
+  [() => gameStore.players.length, () => gameStore.gameStarted],
+  ([playerCount, isStarted]) => {
+    if (playerCount <= 2 && isStarted) {
+      showNotEnoughPlayersModal.value = true
+      gameStore.insufficientPlayers = true
+      gameStore.stopTurnTimer()
+      gameStore.saveStateToLocalStorage()
+    }
+  },
+  { immediate: true },
+)
+
+onMounted(() => {
+  if (gameStore.insufficientPlayers || (gameStore.players.length <= 2 && gameStore.gameStarted)) {
+    showNotEnoughPlayersModal.value = true
+    gameStore.stopTurnTimer()
+  }
+})
+
 // Checking of history
 
 const { isHistoryEmpty } = useGameHistory()
+
 
 function handleBackToMainCta() {
   addCredit.value = true
@@ -575,6 +614,17 @@ const handleSubmitCashOut = () => {
       }
     }
 
+    const player = gameStore.players[index]
+    if (!player) {
+      console.error('Player does not exist')
+      return
+    }
+
+    if (cashOutAmout.value > (player.credits ?? 0)) {
+      console.log('Cash-out amount exceeds available credits') // make this alert latur
+      return
+    }
+
     // Update in-game credits
     gameStore.players[index].credits =
       (gameStore.players[index].credits ?? 0) - Number(cashOutAmout.value)
@@ -589,8 +639,9 @@ const handleSubmitCashOut = () => {
           currentCredits - Number(cashOutAmout.value)
       }
 
-      cashOutAmout.value = 0
+      cashOutAmout.value = null
       isCashOutDialog.value = false
+      cashOutCredit.value = false
     }
   } catch (error) {
     console.error('Error adding credits:', error)
@@ -598,10 +649,22 @@ const handleSubmitCashOut = () => {
 }
 
 const handleCashOutAndQuit = () => {
-  handleSubmitCashOut()
   try {
+    handleSubmitCashOut()
+
     const index = gameStore.currentPlayerIndex
     const playerId = gameStore.players[index]?.id
+
+    const player = gameStore.players[index]
+    if (!player) {
+      console.error('Player does not exist')
+      return
+    }
+
+    if (cashOutAmout.value > (player.credits ?? 0)) {
+      console.log('Cash-out amount exceeds available credits') // make this alert latur
+      return
+    }
 
     if (playerId) {
       playerStoreRegistration.players = playerStoreRegistration.players.filter(
@@ -614,7 +677,9 @@ const handleCashOutAndQuit = () => {
 
       gameStore.saveStateToLocalStorage()
 
+      gameStore.startTurnTimer()
       isCashOutDialog.value = false
+      cashOutCredit.value = false
     }
   } catch (error) {
     console.error('Error removing player:', error)

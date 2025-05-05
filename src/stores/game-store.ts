@@ -47,6 +47,7 @@ const createInitialState = (): GameState => ({
   turnTimerInterval: null,
   turnTimerHalted: false,
   isMultiplayer: true,
+  insufficientPlayers: false,
 })
 
 export const useGameStore = defineStore('game', {
@@ -197,9 +198,47 @@ export const useGameStore = defineStore('game', {
       this.freshStart = true
     },
 
-    // gameOver() {
-    //   //
-    // },
+    checkMinimumPlayers() {
+      if (this.players.length <= 2 && this.gameStarted) {
+        this.insufficientPlayers = true
+        this.message = 'Not enough players to continue. Starting new game...'
+
+        // Save final stats before reset
+        const finalStats = this.getGameStats()
+        console.log('Final game stats:', finalStats)
+
+        // Reset the game after a short delay
+        setTimeout(() => {
+          this.resetGame()
+
+          // Redirect to home/setup page
+          // Note: You'll need to implement this navigation in your Vue component
+          this.message = 'Please set up a new game with more players.'
+        }, TRANSITION_DELAY)
+
+        return true
+      }
+      return false
+    },
+
+    // Modify the gameOver action
+    endGame() {
+      this.gameOver = true
+      this.stopTurnTimer()
+
+      // Check if we need to force restart due to low player count
+      if (this.checkMinimumPlayers()) {
+        return
+      }
+
+      // Handle normal game over scenario
+      this.message = 'Game Over! Final standings:'
+      const stats = this.getGameStats()
+      console.log('Game Over Stats:', stats)
+
+      // Save final state
+      this.saveStateToLocalStorage()
+    },
 
     // ─────────────────────────────
     // PLAYER TURN FUNCTIONS
@@ -352,7 +391,7 @@ export const useGameStore = defineStore('game', {
       // Check if game should end
       if (this.deck.length < 3) {
         this.message += ' Not enough cards to continue. Game over.'
-        this.gameOver = true
+        this.endGame()
         return
       }
 

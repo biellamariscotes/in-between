@@ -32,12 +32,15 @@
 import { useGameStore } from '@/stores/game-store'
 import { usePlayerRegistration } from '@/stores/player'
 import { computed } from 'vue'
+import { inject } from 'vue'
 
 const gameStore = useGameStore()
 const playerStore = usePlayerRegistration()
 
 const props = defineProps(['isCancelDialog'])
 const emit = defineEmits(['update:isCancelDialog'])
+
+const handleBackToMainCta = inject('addCredit') as () => void
 
 // Create computed property for two-way binding
 const dialogVisible = computed({
@@ -65,6 +68,10 @@ const isQuitPlayer = () => {
       gameStore.saveStateToLocalStorage()
 
       emit('update:isCancelDialog', false)
+
+      gameStore.startTurnTimer()
+
+      handleBackToMainCta()
     }
   } catch (error) {
     console.error('Error removing player:', error)
