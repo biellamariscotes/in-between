@@ -101,11 +101,7 @@
         :position="position"
         :isActive="activePlayers[position - 1]"
         :isCurrentPlayer="isCurrentPlayer(position - 1)"
-        :playerName="
-          activePlayers[position - 1] && players[position - 1]?.name
-            ? players[position - 1]?.name.toUpperCase()
-            : ''
-        "
+        :playerName="players[position - 1]?.name?.toUpperCase() ?? ''"
         :playerPoints="getPlayerPoints(position - 1)"
         :cards="playerCards[position - 1] || []"
       />
@@ -249,7 +245,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, provide } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, provide, h } from 'vue'
 import GameTable from '@/assets/img/game-zone/table.svg'
 import MysteryCard from '@/assets/img/cards/special-cards/mystery-card.svg'
 import GameCta from '@/components/gameplay-actions/GameCta.vue'
@@ -279,6 +275,7 @@ import {
 import CardCount from '@/components/utilities/CardCount.vue'
 import EventsHistory from '@/components/utilities/EventsHistory.vue'
 import router from '@/router'
+import { ElNotification } from 'element-plus'
 
 // Add game over modal state
 const showGameOverModal = ref(false)
@@ -296,7 +293,6 @@ const cashOutCredit = ref(false)
 const cashInCredit = ref(false)
 const cashOutAmout = ref()
 const isCashOutDialog = ref(false)
-
 
 // Add with other refs
 const showNotEnoughPlayersModal = ref(false)
@@ -332,7 +328,6 @@ onMounted(() => {
 
 const { isHistoryEmpty } = useGameHistory()
 
-
 function handleBackToMainCta() {
   addCredit.value = true
 }
@@ -365,7 +360,7 @@ function updateCreditStatus() {
   const credits: number | { credits: number } | null = currentPlayerPot.value
 
   // Ensure credits is a number and handle null values
-  const playerCredits = typeof credits === 'number' ? credits : (credits?.credits ?? 0)
+  const playerCredits = typeof credits === 'number' ? credits : 0
 
   console.log('Updating credit status, current credits:', playerCredits)
   addCredit.value = playerCredits > 99
@@ -638,6 +633,12 @@ const handleSubmitCashOut = () => {
         playerStoreRegistration.players[playerIndex].credits =
           currentCredits - Number(cashOutAmout.value)
       }
+
+      ElNotification({
+        title: 'Success',
+        message: 'This is a success message',
+        type: 'success',
+      })
 
       cashOutAmout.value = null
       isCashOutDialog.value = false
