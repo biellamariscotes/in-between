@@ -33,13 +33,14 @@
     </div>
 
     <!--////// CARD COUNT //////  -->
-    <div>
-      <CardCount />
-    </div>
 
     <!-- ////// CARD DISPLAY AREA ////// -->
     <div class="game-zone">
       <div class="card-table">
+        <div>
+          <CardCount />
+        </div>
+
         <div id="btn4" class="game-cards">
           <!-- First face-up card display -->
           <div class="face-up-card card-draw-in" v-if="gameStore.faceUpCards[0]">
