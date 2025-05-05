@@ -34,7 +34,7 @@
     </div>
 
     <div class="btn-group">
-      <Button btnType="submit" variant="secondary">Start Game</Button>
+      <Button btnType="submit" variant="secondary">Continue</Button>
     </div>
   </el-form>
 </template>
