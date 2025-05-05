@@ -52,19 +52,20 @@ const createInitialState = (): GameState => ({
 export const useGameStore = defineStore('game', {
   state: (): GameState => {
     // Check if we should use saved state
-    if (!this?.freshStart) {
-      try {
-        const savedState = localStorage.getItem('gameState')
-        if (savedState) {
-          return JSON.parse(savedState) as GameState
+    try {
+      const savedStateJson = localStorage.getItem('gameState')
+      if (savedStateJson) {
+        const savedState = JSON.parse(savedStateJson) as GameState
+        // Check if the saved state is valid
+        if (!savedState.freshStart) {
+          return savedState
         }
-      } catch (e) {
-        console.error('Failed to parse saved game state:', e)
       }
+    } catch (e) {
+      console.error('Failed to parse saved game state:', e)
     }
     return createInitialState()
   },
-
   getters: {
     getTotalPot: (state) => {
       return state.players.reduce((acc, player) => acc + (player.credits ?? 0), 0)

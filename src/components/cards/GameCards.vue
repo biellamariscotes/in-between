@@ -109,14 +109,5 @@ defineProps<{
   width: 100%;
 }
 
-.credit-display {
-  color: white;
-  text-align: center;
-  margin-top: 15px;
-  /* background-color: rgba(0, 0, 0, 0.7); */
-  padding: 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-}
+
 </style>
