@@ -300,6 +300,8 @@ const cashInCredit = ref(false)
 const cashOutAmout = ref()
 const isCashOutDialog = ref(false)
 const notificationShown = ref(false)
+const showTour = ref(false)
+const mainMenuVisible = ref(false)
 
 // Add with other refs
 const showNotEnoughPlayersModal = ref(false)
@@ -467,8 +469,6 @@ function setupGameDisplay() {
 // Main Menu Management
 // ─────────────────────────────
 
-const mainMenuVisible = ref(false)
-
 /**
  * Toggles main menu visibility via event bus
  */
@@ -556,9 +556,24 @@ watch(mainMenuVisible, (newValue) => {
   if (newValue) {
     gameStore.haltTurnTimer()
   } else {
-    gameStore.resumeTurnTimer()
+    if ((showTour.value = true))
+    gameStore.haltTurnTimer()
   }
 })
+
+// watch(showTour, (tourFinished) => {
+//   if(!tourFinished) {
+//     gameStore.resumeTurnTimer()
+//   }
+// })
+
+// watch(showTour, (newValue) => {
+//   if (newValue) {
+//     gameStore.haltTurnTimer()
+//   } else {
+//     gameStore.resumeTurnTimer()
+//   }
+// })
 
 // Watch: Game messages to display appropriate modals
 watch(

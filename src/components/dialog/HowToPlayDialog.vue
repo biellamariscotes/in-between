@@ -95,6 +95,8 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useGameStore } from '@/stores/game-store'
+const gameStore = useGameStore()
 
 const props = defineProps({
   isOpen: {
@@ -113,6 +115,10 @@ watch(
   () => props.isOpen,
   (newValue) => {
     open.value = newValue
+    if (!newValue) {
+      console.log('tetetetet')
+      gameStore.resumeTurnTimer()
+    }
   },
   { immediate: true },
 )

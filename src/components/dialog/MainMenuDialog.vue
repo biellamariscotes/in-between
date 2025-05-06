@@ -68,8 +68,6 @@ const toggleTour = () => {
 
   if (showTour.value) {
     console.log('nagpaused')
-    gameStore.haltTurnTimer()
-  } else {
     gameStore.resumeTurnTimer()
   }
 }
