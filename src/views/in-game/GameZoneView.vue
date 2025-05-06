@@ -261,6 +261,7 @@ import { useGameStore } from '@/stores/game-store'
 import GameOverModal from '@/components/dialog/GameOverModal.vue'
 import eventBus from '@/eventBus'
 import { useGameHistory } from '@/composables/game/useGameHistory'
+import { useNotification } from '@/composables/game/useNotification'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/gameplay/deck/cardUtil'
@@ -290,6 +291,7 @@ const showGameOverModal = ref(false)
 const gameStore = useGameStore()
 // const { startNewGame } = useGameLifeCycle()
 const playerStoreRegistration = usePlayerRegistration()
+const { showNotification } = useNotification()
 
 // Credit management flags
 const addCredit = ref(false)
@@ -297,7 +299,7 @@ const cashOutCredit = ref(false)
 const cashInCredit = ref(false)
 const cashOutAmout = ref()
 const isCashOutDialog = ref(false)
-
+const notificationShown = ref(false)
 
 // Add with other refs
 const showNotEnoughPlayersModal = ref(false)
@@ -305,8 +307,13 @@ const showNotEnoughPlayersModal = ref(false)
 // Add with other methods
 const handleNotEnoughPlayersClose = () => {
   showNotEnoughPlayersModal.value = false
+  gameStore.stopTurnTimer()
   gameStore.resetGame()
   router.push('/')
+}
+
+if (showNotEnoughPlayersModal.value) {
+  gameStore.stopTurnTimer()
 }
 
 watch(
@@ -332,7 +339,6 @@ onMounted(() => {
 // Checking of history
 
 const { isHistoryEmpty } = useGameHistory()
-
 
 function handleBackToMainCta() {
   addCredit.value = true
@@ -621,6 +627,11 @@ const handleSubmitCashOut = () => {
     }
 
     if (cashOutAmout.value > (player.credits ?? 0)) {
+      showNotification({
+        title: 'Invalid Cash-out',
+        message: 'Cash-out amount exceeds available credits',
+        type: 'warning',
+      })
       console.log('Cash-out amount exceeds available credits') // make this alert latur
       return
     }
@@ -639,6 +650,15 @@ const handleSubmitCashOut = () => {
           currentCredits - Number(cashOutAmout.value)
       }
 
+      if (!notificationShown.value) {
+        showNotification({
+          title: 'Cash-out Confirm',
+          message: 'Cash-out successfully!',
+          type: 'success',
+        })
+        notificationShown.value = true
+      }
+
       cashOutAmout.value = null
       isCashOutDialog.value = false
       cashOutCredit.value = false
@@ -654,6 +674,7 @@ const handleCashOutAndQuit = () => {
 
     const index = gameStore.currentPlayerIndex
     const playerId = gameStore.players[index]?.id
+    const playerName = gameStore.players[index]?.name
 
     const player = gameStore.players[index]
     if (!player) {
@@ -677,7 +698,12 @@ const handleCashOutAndQuit = () => {
 
       gameStore.saveStateToLocalStorage()
 
-      gameStore.startTurnTimer()
+      showNotification({
+        title: 'Player Left',
+        message: `${playerName} has quit the game`,
+        type: 'success',
+      })
+
       isCashOutDialog.value = false
       cashOutCredit.value = false
     }

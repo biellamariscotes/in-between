@@ -45,6 +45,7 @@ import { ref } from 'vue'
 import { useGameStore } from '@/stores/game-store'
 import { usePlayerRegistration } from '@/stores/player'
 import CreditActions from '../currency/CreditActions.vue'
+import { useNotification } from '@/composables/game/useNotification'
 
 // const showAllInConfirmation = ref(false)
 const creditValue = ref()
@@ -52,7 +53,7 @@ const gameStore = useGameStore()
 const playerStore = usePlayerRegistration()
 
 const creditForm = ref(false)
-// const isCancelDialog = ref(false)
+const { showNotification } = useNotification()
 
 const handleAddCredit = () => {
   creditForm.value = true
@@ -100,6 +101,12 @@ const handleSubmitCredit = () => {
 
     // Update game state in localStorage
     gameStore.saveStateToLocalStorage()
+
+    showNotification({
+      title: 'Player Cash-In',
+      message: `Player Cash-in ${creditValue.value}`,
+      type: 'success',
+    })
 
     creditValue.value = null
     creditForm.value = false
