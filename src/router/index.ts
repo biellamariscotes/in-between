@@ -32,18 +32,33 @@ const routes = [
       },
     ],
   },
+
+  {
+    path: '/admin',
+    component: GameLayout,
+    children: [
+      {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: () => import('@/views/admin/DashboardView.vue'),
+        meta: { title: 'In-Between', style: 'game-zone/game-zone.scss', requireGuest: true },
+      },
+    ],
+  },
+
   {
     path: '/game-zone',
     component: GameLayout,
     children: [
       {
-        path: '/game-zone',
+        path: '',
         name: 'game-zone',
         component: () => import('@/views/in-game/GameZoneView.vue'),
-        meta: { title: 'In-Between', style: 'game-zone/game-zone.scss', requireGuest: true },
+        meta: { title: 'Dashboard', style: 'game-zone/game-zone.scss', requireGuest: true },
       },
     ],
   },
+
   // Add a catch-all route for undefined paths
   {
     path: '/:pathMatch(.*)*', // Catch-all route

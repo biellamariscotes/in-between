@@ -80,4 +80,6 @@ export interface GameState {
   rakeAmount: number
 
   insufficientPlayers: boolean
+
+  isAllInBet?: boolean
 }
