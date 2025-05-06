@@ -1,5 +1,5 @@
 <template>
-  <el-tour v-model="open">
+  <el-tour v-model="open" :show-close="false" @finish="finishHowToPlay">
     <!-- START GAME -->
     <template v-if="isElementVisible('#btn1')">
       <el-tour-step
@@ -90,16 +90,25 @@
         description="This section provides real-time information on the total number of cards in the shoe and how many remain in play. It serves as a crucial reference for players, allowing them to track card depletion and strategize accordingly."
       />
     </template>
+
+    <template v-if="isElementVisible('#btn11')">
+      <el-tour-step
+        target="#btn11"
+        title="HISTORY"
+        description="This section provides comprehensive real-time insights into game history, including player actions such as wins, folds, and bets, ensuring transparency and strategic analysis for all participants"
+      />
+    </template>
   </el-tour>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import eventBus from '@/eventBus'
 
 const props = defineProps({
   isOpen: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 })
 
@@ -116,4 +125,12 @@ watch(
   },
   { immediate: true },
 )
+
+const showTour = ref(false)
+
+const finishHowToPlay = () => {
+  console.log('📢 Tour finished — ending How To Play mode.')
+  showTour.value = false
+  eventBus.emit('toggle-tour', false)
+}
 </script>

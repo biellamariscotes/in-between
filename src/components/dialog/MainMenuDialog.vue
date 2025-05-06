@@ -51,27 +51,12 @@ import eventBus from '@/eventBus'
 import { useGameStore } from '@/stores/game-store'
 
 const gameStore = useGameStore()
+
 const mainMenuVisible = ref(false)
 const { startNewGame } = useGameLifeCycle()
 
 const closeMainMenu = () => {
   mainMenuVisible.value = false
-}
-
-const showTour = ref(false)
-
-const toggleTour = () => {
-  console.log('Clicked????')
-  showTour.value = !showTour.value
-  mainMenuVisible.value = false
-  eventBus.emit('untoggle-main-menu', showTour.value)
-
-  if (showTour.value) {
-    console.log('nagpaused')
-    gameStore.haltTurnTimer()
-  } else {
-    gameStore.resumeTurnTimer()
-  }
 }
 
 const props = defineProps({
@@ -104,6 +89,23 @@ onUnmounted(() => {
 watch(mainMenuVisible, (newValue) => {
   eventBus.emit('untoggle-main-menu', newValue)
 })
+
+const showTour = ref(false)
+
+console.log('First state: ', showTour.value)
+
+const toggleTour = () => {
+  console.log('🖱️ How To Play button clicked')
+  showTour.value = !showTour.value
+  eventBus.emit('toggle-tour', showTour.value)
+  mainMenuVisible.value = false // CAUSE OF BUG
+
+  if (showTour.value) {
+    gameStore.haltTurnTimer()
+  } else {
+    gameStore.resumeTurnTimer()
+  }
+}
 </script>
 
 <style scoped>
