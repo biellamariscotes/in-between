@@ -1,5 +1,5 @@
 <template>
-  <el-tour v-model="open" @finish="finishHowToPlay">
+  <el-tour v-model="open" :show-close="false" @finish="finishHowToPlay">
     <!-- START GAME -->
     <template v-if="isElementVisible('#btn1')">
       <el-tour-step
@@ -88,6 +88,14 @@
         target="#btn10"
         title="CARD SHOE"
         description="This section provides real-time information on the total number of cards in the shoe and how many remain in play. It serves as a crucial reference for players, allowing them to track card depletion and strategize accordingly."
+      />
+    </template>
+
+    <template v-if="isElementVisible('#btn11')">
+      <el-tour-step
+        target="#btn11"
+        title="HISTORY"
+        description="This section provides comprehensive real-time insights into game history, including player actions such as wins, folds, and bets, ensuring transparency and strategic analysis for all participants"
       />
     </template>
   </el-tour>

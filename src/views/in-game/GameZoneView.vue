@@ -579,6 +579,13 @@ watch(mainMenuVisible, (newValue) => {
   if (newValue) {
     gameStore.haltTurnTimer()
   } else {
+    if (!showTour.value) {
+      gameStore.resumeTurnTimer()
+    }
+  }
+})
+watch(showTour, (tourFinished) => {
+  if (!tourFinished) {
     gameStore.resumeTurnTimer()
   }
 })

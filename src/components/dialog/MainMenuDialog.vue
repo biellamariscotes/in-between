@@ -48,6 +48,9 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 import eventBus from '@/eventBus'
+import { useGameStore } from '@/stores/game-store'
+
+const gameStore = useGameStore()
 
 const mainMenuVisible = ref(false)
 const { startNewGame } = useGameLifeCycle()
@@ -93,9 +96,15 @@ console.log('First state: ', showTour.value)
 
 const toggleTour = () => {
   console.log('🖱️ How To Play button clicked')
-  showTour.value = true
+  showTour.value = !showTour.value
   eventBus.emit('toggle-tour', showTour.value)
   mainMenuVisible.value = false // CAUSE OF BUG
+
+  if (showTour.value) {
+    gameStore.haltTurnTimer()
+  } else {
+    gameStore.resumeTurnTimer()
+  }
 }
 </script>
 
