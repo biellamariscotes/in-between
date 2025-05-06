@@ -76,8 +76,6 @@ export function useTaxation() {
     taxRate, // reactive computed
     taxHistory, // reactive computed
     taxStats, // reactive computed
-
-    // Dashboard specific
     getRecentTaxEvents,
   }
 }
