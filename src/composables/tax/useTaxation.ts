@@ -1,23 +1,17 @@
-/**
- * Composable to handle tax collection on all-in wins
- * This is used to integrate with the game flow
- */
 import { useTaxStore } from '@/stores/tax-store'
 import { useGameStore } from '@/stores/game-store'
-import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 
 export function useTaxation() {
   const taxStore = useTaxStore()
   const gameStore = useGameStore()
 
-  // Initialize tax store if not already initialized
-  if (!taxStore.initialized) {
-    taxStore.initialize()
-  }
-
-  // Get reactive references to store values
-  const { roundsPlayed } = storeToRefs(gameStore)
-  const { totalTaxCollected, taxRate, taxHistory } = storeToRefs(taxStore)
+  // Get reactive references to store values using computed
+  const roundsPlayed = computed(() => gameStore.roundsPlayed)
+  const totalTaxCollected = computed(() => taxStore.totalTaxCollected)
+  const taxRate = computed(() => taxStore.taxRate)
+  const taxHistory = computed(() => taxStore.taxHistory)
+  const taxStats = computed(() => taxStore.getTaxStats) // Access the getter correctly
 
   /**
    * Process tax for a winning player
@@ -34,7 +28,6 @@ export function useTaxation() {
     if (!isAllIn || winAmount <= 0) {
       return 0
     }
-    // Collect tax and return the tax amount
     return taxStore.collectTax(playerId, winAmount, roundsPlayed.value)
   }
 
@@ -48,24 +41,8 @@ export function useTaxation() {
     if (!isAllIn || winAmount <= 0) {
       return winAmount
     }
-    // Calculate tax amount (using reactive taxRate)
     const taxAmount = Math.round(winAmount * taxRate.value * 100) / 100
-    // Return win amount after tax
     return winAmount - taxAmount
-  }
-
-  /**
-   * Get tax statistics for display
-   */
-  const getTaxStats = () => {
-    return taxStore.getTaxStats
-  }
-
-  /**
-   * Get recent tax events
-   */
-  const getRecentTaxEvents = (count = 5) => {
-    return taxStore.getRecentTaxEvents(count)
   }
 
   /**
@@ -82,15 +59,25 @@ export function useTaxation() {
     taxStore.resetTax()
   }
 
+  /**
+   * Get recent tax events
+   * @param count Number of events to return (default 5)
+   */
+  const getRecentTaxEvents = (count = 5) => {
+    return taxStore.getRecentTaxEvents(count)
+  }
+
   return {
     processTax,
     calculateAfterTaxWin,
-    getTaxStats,
-    getRecentTaxEvents,
     getTaxByPlayer,
     resetTaxData,
-    totalTaxCollected, // Return reactive reference
-    taxRate: taxStore.getTaxRate, // Using getter for consistency with current code
-    taxHistory, // Return reactive reference
+    totalTaxCollected, // reactive computed
+    taxRate, // reactive computed
+    taxHistory, // reactive computed
+    taxStats, // reactive computed
+
+    // Dashboard specific
+    getRecentTaxEvents,
   }
 }

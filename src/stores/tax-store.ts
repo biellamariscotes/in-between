@@ -1,8 +1,3 @@
-/**
- * Manages the taxation of all-in wins
- * Documentation: src/docs/stores/taxStore.md
- */
-
 import { defineStore } from 'pinia'
 import { usePlayerRegistration } from '@/stores/player'
 
@@ -27,7 +22,9 @@ export const useTaxStore = defineStore('tax', {
     try {
       const savedState = localStorage.getItem('taxState')
       if (savedState) {
-        return JSON.parse(savedState) as TaxState
+        const parsedState = JSON.parse(savedState) as TaxState
+        parsedState.initialized = true // Set initialized flag to true
+        return parsedState
       }
     } catch (e) {
       console.error('Failed to parse saved tax state:', e)
@@ -76,29 +73,9 @@ export const useTaxStore = defineStore('tax', {
   },
 
   actions: {
-    initialize() {
-      if (!this.initialized) {
-        this.loadTaxState()
-        this.initialized = true
-      }
-    },
-
     // Save state to localStorage
     saveTaxState() {
       localStorage.setItem('taxState', JSON.stringify(this.$state))
-    },
-
-    // Load state from localStorage
-    loadTaxState() {
-      try {
-        const savedState = localStorage.getItem('taxState')
-        if (savedState) {
-          const parsedState = JSON.parse(savedState) as TaxState
-          this.$patch(parsedState)
-        }
-      } catch (e) {
-        console.error('Failed to load tax state:', e)
-      }
     },
 
     // Update tax rate
@@ -114,7 +91,6 @@ export const useTaxStore = defineStore('tax', {
 
     // Collect tax on an all-in win
     collectTax(playerId: string | number | undefined, winAmount: number, roundNumber: number) {
-      // If win amount is 0 or negative, no tax is collected
       if (winAmount <= 0) return 0
 
       const playerStore = usePlayerRegistration()
@@ -125,24 +101,24 @@ export const useTaxStore = defineStore('tax', {
         return 0
       }
 
-      // Calculate tax amount (rounded to 2 decimal places)
       const taxAmount = Math.round(winAmount * this.taxRate * 100) / 100
 
-      // Update total tax collected
-      this.totalTaxCollected += taxAmount
-
-      // Add to tax history with proper type handling for playerId
-      this.taxHistory.push({
-        playerName: player.name || `Player ${String(playerId)}`,
-        playerId: player.id || String(playerId), // Ensure proper type conversion
-        amount: taxAmount,
-        timestamp: Date.now(),
-        roundNumber,
+      // Use $patch() to update state reactively
+      this.$patch({
+        totalTaxCollected: this.totalTaxCollected + taxAmount,
+        taxHistory: [
+          ...this.taxHistory,
+          {
+            playerName: player.name || `Player ${String(playerId)}`,
+            playerId: player.id || String(playerId),
+            amount: taxAmount,
+            timestamp: Date.now(),
+            roundNumber,
+          },
+        ],
       })
 
-      // Save state
       this.saveTaxState()
-
       return taxAmount
     },
 
