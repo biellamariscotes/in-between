@@ -697,25 +697,28 @@ const handleSubmitCashOut = () => {
     console.error('Error adding credits:', error)
   }
 }
-
 const handleCashOutAndQuit = () => {
   try {
-    handleSubmitCashOut()
-
     const index = gameStore.currentPlayerIndex
-    const playerId = gameStore.players[index]?.id
-    const playerName = gameStore.players[index]?.name
-
     const player = gameStore.players[index]
+    const playerId = player?.id
+    const playerName = player?.name
+
     if (!player) {
       console.error('Player does not exist')
       return
     }
 
     if (cashOutAmout.value > (player.credits ?? 0)) {
-      console.log('Cash-out amount exceeds available credits') // make this alert latur
+      showNotification({
+        title: 'Invalid Cash-out',
+        message: 'Cash-out amount exceeds available credits',
+        type: 'warning',
+      })
       return
     }
+
+    handleSubmitCashOut()
 
     if (playerId) {
       playerStoreRegistration.players = playerStoreRegistration.players.filter(
@@ -736,6 +739,11 @@ const handleCashOutAndQuit = () => {
 
       isCashOutDialog.value = false
       cashOutCredit.value = false
+
+      // Reset timer for next player
+      gameStore.turnTimeRemaining = 20
+      gameStore.stopTurnTimer()
+      gameStore.startTurnTimer()
     }
   } catch (error) {
     console.error('Error removing player:', error)
