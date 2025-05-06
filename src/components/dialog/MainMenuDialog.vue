@@ -39,7 +39,7 @@
       <div class="dialog-footer"></div>
     </template>
   </el-dialog>
-  <HowToPlay :is-open="showTour" />
+  <HowToPlayDialog :is-open="showTour" />
 
   <!-- Additional 'How to Play' Dialog -->
 </template>
