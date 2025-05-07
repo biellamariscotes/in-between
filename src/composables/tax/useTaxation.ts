@@ -71,6 +71,9 @@ export function useTaxation() {
     [...taxStore.taxHistory].sort((a, b) => b.timestamp - a.timestamp).slice(0, 20),
   )
 
+  /**
+   * Get the state from the local storage
+   */
   const updateTaxStoreFromLocalStorage = () => {
     const savedState = localStorage.getItem('taxState')
     if (savedState) {
