@@ -6,6 +6,7 @@ import YouFoldImage from '@/assets/img/outcomes/you-fold.png'
 import YouWinSound from '@/assets/sfx/voices/you-win.wav'
 import YouLoseSound from '@/assets/sfx/voices/you-lose.wav'
 import YouFoldSound from '@/assets/sfx/outcomes/lose_1.wav'
+
 const youWinSound = new Audio(YouWinSound)
 const youLoseSound = new Audio(YouLoseSound)
 const youFoldSound = new Audio(YouFoldSound)
@@ -104,3 +105,22 @@ export function showFoldModal() {
     }
   }, MODAL_DISPLAY_TIME)
 }
+
+// export function showPenaltyModal() {
+//   const gameStore = useGameStore()
+
+//   gameStore.stopTurnTimer()
+
+//   showModal(YouPenaltyImage, 'penalty')
+//   youFoldSound.currentTime = 0
+//   youFoldSound.play().catch((error) => {
+//     console.error('Error playing sound:', error)
+//   })
+//   setTimeout(() => {
+//     if (gameStore.isMultiplayer && gameStore.gameStarted && !gameStore.gameOver) {
+//       setTimeout(() => {
+//         gameStore.startTurnTimer()
+//       }, 500)
+//     }
+//   }, MODAL_DISPLAY_TIME)
+// }
