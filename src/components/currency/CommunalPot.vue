@@ -18,7 +18,7 @@
 
     <!-- Pot Value Display -->
     <div class="pot-amount__value">
-      <span class="pot-amount__value--total">{{ potAmount }}</span>
+      <span class="pot-amount__value--total">{{ potAmount.toLocaleString() }}</span>
     </div>
   </div>
 </template>
