@@ -7,6 +7,8 @@
         class="game-over-image"
       />
 
+      <h1 class="gameover-feedback">Remaining Pot Goes to Banker</h1>
+
       <div class="button-container">
         <button class="game-button new-game-btn" @click="handleNewGame">Start New Game</button>
       </div>
@@ -59,7 +61,7 @@ const handleNewGame = () => {
   align-items: center;
   margin: 0 auto;
   position: relative;
-  top: -40px;
+  top: -10px;
   max-width: 90%;
   text-align: center;
 }
@@ -113,5 +115,10 @@ const handleNewGame = () => {
 
 .reshuffle-btn:hover {
   background: linear-gradient(to bottom, #42a5f5, #2196f3);
+}
+
+.gameover-feedback {
+  color: white;
+  letter-spacing: 3px;
 }
 </style>

@@ -28,7 +28,11 @@
 
   <!-- credit homepage -->
   <div v-else class="insufficient-wrapper">
-    <div class="credit-wrapper">
+    <div v-if="isEmptyPot" class="credit-wrapper">
+      <h1 class="credits">Add Credits</h1>
+    </div>
+
+    <div v-else class="credit-wrapper">
       <img
         src="../../assets/img/buttons/credits/insufficient.png"
         alt="all-in-png"
@@ -51,6 +55,7 @@ import { useNotification } from '@/composables/game/useNotification'
 const creditValue = ref()
 const gameStore = useGameStore()
 const playerStore = usePlayerRegistration()
+const isEmptyPot = ref(false)
 
 const creditForm = ref(false)
 const { showNotification } = useNotification()
@@ -61,6 +66,12 @@ const handleAddCredit = () => {
 
 const handleBackToAddCredit = () => {
   creditForm.value = false
+}
+
+const getPot = gameStore.getCurrentPlayerPot
+
+if (getPot > 0) {
+  isEmptyPot.value = true
 }
 
 const handleSubmitCredit = () => {
@@ -180,6 +191,13 @@ const handleSubmitCredit = () => {
   width: 30px !important;
   height: 30px !important;
   cursor: pointer;
+}
+
+.credits {
+  text-align: center;
+  text-transform: uppercase;
+  color: white;
+  letter-spacing: 2px;
 }
 
 :deep(.el-input) {
