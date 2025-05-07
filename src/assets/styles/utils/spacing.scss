@@ -1,0 +1,149 @@
+/* ============================= */
+/*           Spacings            */
+/* ============================= */
+
+/* Margin Utilities */
+.m-0 {
+  margin: 0 !important;
+}
+.mt-0,
+.my-0 {
+  margin-top: 0 !important;
+}
+.mr-0,
+.mx-0 {
+  margin-right: 0 !important;
+}
+.mb-0,
+.my-0 {
+  margin-bottom: 0 !important;
+}
+.ml-0,
+.mx-0 {
+  margin-left: 0 !important;
+}
+
+/* Padding Utilities */
+.p-0 {
+  padding: 0 !important;
+}
+.pt-0,
+.py-0 {
+  padding-top: 0 !important;
+}
+.pr-0,
+.px-0 {
+  padding-right: 0 !important;
+}
+.pb-0,
+.py-0 {
+  padding-bottom: 0 !important;
+}
+.pl-0,
+.px-0 {
+  padding-left: 0 !important;
+}
+
+.m-1 {
+  margin: 1rem !important;
+}
+.mt-1,
+.my-1 {
+  margin-top: 1rem !important;
+}
+.mr-1,
+.mx-1 {
+  margin-right: 1rem !important;
+}
+.mb-1,
+.my-1 {
+  margin-bottom: 1rem !important;
+}
+.ml-1,
+.mx-1 {
+  margin-left: 1rem !important;
+}
+
+.m-2 {
+  margin: 2rem !important;
+}
+.mt-2,
+.my-2 {
+  margin-top: 2rem !important;
+}
+.mr-2,
+.mx-2 {
+  margin-right: 2rem !important;
+}
+.mb-2,
+.my-2 {
+  margin-bottom: 2rem !important;
+}
+.ml-2,
+.mx-2 {
+  margin-left: 2rem !important;
+}
+
+/* Paddding Utilities */
+.p-1 {
+  padding: 1rem !important;
+}
+.pt-1,
+.py-1 {
+  padding-top: 1rem !important;
+}
+.pr-1,
+.px-1 {
+  padding-right: 1rem !important;
+}
+.pb-1,
+.py-1 {
+  padding-bottom: 1rem !important;
+}
+.pl-1,
+.px-1 {
+  padding-left: 1rem !important;
+}
+
+.p-2 {
+  padding: 2rem !important;
+}
+.pt-2,
+.py-2 {
+  padding-top: 2rem !important;
+}
+
+.pt-3,
+.py-3 {
+  padding-top: 3rem !important;
+}
+
+.pr-2,
+.px-2 {
+  padding-right: 2rem !important;
+}
+.pb-2,
+.py-2 {
+  padding-bottom: 2rem !important;
+}
+.pl-2,
+.px-2 {
+  padding-left: 2rem !important;
+}
+/* Icon Spacing */
+
+.ellipsis-row {
+  display: flex !important;
+  align-items: center;
+}
+
+.ellipsis-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
