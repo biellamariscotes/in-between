@@ -54,7 +54,7 @@
           </template>
           <template v-else> Empty </template>
         </h1>
-        <h1 class="player-points">P {{ playerPoints || 0 }}</h1>
+        <h1 class="player-points">₱ {{ playerPoints.toLocaleString() || 0 }}</h1>
       </div>
 
       <!-- Player Hand Display -->
