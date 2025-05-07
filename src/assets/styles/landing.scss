@@ -13,6 +13,16 @@
   width: 578px;
   height: 603.46px;
   z-index: 10;
+
+  @media (max-width: 768px) {
+    width: 450px;
+    height: 470px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 350px;
+    height: 365px;
+  }
 }
 
 .logo {
@@ -24,6 +34,16 @@
   width: 90%;
   height: 90%;
   z-index: 100;
+
+  @media (max-width: 768px) {
+    width: 85%;
+    height: 85%;
+  }
+  
+  @media (max-width: 480px) {
+    width: 80%;
+    height: 80%;
+  }
 }
 
 .start {
@@ -36,14 +56,93 @@
   margin: 0 auto;
   cursor: pointer;
   z-index: 999;
+
+  @media (max-width: 768px) {
+    width: 280px;
+    height: 65px;
+    bottom: 5%;
+  }
+  
+  @media (max-width: 480px) {
+    width: 220px;
+    height: 50px;
+    bottom: 8%;
+  }
 }
 
 .cards {
   position: absolute;
-
-  bottom: 13%;
-  left: 0;
-
+  top: 50%; /* Position from top like the logo */
+  left: 0; /* Starting from left edge */
+  transform: translateY(-50%); /* Center vertically like the logo */
   width: 419.94px;
   z-index: 10;
+
+  @media (max-width: 768px) {
+    width: 320px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 250px;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .logo-container {
+    top: 50%;
+    width: 400px;
+    height: 420px;
+  }
+  
+  .logo {
+    top: 50%;
+    left: 50%;
+    width: 70%;
+    height: 70%;
+  }
+  
+  .start {
+    width: 180px;
+    height: 40px;
+    bottom: 10%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+  
+  /* Cards positioning adjusted to align with logo */
+  .cards {
+    position: absolute;
+    top: 50%; /* Match the logo's top position */
+    left: 5%; /* Position from left side */
+    transform: translateY(-50%);
+    width: 220px;
+  }
+}
+
+/* For extremely small heights - like iPhone in landscape */
+@media (max-height: 380px) and (orientation: landscape) {
+  .logo-container {
+    top: 50%;
+    width: 320px;
+    height: 340px;
+  }
+  
+  .logo {
+    top: 50%;
+    width: 65%;
+    height: 65%;
+  }
+  
+  .start {
+    width: 150px;
+    height: 35px;
+    bottom: 2%;
+  }
+  
+  .cards {
+    top: 50%; /* Match the logo's top position in smaller devices */
+    width: 150px;
+  }
 }

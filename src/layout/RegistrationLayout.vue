@@ -1,7 +1,3 @@
-<!--
-  Layout for all OUTSIDE views.
--->
-
 <template>
   <div class="landing-container landing-gradient">
     <div class="overlay" />
@@ -29,7 +25,6 @@ useDynamicStyle()
   width: 100%;
   height: 100vh;
   overflow: hidden;
-  padding: 2rem 2.5rem;
 }
 
 .overlay {
