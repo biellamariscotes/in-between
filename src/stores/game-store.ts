@@ -13,6 +13,7 @@ import type { Player } from '@/interface/player'
 import { usePlayerRegistration } from '@/stores/player'
 import { usePlayerStore } from '@/stores/player-count'
 import { useGameHistory } from '@/composables/game/useGameHistory'
+import { useTaxation } from '@/composables/tax/useTaxation'
 import {
   INITIAL_TURN_TIME,
   RAKE_AMOUNT,
@@ -47,6 +48,7 @@ const createInitialState = (): GameState => ({
   turnTimerInterval: null,
   turnTimerHalted: false,
   isMultiplayer: true,
+  isAllInBet: false,
   insufficientPlayers: false,
 })
 
@@ -412,6 +414,14 @@ export const useGameStore = defineStore('game', {
       this.handleNextRound()
     },
 
+    isAllInBet: false, // Flag to track if the current bet is an all-in
+
+    // Add this method to set the all-in flag
+    setAllInFlag(isAllIn: boolean) {
+      this.isAllInBet = isAllIn
+      this.saveStateToLocalStorage()
+    },
+
     processGameResult() {
       // Extract card values
       const [card1, card2] = this.faceUpCards
@@ -435,11 +445,13 @@ export const useGameStore = defineStore('game', {
           // Do NOT draw or process further until player chooses
           return
         }
+
         // Only process result if player has made a choice
         if (!this.equalCardsChoice) {
           // Still waiting for player input, do not proceed
           return
         }
+
         winAmount = this.processEqualCardsResult(r1, r3)
         resultMessage = this.getEqualCardsMessage(card1?.rank, r1, r3)
       }
@@ -473,26 +485,53 @@ export const useGameStore = defineStore('game', {
       this.awaitingEqualChoice = false
       this.equalCardsChoice = null
 
+      const player = this.players[this.currentPlayerIndex]
+      const playerName = player?.name || `Player ${this.currentPlayerIndex + 1}`
+
+      // IMPORTANT: Apply tax if this is a win from an all-in bet
+      if (winAmount > 0 && this.isAllInBet) {
+        // Import taxation composable
+        const { processTax } = useTaxation()
+
+        // Process tax on the win amount
+        const taxAmount = processTax(
+          player?.id,
+          winAmount,
+          true, // isAllIn = true
+        )
+
+        // Adjust win amount after tax
+        if (taxAmount > 0) {
+          winAmount -= taxAmount
+
+          // Update result message to include tax information
+          resultMessage = resultMessage.replace(
+            `You win ${this.currentBet} credits!`,
+            `You win ${winAmount} credits! (${taxAmount} tax deducted)`,
+          )
+        }
+      }
+
       // Update player credits and game state
       this.updatePlayerCredits(winAmount)
-
-      const playerName =
-        this.players[this.currentPlayerIndex]?.name || `Player ${this.currentPlayerIndex + 1}`
       this.message = `${playerName}: ${resultMessage}`
 
       // Get the player logger for the current player
       const gameHistory = useGameHistory()
-      const { logWin, logLoss } = gameHistory.getPlayerLogger(this.players[this.currentPlayerIndex])
+      const { logWin, logLoss } = gameHistory.getPlayerLogger(player)
 
       // Log the win or loss based on winAmount
       if (winAmount > 0) {
-        logWin(winAmount)
+        logWin(winAmount) // Pass isAllIn flag to the logger
       } else {
         logLoss(Math.abs(winAmount))
       }
 
       this.roundsPlayed++
       this.currentBet = 0
+
+      // Reset the all-in flag
+      this.isAllInBet = false
 
       // If player won, start new round with rake
       if (winAmount > 0 && !this.gameOver) {

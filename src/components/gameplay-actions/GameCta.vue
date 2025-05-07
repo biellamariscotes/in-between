@@ -113,8 +113,16 @@ const allInTooltipText = computed(() => {
 const handleAllIn = () => {
   const allInAmount = Math.min(playerCredits.value, gameStore.communalPot)
   if (allInAmount > 0) {
+    // Check for equal cards before placing bet
     gameStore.checkForEqualCardsAndProcess()
+
+    // Place the bet
     gameStore.placeBet(allInAmount)
+
+    // Set the all-in flag to true so tax can be applied if player wins
+    gameStore.setAllInFlag(true)
+
+    // Draw the third card to determine outcome
     gameStore.drawThirdCard()
   }
 }
