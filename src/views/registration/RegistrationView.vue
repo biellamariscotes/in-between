@@ -16,4 +16,17 @@ import Form from '@/components/forms/PlayerForm.vue'
   width: 35%;
   padding: 0.4em 0em;
 }
+
+@media (max-width: 768px) {
+  .registration-title {
+    width: 70%;
+    padding: 0.3em 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .registration-title {
+    width: 90%;
+  }
+}
 </style>

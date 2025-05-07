@@ -11,9 +11,9 @@
       status-icon
       @submit.prevent="onSubmit"
     >
-      <el-row :gutter="30" class="form-row">
+      <el-row :gutter="15" class="form-row">
         <template v-for="(field, index) in dynamicInputFields" :key="index">
-          <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8" class="form-col">
+          <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="8" class="form-col">
             <div class="item-wrapper">
               <el-form-item
                 :label="'Name:'"
@@ -129,6 +129,7 @@ const onSubmit = async () => {
   height: 100%;
   max-height: calc(100vh - 100px);
   overflow: hidden;
+  width: 100%;
 }
 
 .btn-group {
@@ -152,12 +153,23 @@ const onSubmit = async () => {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 
   .form-row {
     flex: 1;
-    width: 50%;
+    width: 100%;
     overflow-y: visible;
+  }
+
+  .item-wrapper {
+    padding: 1rem;
+    min-height: 140px;
+    width: 100%;
+  }
+
+  :deep(.el-input) {
+    max-width: 100%;
   }
 
   .btn-group {
@@ -165,7 +177,6 @@ const onSubmit = async () => {
     bottom: 0;
     z-index: 5;
     padding: 0.75rem 0;
-    margin-top: 0.5rem;
     width: 100%;
   }
 }
@@ -175,30 +186,75 @@ const onSubmit = async () => {
   .demo-ruleForm {
     padding: 0.75rem;
     max-height: calc(100vh - 60px);
-    display: flex;
     overflow-y: auto;
+    width: 100%;
   }
+  
   .form-row {
-    width: 50%;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
   }
-
+  
+  /* Override the el-col default breakpoints for landscape mode */
+  :deep(.el-col-xs-24) {
+    width: 50% !important;
+    max-width: 50% !important;
+    flex: 0 0 50% !important;
+  }
+  
+  .form-col {
+    width: 50% !important;
+    max-width: 50% !important;
+    flex: 0 0 50% !important;
+    padding: 0 8px 15px;
+  }
+  
   .item-wrapper {
-    padding: 0.75rem 1rem;
-    min-height: 130px;
+    padding: 0.75rem;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-
+  
+  :deep(.el-form-item) {
+    margin-bottom: 8px;
+  }
+  
+  :deep(.el-form-item__label) {
+    font-size: 0.85em;
+    padding-bottom: 2px;
+  }
+  
+  :deep(.el-input__inner) {
+    font-size: 0.85em;
+  }
+  
+  :deep(.el-input) {
+    max-width: 100%;
+  }
+  
   .btn-group {
     position: sticky;
     bottom: 0;
     z-index: 5;
     padding: 0.5rem 0;
   }
+}
 
-  :deep(.el-form-item__label) {
-    font-size: 0.9em;
+/* Extra small screens like small phones */
+@media (max-width: 480px) {
+  .demo-ruleForm {
+    padding: 0.75rem;
   }
-
-  :deep(.el-input__inner) {
+  
+  .item-wrapper {
+    padding: 0.75rem;
+    min-height: 130px;
+  }
+  
+  :deep(.el-form-item__label) {
     font-size: 0.9em;
   }
 }
