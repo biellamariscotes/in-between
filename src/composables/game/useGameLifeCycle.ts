@@ -18,7 +18,8 @@ export function useGameLifeCycle() {
   // ─────────────────────────────
 
   const startNewGame = () => {
-    localStorage.clear()
+    const keysToRemove = ['currentCard', 'gameHistory', 'gameState', 'playerCount', 'players']
+    keysToRemove.forEach((key) => localStorage.removeItem(key))
     gameStore.resetGame()
     gameHistoryStore.clearHistory()
     router.push('/')
