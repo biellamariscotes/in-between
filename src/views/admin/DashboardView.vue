@@ -63,12 +63,13 @@
         :xl="{ span: 24 }"
         class="center flex-column pt-3"
       >
+        <!-- Table Component -->
         <el-table
-          row-class-name="no-hover"
           v-if="recentEvents.length > 0"
-          :data="recentEvents"
+          :data="paginatedData"
           border
           class="table-cont"
+          row-class-name="no-hover"
         >
           <!-- Player Name -->
           <el-table-column label="Player" prop="playerName" :formatter="formatPlayerName" />
@@ -85,6 +86,18 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <!-- Pagination Component - simple version -->
+        <el-pagination
+          v-if="recentEvents.length > 0"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          layout="prev, pager, next"
+          :total="recentEvents.length"
+          background
+          class="mt-4"
+        />
 
         <!-- Empty State -->
         <p v-else class="text-gray-500 text-sm">No tax events yet.</p>
@@ -109,7 +122,7 @@
 
 <script setup lang="ts">
 import { useTaxation } from '@/composables/tax/useTaxation'
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { useFormat } from '@/composables/utilities/useFormat'
 
 const { toSentenceCase } = useFormat()
@@ -135,6 +148,21 @@ const formatTimestamp = (timestamp: number): string => {
 // Lifecycle Hooks
 // ─────────────────────────────
 
+const currentPage = ref(1)
+const pageSize = ref(5) // Show 5 items per page
+
+// Calculate paginated data
+const paginatedData = computed(() => {
+  const startIndex = (currentPage.value - 1) * pageSize.value
+  const endIndex = startIndex + pageSize.value
+  return recentEvents.value.slice(startIndex, endIndex)
+})
+
+// Event handlers
+const handleCurrentChange = (val: number) => {
+  currentPage.value = val
+}
+
 onMounted(() => {
   window.addEventListener('storage', updateTaxStoreFromLocalStorage)
   updateTaxStoreFromLocalStorage()
@@ -150,5 +178,19 @@ onUnmounted(() => {
 <style scoped>
 * {
   color: #fff;
+}
+
+:deep(.el-pagination) {
+  --el-pagination-button-color: #606266;
+  --el-pagination-hover-color: #409eff;
+}
+
+:deep(.el-pagination .el-pager li) {
+  cursor: pointer;
+}
+
+:deep(.el-pagination .btn-prev),
+:deep(.el-pagination .btn-next) {
+  cursor: pointer;
 }
 </style>
