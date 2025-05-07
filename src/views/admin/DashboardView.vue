@@ -1,6 +1,11 @@
 <template>
   <section>
-    <h1 class="uppercase">Tax Dashboard</h1>
+    <el-row>
+      <el-col :span="24" class="center mt-1 mb-2">
+        <p class="title">Tax Dashboard</p>
+      </el-col>
+    </el-row>
+
     <!-- Total Tax Collected -->
     <el-row>
       <el-col :span="24" class="center">
@@ -20,7 +25,7 @@
         :md="{ span: 5 }"
         :lg="{ span: 5 }"
         :xl="{ span: 5 }"
-        class="border center flex-column pr-1"
+        class="border center flex-column pr-1 mt-1"
       >
         <h1>₱{{ taxStats.averageTaxAmount.toFixed(2) }}</h1>
         <h4 class="mt-05">Average Tax Amount</h4>
@@ -87,7 +92,7 @@
           </el-table-column>
         </el-table>
 
-        <!-- Pagination Component - simple version -->
+        <!-- Pagination  -->
         <el-pagination
           v-if="recentEvents.length > 0"
           @current-change="handleCurrentChange"
@@ -96,7 +101,7 @@
           layout="prev, pager, next"
           :total="recentEvents.length"
           background
-          class="mt-4"
+          class="mt-2 pagination"
         />
 
         <!-- Empty State -->
@@ -178,19 +183,5 @@ onUnmounted(() => {
 <style scoped>
 * {
   color: #fff;
-}
-
-:deep(.el-pagination) {
-  --el-pagination-button-color: #606266;
-  --el-pagination-hover-color: #409eff;
-}
-
-:deep(.el-pagination .el-pager li) {
-  cursor: pointer;
-}
-
-:deep(.el-pagination .btn-prev),
-:deep(.el-pagination .btn-next) {
-  cursor: pointer;
 }
 </style>
