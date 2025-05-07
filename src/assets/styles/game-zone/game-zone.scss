@@ -27,8 +27,6 @@
   z-index: 100;
 }
 .timer-container {
-  width: 13%;
-  height: 13%;
   position: absolute;
   top: 7%;
   right: 7%;
@@ -83,6 +81,7 @@
   position: absolute;
   left: 7%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 100;
@@ -99,7 +98,7 @@
   pointer-events: none;
 }
 .turn-container h1 {
-  font-size: 70px;
+  font-size: 4vw;
   color: white;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
@@ -347,12 +346,15 @@
 /* Player text styling */
 .player-name {
   color: white;
-  font-size: 18px; /* Slightly larger font size for player name */
+  font-size: 17px; /* Slightly larger font size for player name */
   text-align: center;
   margin: 2px 0;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
   display: inline-block; /* Allows width to adjust based on content */
   white-space: nowrap; /* Prevents text from wrapping */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    font-size: 9px; /* Adjust font size for smaller screens */
+  }
 }
 
 .player-points {
@@ -363,6 +365,11 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
   display: inline-block; /* Allows width to adjust based on content */
   white-space: nowrap; /* Prevents text from wrapping */
+
+  //landscape orientation media screen for mobile devices such as iphone 14 pro max 932 width and 430 height
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    font-size: 7px; /* Adjust font size for smaller screens */
+  }
 }
 
 .player-info {
@@ -393,35 +400,28 @@
 /* Table card styling */
 .face-up-card,
 .current-card {
-  width: 100px;
-  height: 140px;
-  background-color: rgba(0, 0, 0, 0.2);
+  width: 55%;
+  height: 55%;
   border-radius: 10px;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
+  /* background-color: rgba(0, 0, 0, 0.2); */
+
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+.mystery-card {
+  width: 100%;
+  height: 100%;
+}
+
 .card-placeholder {
   display: flex;
-  width: 100px;
-  height: 140px;
+  width: 55%;
+  height: 55%;
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   border: 2px dashed rgba(255, 255, 255, 0.3);
-}
-
-/* Credit display styling */
-.credit-display {
-  color: white;
-  text-align: center;
-  margin-top: 15px;
-  // background-color: rgba(0, 0, 0, 0.7);
-  padding: 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 /* Card table container */
@@ -518,21 +518,11 @@
   }
 }
 
-.game-cards {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  height: 100%;
-  padding: 10px;
-}
-
 /* Adjust styling for table cards to match player hands */
 .face-up-card,
 .current-card {
-  width: 140px;
-  height: 220px;
+  width: 55%;
+  height: 55%;
   border-radius: 10px;
   /* background-color: rgba(0, 0, 0, 0.2); */
 
@@ -542,14 +532,14 @@
 }
 
 .mystery-card {
-  width: 1000px;
-  height: 250px;
+  width: 100%;
+  height: 100%;
 }
 
 .card-placeholder {
   display: flex;
-  width: 100px;
-  height: 140px;
+  width: 55%;
+  height: 55%;
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   border: 2px dashed rgba(255, 255, 255, 0.3);
@@ -564,17 +554,6 @@
   height: 100%;
   width: 100%;
 }
-
-/* .timer {
-  color: white;
-  font-size: 1.5rem;
-  transition: color 0.3s ease;
-}
-
-.timer.warning {
-  color: #ff5252;
-  animation: pulse 1s infinite;
-} */
 
 @keyframes pulse {
   0% {
