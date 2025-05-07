@@ -1,42 +1,45 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <el-form
-    ref="ruleFormRef"
-    :model="dynamicInputFields"
-    :rules="useRegistrationRule"
-    label-width="auto"
-    class="demo-ruleForm"
-    :label-position="labelPosition"
-    :size="formSize"
-    status-icon
-    @submit.prevent="onSubmit"
-  >
-    <div
-      v-for="(field, index) in dynamicInputFields"
-      :key="index"
-      :class="['item-wrapper', isLastInOddArray(index) ? 'center-item' : '']"
+  <div class="form-container">
+    <el-form
+      ref="ruleFormRef"
+      :model="dynamicInputFields"
+      :rules="useRegistrationRule"
+      label-width="auto"
+      class="demo-ruleForm"
+      :label-position="labelPosition"
+      :size="formSize"
+      status-icon
+      @submit.prevent="onSubmit"
     >
-      <el-form-item
-        :label="'Name:'"
-        :prop="'[' + index + '].name'"
-        :rules="useRegistrationRule.name"
-      >
-        <el-input size="small" v-model="dynamicInputFields[index].name" />
-      </el-form-item>
+      <el-row :gutter="30" class="form-row">
+        <template v-for="(field, index) in dynamicInputFields" :key="index">
+          <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8" class="form-col">
+            <div class="item-wrapper">
+              <el-form-item
+                :label="'Name:'"
+                :prop="'[' + index + '].name'"
+                :rules="useRegistrationRule.name"
+              >
+                <el-input size="small" v-model="dynamicInputFields[index].name" />
+              </el-form-item>
 
-      <el-form-item
-        :label="'Credits:'"
-        :prop="'[' + index + '].credits'"
-        :rules="useRegistrationRule.credits"
-      >
-        <el-input size="small" v-model.number="dynamicInputFields[index].credits" />
-      </el-form-item>
-    </div>
+              <el-form-item
+                :label="'Credits:'"
+                :prop="'[' + index + '].credits'"
+                :rules="useRegistrationRule.credits"
+              >
+                <el-input size="small" v-model.number="dynamicInputFields[index].credits" />
+              </el-form-item>
+            </div>
+          </el-col>
+        </template>
+      </el-row>
+    </el-form>
 
     <div class="btn-group">
-      <Button btnType="submit" variant="secondary">Continue</Button>
+      <Button btnType="submit" variant="secondary" @click="onSubmit">Continue</Button>
     </div>
-  </el-form>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -90,41 +93,114 @@ const onSubmit = async () => {
     console.error('Error during form submission:', error)
   }
 }
-
-const isLastInOddArray = (index: number): boolean => {
-  return dynamicInputFields.value.length % 2 !== 0 && index === dynamicInputFields.value.length - 1
-}
 </script>
 
 <style lang="css" scoped>
-.btn-group {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  grid-column: span 2;
-  gap: 10px;
+.demo-ruleForm {
+  overflow-y: auto;
+  height: auto;
+  max-height: calc(100vh - 120px); /* Adjust based on your header height */
+  width: 100%;
+  padding: 2rem;
 }
 
-.el-form {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  place-items: start center;
-  gap: 2.5rem;
-  padding: 2rem 4rem;
+.form-row {
+  width: 100%;
+  margin: 0;
+  overflow-y: visible;
+}
+
+.form-col {
+  padding-bottom: 20px;
 }
 
 .item-wrapper {
   padding: 1rem 1.5rem;
   background-color: white;
   border-radius: 15px;
-  height: 160px;
-  width: 450px;
-  max-width: 450px;
+  height: auto;
+  min-height: 160px;
+  width: 100%;
 }
 
-.center-item {
-  grid-column: 1 / -1;
-  justify-self: center;
+.form-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: calc(100vh - 100px);
+  overflow: hidden;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 1rem 0;
+  width: 100%;
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin-top: 10px;
+}
+
+/* Small screens (sm breakpoint) - ensure scrollable */
+@media (max-width: 768px) {
+  .demo-ruleForm {
+    padding: 1rem;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-row {
+    flex: 1;
+    width: 50%;
+    overflow-y: visible;
+  }
+
+  .btn-group {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding: 0.75rem 0;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+}
+
+/* For landscape mobile */
+@media (max-width: 932px) and (max-height: 430px) {
+  .demo-ruleForm {
+    padding: 0.75rem;
+    max-height: calc(100vh - 60px);
+    display: flex;
+    overflow-y: auto;
+  }
+  .form-row {
+    width: 50%;
+  }
+
+  .item-wrapper {
+    padding: 0.75rem 1rem;
+    min-height: 130px;
+  }
+
+  .btn-group {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding: 0.5rem 0;
+  }
+
+  :deep(.el-form-item__label) {
+    font-size: 0.9em;
+  }
+
+  :deep(.el-input__inner) {
+    font-size: 0.9em;
+  }
 }
 
 :deep(.el-form-item.is-error .el-input__wrapper) {
@@ -141,7 +217,7 @@ const isLastInOddArray = (index: number): boolean => {
 
 :deep(.el-input) {
   max-width: 250px;
-  width: 250px;
+  width: 100%;
   border: none !important;
 }
 
