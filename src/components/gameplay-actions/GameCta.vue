@@ -194,6 +194,26 @@ watch(playerCredits, (newValue) => {
   justify-content: center;
   align-items: center;
   gap: 20px;
+  
+  /* Reduce gap on smaller screens */
+  @media screen and (max-width: 768px) {
+    gap: 15px;
+  }
+  
+  /* Further reduce gap for very small screens */
+  @media screen and (max-width: 480px) {
+    gap: 10px;
+  }
+  
+  /* Adjust for landscape mode on mobile devices */
+  @media screen and (orientation: landscape) and (max-height: 500px) {
+    gap: 12px;
+  }
+  
+  /* Specific adjustments for iPhone-sized devices in landscape */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    gap: 8px;
+  }
 }
 
 .credit-form-wrapper {
@@ -218,6 +238,32 @@ watch(playerCredits, (newValue) => {
   width: 250px;
   height: 80px;
   cursor: pointer;
+  
+  /* Responsive sizing for mobile devices */
+  @media screen and (max-width: 768px) {
+    width: 200px;
+    height: 65px;
+  }
+  
+  /* Even smaller for very small screens */
+  @media screen and (max-width: 480px) {
+    width: 180px;
+    height: 58px;
+  }
+  
+  /* Landscape mode on mobile devices */
+  @media screen and (orientation: landscape) and (max-height: 500px) {
+    width: 170px;
+    height: 55px;
+    margin-top: 10px;
+  }
+  
+  /* Specific adjustments for iPhone-sized devices in landscape */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 150px;
+    height: 50px;
+    margin-top: 5px;
+  }
 }
 
 .bet-cta {
@@ -226,6 +272,33 @@ watch(playerCredits, (newValue) => {
   height: 85px;
   margin-bottom: 5px;
   cursor: pointer;
+  
+  /* Responsive sizing for mobile devices */
+  @media screen and (max-width: 768px) {
+    width: 200px;
+    height: 68px;
+  }
+  
+  /* Even smaller for very small screens */
+  @media screen and (max-width: 480px) {
+    width: 180px;
+    height: 62px;
+  }
+  
+  /* Landscape mode on mobile devices */
+  @media screen and (orientation: landscape) and (max-height: 500px) {
+    width: 170px;
+    height: 58px;
+    margin-top: 10px;
+  }
+  
+  /* Specific adjustments for iPhone-sized devices in landscape */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 150px;
+    height: 52px;
+    margin-top: 5px;
+    margin-bottom: 2px;
+  }
 }
 
 .back-cta {
@@ -241,8 +314,34 @@ watch(playerCredits, (newValue) => {
   margin-top: 15px;
   width: 220px;
   height: 50px;
-
   cursor: pointer;
+  
+  /* Responsive sizing for mobile */
+  @media screen and (max-width: 768px) {
+    width: 180px;
+    height: 42px;
+    margin-top: 10px;
+  }
+  
+  /* Even smaller for very small screens */
+  @media screen and (max-width: 480px) {
+    width: 160px;
+    height: 38px;
+  }
+  
+  /* Landscape mode on mobile devices */
+  @media screen and (orientation: landscape) and (max-height: 500px) {
+    width: 150px;
+    height: 35px;
+    margin-top: 8px;
+  }
+  
+  /* Specific adjustments for iPhone-sized devices in landscape */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 130px;
+    height: 30px;
+    margin-top: 5px;
+  }
 }
 
 .el-input {
@@ -281,6 +380,30 @@ watch(playerCredits, (newValue) => {
   width: 280px;
   height: 70px;
   cursor: pointer;
+  
+  /* Responsive sizing for mobile */
+  @media screen and (max-width: 768px) {
+    width: 220px;
+    height: 55px;
+  }
+  
+  /* Even smaller for very small screens */
+  @media screen and (max-width: 480px) {
+    width: 180px;
+    height: 45px;
+  }
+  
+  /* Landscape mode on mobile devices */
+  @media screen and (orientation: landscape) and (max-height: 500px) {
+    width: 200px;
+    height: 50px;
+  }
+  
+  /* Specific adjustments for iPhone-sized devices in landscape */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 160px;
+    height: 40px;
+  }
 }
 
 .add-credits-cta {
@@ -290,6 +413,33 @@ watch(playerCredits, (newValue) => {
   width: 190px;
   height: 60px;
   cursor: pointer;
+  
+  /* Responsive sizing for mobile */
+  @media screen and (max-width: 768px) {
+    width: 160px;
+    height: 50px;
+    right: -15%;
+  }
+  
+  /* Even smaller for very small screens */
+  @media screen and (max-width: 480px) {
+    width: 140px;
+    height: 45px;
+  }
+  
+  /* Landscape mode on mobile devices */
+  @media screen and (orientation: landscape) and (max-height: 500px) {
+    width: 130px;
+    height: 42px;
+    right: -12%;
+  }
+  
+  /* Specific adjustments for iPhone-sized devices in landscape */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 110px;
+    height: 36px;
+    right: -10%;
+  }
 }
 
 :deep(.el-input) {

@@ -822,4 +822,29 @@ const handleCashOutAndQuit = () => {
   color: white;
   font-family: 'Baumans';
 }
+
+.gameCta-wrapper {
+  width: 100%;
+  height: 100%;
+  
+  /* Responsive sizing for mobile */
+  @media screen and (max-width: 768px) {
+    transform: scale(0.9);
+  }
+  
+  /* Even smaller for very small screens */
+  @media screen and (max-width: 480px) {
+    transform: scale(0.85);
+  }
+  
+  /* Landscape mode on mobile devices */
+  @media screen and (orientation: landscape) and (max-height: 500px) {
+    transform: scale(0.8);
+  }
+  
+  /* Specific adjustments for iPhone-sized devices in landscape */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    transform: scale(0.75);
+  }
+}
 </style>

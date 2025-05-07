@@ -89,6 +89,29 @@ defineProps<{
   display: flex;
   justify-content: center;
   align-items: center;
+  
+  /* Responsive sizing for different screen sizes */
+  @media screen and (max-width: 768px) {
+    width: 90px;
+    height: 126px;
+  }
+  
+  @media screen and (max-width: 480px) {
+    width: 80px;
+    height: 112px;
+  }
+  
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    width: 75px;
+    height: 105px;
+    gap: 10px;
+  }
+  
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 65px;
+    height: 91px;
+    gap: 8px;
+  }
 }
 
 .card-placeholder {
@@ -98,6 +121,27 @@ defineProps<{
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   border: 2px dashed rgba(255, 255, 255, 0.3);
+  
+  /* Responsive sizing for different screen sizes */
+  @media screen and (max-width: 768px) {
+    width: 90px;
+    height: 126px;
+  }
+  
+  @media screen and (max-width: 480px) {
+    width: 80px;
+    height: 112px;
+  }
+  
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    width: 75px;
+    height: 105px;
+  }
+  
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 65px;
+    height: 91px;
+  }
 }
 
 .card-table {
@@ -109,14 +153,5 @@ defineProps<{
   width: 100%;
 }
 
-.credit-display {
-  color: white;
-  text-align: center;
-  margin-top: 15px;
-  /* background-color: rgba(0, 0, 0, 0.7); */
-  padding: 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-}
+/* Removing credit-display styling as it's now in CashFlow component */
 </style>

@@ -64,6 +64,28 @@ defineProps<{
     &--total {
       color: #ffcc00;
       width: 100%;
+       /* Responsive sizing for mobile */
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
+  }
+  
+  /* Even smaller for very small screens */
+  @media screen and (max-width: 480px) {
+    font-size: 10px;
+
+  }
+  
+  /* Landscape mode on mobile devices */
+  @media screen and (orientation: landscape) and (max-height: 500px) {
+    font-size: 10px;
+
+  }
+  
+  /* Specific adjustments for iPhone-sized devices in landscape */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    font-size: 10px;
+
+  }
     }
   }
 }

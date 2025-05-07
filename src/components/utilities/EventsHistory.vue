@@ -123,9 +123,34 @@ onUpdated(() => {
 ul {
   list-style-type: none;
   padding: 0;
+  margin: 0;
 }
 
 li {
   padding: 3px;
+  font-size: inherit; /* Inherit font size from parent container */
+  line-height: 1.3; /* Better line height for readability */
+  margin-bottom: 2px;
+}
+
+/* Responsive padding for list items */
+@media screen and (max-width: 768px) {
+  li {
+    padding: 2px;
+    margin-bottom: 1px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  li {
+    padding: 1px;
+  }
+}
+
+/* iPhone specific landscape adjustments */
+@media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+  .scroll-container {
+    max-height: 90%; /* Adjust container height for small landscapes */
+  }
 }
 </style>

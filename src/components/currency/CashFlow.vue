@@ -98,6 +98,25 @@ const handleCashOut = () => {
   border-radius: 5px;
   font-weight: bold;
   z-index: 900;
+  
+  /* Responsive sizing for different screen sizes */
+  @media screen and (max-width: 768px) {
+    transform: scale(0.9);
+  }
+  
+  @media screen and (max-width: 480px) {
+    transform: scale(0.85);
+  }
+  
+  /* Landscape orientation adjustments */
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    transform: scale(0.8);
+  }
+  
+  /* iPhone specific landscape adjustments */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    transform: scale(0.75);
+  }
 }
 
 .credit {
@@ -111,6 +130,23 @@ const handleCashOut = () => {
   align-items: center;
 
   font-size: 14px;
+  
+  /* Responsive font size for smaller screens */
+  @media screen and (max-width: 768px) {
+    font-size: 13px;
+  }
+  
+  @media screen and (max-width: 480px) {
+    font-size: 12px;
+  }
+  
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    font-size: 11px;
+  }
+  
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    font-size: 10px;
+  }
 }
 
 .cash-out-cta {
@@ -123,10 +159,44 @@ const handleCashOut = () => {
 .cash-in-cta {
   width: 120px;
   cursor: pointer;
+  
+  /* Responsive sizing for different screen sizes */
+  @media screen and (max-width: 768px) {
+    width: 110px;
+  }
+  
+  @media screen and (max-width: 480px) {
+    width: 100px;
+  }
+  
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    width: 95px;
+  }
+  
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 85px;
+  }
 }
 
 .cash-out-cta {
   width: 100px;
   cursor: pointer;
+  
+  /* Responsive sizing for different screen sizes */
+  @media screen and (max-width: 768px) {
+    width: 90px;
+  }
+  
+  @media screen and (max-width: 480px) {
+    width: 80px;
+  }
+  
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    width: 75px;
+  }
+  
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 65px;
+  }
 }
 </style>
