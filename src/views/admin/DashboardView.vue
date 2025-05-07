@@ -1,31 +1,98 @@
 <template>
-  <div class="p-6 bg-gray-50 rounded-lg shadow-md space-y-6">
-    <h2 class="text-2xl font-bold">Tax Dashboard</h2>
+  <section>
+    <h1 class="uppercase">Tax Dashboard</h1>
+    <!-- Total Tax Collected -->
+    <el-row>
+      <el-col :span="24" class="center">
+        <div class="btn-group total-tax">
+          <Button variant="secondary">₱{{ totalTaxCollected }}</Button>
+          <h2 class="pt-1 pb-2">Total Tax Collected</h2>
+        </div>
+      </el-col>
+    </el-row>
 
-    <!-- Tax Stats Summary -->
-    <div class="grid grid-cols-2 gap-4">
-      <div class="p-4 bg-white rounded shadow">
-        <h3 class="font-semibold text-lg">Total Tax Collected</h3>
-        <p class="text-2xl text-green-600">₱{{ totalTaxCollected }}</p>
-      </div>
-      <div class="p-4 bg-white rounded shadow">
-        <h3 class="font-semibold text-lg">Tax Rate</h3>
-        <p class="text-2xl text-blue-600">{{ taxRate * 100 }}%</p>
-      </div>
-    </div>
+    <!-- Tax Stats -->
+    <el-row justify="center">
+      <!-- Average Tax Amount -->
+      <el-col
+        :xs="{ span: 24 }"
+        :sm="{ span: 24 }"
+        :md="{ span: 5 }"
+        :lg="{ span: 5 }"
+        :xl="{ span: 5 }"
+        class="border center flex-column pr-1"
+      >
+        <h1>₱{{ taxStats.averageTaxAmount.toFixed(2) }}</h1>
+        <h4 class="mt-05">Average Tax Amount</h4>
+      </el-col>
 
-    <!-- Tax Stats Details -->
-    <div class="p-4 bg-white rounded shadow space-y-2">
-      <h3 class="font-semibold text-lg">Tax Stats</h3>
-      <ul class="text-gray-700">
-        <li>Total Events: {{ taxStats.numberOfTaxEvents }}</li>
-        <li>Average Tax Amount: ₱{{ taxStats.averageTaxAmount.toFixed(2) }}</li>
-        <li>Largest Tax Collected: ₱{{ taxStats.largestTaxAmount }}</li>
-      </ul>
-    </div>
+      <!-- Total Tax Events -->
+      <el-col
+        :xs="{ span: 24 }"
+        :sm="{ span: 24 }"
+        :md="{ span: 5 }"
+        :lg="{ span: 5 }"
+        :xl="{ span: 5 }"
+        class="border center flex-column pl-1"
+      >
+        <h1>{{ taxStats.numberOfTaxEvents }} events</h1>
+        <h4 class="mt-05">Total Tax Events</h4>
+      </el-col>
+
+      <!-- Largest Tax Collected -->
+      <el-col
+        :xs="{ span: 24 }"
+        :sm="{ span: 24 }"
+        :md="{ span: 5 }"
+        :lg="{ span: 5 }"
+        :xl="{ span: 5 }"
+        class="border center flex-column pl-1"
+      >
+        <h1>₱{{ taxStats.largestTaxAmount }}</h1>
+        <h4 class="mt-05">Average Tax Amount</h4>
+      </el-col>
+    </el-row>
+
+    <!-- Tax Details Table -->
+    <el-row>
+      <el-col
+        :xs="{ span: 24 }"
+        :sm="{ span: 24 }"
+        :md="{ span: 24 }"
+        :lg="{ span: 24 }"
+        :xl="{ span: 24 }"
+        class="center flex-column pt-3"
+      >
+        <el-table
+          row-class-name="no-hover"
+          v-if="recentEvents.length > 0"
+          :data="recentEvents"
+          border
+          class="table-cont"
+        >
+          <!-- Player Name -->
+          <el-table-column label="Player" prop="playerName" :formatter="formatPlayerName" />
+
+          <!-- Tax Amount Collected -->
+          <el-table-column label="Amount" width="120">
+            <template #default="{ row }"> ₱{{ row.amount }} </template>
+          </el-table-column>
+
+          <!-- Timestamp -->
+          <el-table-column label="Timestamp" width="200">
+            <template #default="{ row }">
+              {{ formatTimestamp(row.timestamp) }}
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <!-- Empty State -->
+        <p v-else class="text-gray-500 text-sm">No tax events yet.</p>
+      </el-col>
+    </el-row>
 
     <!-- Recent Tax Events -->
-    <div class="p-4 bg-white rounded shadow">
+    <!-- <div class="p-4 bg-white rounded shadow">
       <h3 class="font-semibold text-lg mb-2">Recent Tax Events</h3>
       <ul v-if="recentEvents.length > 0" class="divide-y divide-gray-200">
         <li v-for="event in recentEvents" :key="event.timestamp" class="py-2 flex justify-between">
@@ -36,21 +103,37 @@
         </li>
       </ul>
       <p v-else class="text-gray-500 text-sm">No tax events yet.</p>
-    </div>
-  </div>
+    </div> -->
+  </section>
 </template>
 
 <script setup lang="ts">
 import { useTaxation } from '@/composables/tax/useTaxation'
 import { onMounted, onUnmounted } from 'vue'
+import { useFormat } from '@/composables/utilities/useFormat'
 
-const { totalTaxCollected, taxRate, taxStats, recentEvents, updateTaxStoreFromLocalStorage } =
-  useTaxation()
+const { toSentenceCase } = useFormat()
+
+const { totalTaxCollected, taxStats, recentEvents, updateTaxStoreFromLocalStorage } = useTaxation()
+
+type PlayerRow = {
+  playerName: string
+}
+
+// ─────────────────────────────
+// Formatting
+// ─────────────────────────────
+
+const formatPlayerName = (row: PlayerRow) => toSentenceCase(row.playerName)
 
 const formatTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp)
   return date.toLocaleString()
 }
+
+// ─────────────────────────────
+// Lifecycle Hooks
+// ─────────────────────────────
 
 onMounted(() => {
   window.addEventListener('storage', updateTaxStoreFromLocalStorage)
@@ -64,4 +147,8 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+* {
+  color: #fff;
+}
+</style>

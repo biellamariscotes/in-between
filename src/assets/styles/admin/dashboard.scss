@@ -1,0 +1,47 @@
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+.left {
+  display: flex;
+  justify-content: left;
+  align-items: left;
+}
+
+button {
+  padding: 1rem 4rem !important;
+  font-size: 1.5rem !important;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.mt-05 {
+  margin-top: 10px;
+}
+
+.el-table {
+  --el-table-tr-bg-color: transparent;
+  --el-table-bg-color: transparent;
+  --el-table-border: 1px solid #fff;
+  --el-table-header-bg-color: transparent;
+  --el-table-header-text-color: #fff;
+}
+
+.no-hover:hover > td {
+  background-color: initial !important;
+}
+
+.table-cont {
+  width: 70%;
+}

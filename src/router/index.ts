@@ -35,13 +35,13 @@ const routes = [
 
   {
     path: '/admin',
-    component: GameLayout,
+    component: RegistrationLayout,
     children: [
       {
         path: 'dashboard',
         name: 'dashboard',
         component: () => import('@/views/admin/DashboardView.vue'),
-        meta: { title: 'In-Between', style: 'game-zone/game-zone.scss', requireGuest: true },
+        meta: { title: 'In-Between', style: 'admin/dashboard.scss', requireGuest: true },
       },
     ],
   },
