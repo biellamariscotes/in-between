@@ -1,18 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Baumans&display=swap');
 
-.modal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 5%;
-  width: 100%;
-  min-width: 300px;
-  max-width: 1600px;
-  text-align: center;
-  z-index: 100;
-  max-height: 100vh;
-}
 
 @media (max-width: 768px) {
   .modal {
@@ -81,3 +68,152 @@
 //   opacity: 0.5;
 //   cursor: not-allowed;
 // }
+@import url('https://fonts.googleapis.com/css2?family=Baumans&display=swap');
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 5%;
+  width: 100%;
+  min-width: 300px;
+  max-width: 1600px;
+  text-align: center;
+  z-index: 100;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .modal {
+    width: 90%;
+    padding: 7%;
+  }
+}
+
+.title {
+  font-family: 'Baumans', sans-serif;
+  font-size: clamp(28px, 5vw, 45px);
+  color: white;
+  margin-bottom: 30px;
+  text-shadow: 0 0 4px #000;
+}
+
+.registration-title {
+  width: clamp(200px, 70%, 500px);
+  max-width: 100%;
+  height: auto;
+  margin-bottom: clamp(0.5rem, 3vh, 2rem);
+}
+
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  justify-items: center;
+  width: min(50%, 450px);
+  gap: clamp(0.5rem, 2vw, 2rem);
+  margin: 0 auto;
+}
+
+.number-button {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: clamp(80px, 15vw, 150px);
+  height: auto;
+}
+
+.number-button img {
+  width: clamp(60px, 80%, 150px);
+  height: auto;
+  object-fit: contain;
+}
+
+.number-button:hover {
+  transform: scale(1.2);
+}
+
+.number-button.selected {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 10px #ffd700);
+}
+
+// .confirm-btn {
+//   padding: 10px 50px;
+//   font-size: 16px;
+//   border: none;
+//   border-radius: 6px;
+//   background-color: rgba(255, 255, 255, 0.6);
+//   color: #c55794;
+//   cursor: pointer;
+//   font-weight: bold;
+//   transition: all 0.3s ease;
+//   width: 40%;
+//   min-width: 300px;
+
+//   height: 50px;
+// }
+
+// .confirm-btn:disabled {
+//   opacity: 0.5;
+//   cursor: not-allowed;
+// }
+
+/* Responsive design for mobile landscape orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+  .registration-title {
+    width: 70%;
+    max-width: 300px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .number-grid {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  .number-button {
+    transform: scale(0.8);
+  }
+}
+
+/* iPhone 14 Pro Max and similar large phones in landscape */
+@media (max-height: 430px) and (min-width: 800px) and (orientation: landscape) {
+  .registration-title {
+    width: 50%;
+    max-width: 250px;
+  }
+  
+  .number-grid {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+/* Smaller phones in landscape */
+@media (max-height: 375px) and (orientation: landscape) {
+  .registration-title {
+    width: 40%;
+    max-width: 200px;
+    margin-bottom: 0.25rem;
+  }
+  
+  .number-grid {
+    gap: 0.75rem;
+  }
+  
+  .number-button {
+    transform: scale(0.7);
+  }
+}
