@@ -17,26 +17,12 @@ interface TaxEvent {
 }
 
 export const useTaxStore = defineStore('tax', {
-  state: (): TaxState => {
-    // Check if we should use saved state
-    try {
-      const savedState = localStorage.getItem('taxState')
-      if (savedState) {
-        const parsedState = JSON.parse(savedState) as TaxState
-        parsedState.initialized = true // Set initialized flag to true
-        return parsedState
-      }
-    } catch (e) {
-      console.error('Failed to parse saved tax state:', e)
-    }
-
-    return {
-      totalTaxCollected: 0,
-      taxRate: 0.05, // 5% tax rate
-      taxHistory: [],
-      initialized: false,
-    }
-  },
+  state: (): TaxState => ({
+    totalTaxCollected: 0,
+    taxRate: 0.05,
+    taxHistory: [],
+    initialized: false,
+  }),
 
   getters: {
     getTotalTax: (state) => state.totalTaxCollected,
@@ -133,5 +119,10 @@ export const useTaxStore = defineStore('tax', {
     getRecentTaxEvents(count = 5) {
       return [...this.taxHistory].sort((a, b) => b.timestamp - a.timestamp).slice(0, count)
     },
+  },
+
+  persist: {
+    key: 'taxState',
+    storage: localStorage,
   },
 })

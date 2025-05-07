@@ -42,16 +42,26 @@
 
 <script setup lang="ts">
 import { useTaxation } from '@/composables/tax/useTaxation'
-import { computed } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 
-const { totalTaxCollected, taxRate, getRecentTaxEvents, taxStats } = useTaxation()
-
-const recentEvents = computed(() => getRecentTaxEvents(20))
+const { totalTaxCollected, taxRate, taxStats, recentEvents, updateTaxStoreFromLocalStorage } =
+  useTaxation()
 
 const formatTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp)
   return date.toLocaleString()
 }
+
+onMounted(() => {
+  window.addEventListener('storage', updateTaxStoreFromLocalStorage)
+  updateTaxStoreFromLocalStorage()
+  console.log('Tax Dashboard mounted and local storage listener added.')
+})
+
+onUnmounted(() => {
+  window.removeEventListener('storage', updateTaxStoreFromLocalStorage)
+  console.log('Tax Dashboard unmounted and local storage listener removed.')
+})
 </script>
 
 <style scoped></style>

@@ -67,6 +67,18 @@ export function useTaxation() {
     return taxStore.getRecentTaxEvents(count)
   }
 
+  const recentEvents = computed(() =>
+    [...taxStore.taxHistory].sort((a, b) => b.timestamp - a.timestamp).slice(0, 20),
+  )
+
+  const updateTaxStoreFromLocalStorage = () => {
+    const savedState = localStorage.getItem('taxState')
+    if (savedState) {
+      const parsedState = JSON.parse(savedState)
+      taxStore.$patch(parsedState)
+    }
+  }
+
   return {
     processTax,
     calculateAfterTaxWin,
@@ -77,5 +89,7 @@ export function useTaxation() {
     taxHistory, // reactive computed
     taxStats, // reactive computed
     getRecentTaxEvents,
+    recentEvents,
+    updateTaxStoreFromLocalStorage,
   }
 }
