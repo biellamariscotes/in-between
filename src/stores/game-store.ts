@@ -308,6 +308,19 @@ export const useGameStore = defineStore('game', {
       if (this.gameStarted && !this.gameOver) {
         console.log('Time ran out - auto-folding')
         this.fold()
+
+        const penaltyAmount = 20
+        const playerPosition = this.currentPlayerIndex
+        const playerCredit = this.players[playerPosition].credits
+        const player = this.players[playerPosition].id
+
+        if (!player) {
+          console.log('No player found')
+        }
+
+        const playerPenalty = (playerCredit ?? 0) - penaltyAmount
+        this.players[playerPosition].credits = playerPenalty
+        this.communalPot = this.communalPot + penaltyAmount
       }
     },
 
