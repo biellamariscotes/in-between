@@ -268,12 +268,7 @@ import { cardToDisplayId } from '@/utils/gameplay/deck/cardUtil'
 import {
   showResultModal,
   resultModalImage,
-  showWinModal,
-  showLoseModal,
-  showFoldModal,
-  modalType, // Import the new modalType ref
-  // Add the following import:
-  showPenaltyFoldModal,
+  modalType, 
 } from '@/utils/gameplay/pop-ups/modalUtil'
 import {
   isCurrentPlayer,

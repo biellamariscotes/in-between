@@ -344,7 +344,7 @@ export const useGameStore = defineStore('game', {
         // Game history entry: AUTO-FOLD with PENALTY
         const gameHistory = useGameHistory()
         const { logFold } = gameHistory.getPlayerLogger(this.players[this.currentPlayerIndex])
-        logFold(true) // Add a parameter to indicate penalty fold if needed
+        logFold() // Add a parameter to indicate penalty fold if needed
 
         this.roundsPlayed++
 
