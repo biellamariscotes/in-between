@@ -281,7 +281,7 @@ import {
 import CardCount from '@/components/utilities/CardCount.vue'
 import EventsHistory from '@/components/utilities/EventsHistory.vue'
 import router from '@/router'
-
+import { INITIAL_TURN_TIME } from '@/const/game-constants'
 // Add game over modal state
 const showGameOverModal = ref(false)
 
@@ -737,7 +737,7 @@ const handleCashOutAndQuit = () => {
       isCashOutDialog.value = false
       cashOutCredit.value = false
       // Reset timer for next player
-      gameStore.turnTimeRemaining = 20
+      gameStore.turnTimeRemaining = INITIAL_TURN_TIME
       gameStore.stopTurnTimer()
       gameStore.startTurnTimer()
     }
