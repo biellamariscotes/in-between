@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <el-form
     ref="ruleFormRef"
@@ -97,6 +96,7 @@ const isLastInOddArray = (index: number): boolean => {
 </script>
 
 <style lang="css" scoped>
+/* Form Button Group */
 .btn-group {
   display: flex;
   justify-content: center;
@@ -105,6 +105,7 @@ const isLastInOddArray = (index: number): boolean => {
   gap: 10px;
 }
 
+/* Form Layout */
 .el-form {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -113,6 +114,7 @@ const isLastInOddArray = (index: number): boolean => {
   padding: 2rem 4rem;
 }
 
+/* Input Field Wrapper */
 .item-wrapper {
   padding: 1rem 1.5rem;
   background-color: white;
@@ -122,11 +124,13 @@ const isLastInOddArray = (index: number): boolean => {
   max-width: 450px;
 }
 
+/* Center Item */
 .center-item {
   grid-column: 1 / -1;
   justify-self: center;
 }
 
+/* Deep Styles for Form Inputs */
 :deep(.el-form-item.is-error .el-input__wrapper) {
   box-shadow: none;
 }
@@ -145,18 +149,6 @@ const isLastInOddArray = (index: number): boolean => {
   border: none !important;
 }
 
-:deep(.el-form-item__label-wrap) {
-  display: block;
-}
-
-:deep(
-  .el-form-item.is-required:not(.is-no-asterisk).asterisk-left
-    > .el-form-item__label-wrap
-    > .el-form-item__label:before
-) {
-  content: '' !important;
-}
-
 :deep(.el-input__wrapper) {
   padding: 0.2rem 0.5rem;
   border-bottom: 1px solid black;
@@ -170,5 +162,40 @@ const isLastInOddArray = (index: number): boolean => {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1.2px;
+}
+
+
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .el-form {
+    grid-template-columns: 1fr;
+    padding: 1rem 2rem;
+    gap: 1.5rem;
+  }
+
+  .item-wrapper {
+    width: 90%;
+    max-width: 350px;
+    height: auto;
+    padding: 0.8rem 1rem;
+  }
+
+  .btn-group {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  :deep(.el-input) {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  :deep(.el-input__wrapper) {
+    padding: 0.1rem 0.3rem;
+    border-bottom: 1px solid black;
+  }
+
+  :deep(.el-input__inner) {
+    font-size: 0.9em;
+  }
 }
 </style>

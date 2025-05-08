@@ -100,7 +100,7 @@ function handleClick(event: MouseEvent) {
   color: white;
   border-radius: 10px;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 2px;  
   border: 3px solid;
   border-image: linear-gradient(
     180deg,
