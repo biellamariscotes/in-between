@@ -736,6 +736,10 @@ const handleCashOutAndQuit = () => {
 
       isCashOutDialog.value = false
       cashOutCredit.value = false
+      // Reset timer for next player
+      gameStore.turnTimeRemaining = 20
+      gameStore.stopTurnTimer()
+      gameStore.startTurnTimer()
     }
   } catch (error) {
     console.error('Error removing player:', error)
