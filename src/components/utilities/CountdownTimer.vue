@@ -112,6 +112,43 @@ onMounted(() => {
   box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
   position: relative;
+
+  /* Responsive styling for different screen sizes */
+  /* Large tablets */
+  @media screen and (max-width: 1024px) {
+    width: 130px;
+    height: 130px;
+  }
+
+  /* Small tablets and large phones */
+  @media screen and (max-width: 768px) {
+    width: 110px;
+    height: 110px;
+  }
+
+  /* Mobile phones */
+  @media screen and (max-width: 480px) {
+    width: 90px;
+    height: 90px;
+  }
+
+  /* Very small devices */
+  @media screen and (max-width: 360px) {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Landscape orientation - phones and small tablets */
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* iPhone specific landscape adjustments */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 90px;
+    height: 90px;
+  }
 }
 
 .time-warning {
@@ -141,5 +178,22 @@ onMounted(() => {
   color: white;
   font-size: 14px;
   font-weight: bold;
+
+  /* Responsive font size for smaller screens */
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+    bottom: -20px;
+  }
+
+  @media screen and (max-width: 480px) {
+    font-size: 10px;
+    bottom: -18px;
+  }
+
+  /* Landscape orientation adjustments */
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    font-size: 10px;
+    bottom: -16px;
+  }
 }
 </style>

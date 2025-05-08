@@ -174,7 +174,6 @@ const handleDealNow = () => {
   emit('update:chooseBet', false)
 }
 </script>
-
 <style scoped>
 .actions-wrapper {
   position: relative;
@@ -245,6 +244,25 @@ const handleDealNow = () => {
 
 :deep(.el-slider__bar) {
   background-color: #ffd700;
+  @media (max-width: 932px) and (max-height: 430px) {
+    width: 150px;
+  }
+}
+:deep(.el-slider__runway) {
+  @media (max-width: 932px) and (max-height: 430px) {
+    width: 150px;
+  }
+}
+@media screen and (max-width: 932px) and (max-height: 430px) {
+  .el-input-number {
+    width: 100px;
+  }
+  :deep(.el-slider__input) {
+    width: 80px;
+  }
+  :deep(.el-slider__runway.show-input) {
+    margin-right: 0px;
+  }
 }
 
 :deep(.el-slider__button) {
@@ -318,5 +336,44 @@ const handleDealNow = () => {
   justify-items: center;
   align-content: center;
   justify-content: center;
+}
+
+/* Add media queries for mobile landscape orientation */
+@media (max-width: 932px) and (max-height: 430px) {
+  .actions-wrapper {
+    padding: 2rem;
+    gap: 10px;
+  }
+
+  .back-cta {
+    width: 30px;
+    height: 30px;
+  }
+
+  .deal-cta {
+    width: 180px;
+    height: 40px;
+  }
+
+  .el-input {
+    max-width: 200px;
+    width: 120px;
+  }
+
+  :deep(.el-input) {
+    width: 100px;
+  }
+
+  :deep(.el-slider) {
+    gap: 10px;
+  }
+
+  .dialog-footer {
+    gap: 10px;
+  }
+
+  :deep(.el-button) {
+    min-width: 80px;
+  }
 }
 </style>
