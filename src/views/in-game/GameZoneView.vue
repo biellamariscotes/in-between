@@ -592,33 +592,6 @@ watch(showTour, (tourFinished) => {
   }
 })
 
-// Watch: Game messages to display appropriate modals
-watch(
-  () => gameStore.message,
-  (newMessage, oldMessage) => {
-    if (oldMessage !== newMessage) {
-      // Stop timer when showing results
-      if (newMessage.includes('Win!')) {
-        gameStore.stopTurnTimer()
-        showWinModal()
-      } else if (newMessage.includes('Lose')) {
-        gameStore.stopTurnTimer()
-        showLoseModal()
-      } else if (
-        // Show penalty fold modal for auto-fold with penalty
-        (newMessage.includes('folded and skipped') && newMessage.includes('penalty')) ||
-        newMessage.includes('auto-fold')
-      ) {
-        gameStore.stopTurnTimer()
-        showPenaltyFoldModal()
-      } else if (newMessage.includes('Fold') || newMessage.includes('folded')) {
-        // Only show regular fold modal for manual fold
-        gameStore.stopTurnTimer()
-        showFoldModal()
-      }
-    }
-  },
-)
 
 // Watch: Reset game when player count changes
 watch(playerCount, () => {

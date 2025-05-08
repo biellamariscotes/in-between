@@ -22,7 +22,7 @@ const MODAL_DISPLAY_TIME = 2000 // 2 seconds
 /**
  * Shows a modal with the specified image for a fixed duration
  * @param image The image to display in the modal
- * @param type The type of modal ('win', 'lose', or 'fold')
+ * @param type The type of modal ('win', 'lose', 'fold', or 'penalty-fold')
  */
 function showModal(image: string, type: 'win' | 'lose' | 'fold' | 'penalty-fold') {
   resultModalImage.value = image
@@ -108,6 +108,10 @@ export function showFoldModal() {
 }
 
 export function showPenaltyFoldModal() {
+  const gameStore = useGameStore()
+
+  gameStore.stopTurnTimer()
+
   resultModalImage.value = PenaltyFoldImage
   modalType.value = 'penalty-fold'
   showResultModal.value = true
@@ -115,5 +119,12 @@ export function showPenaltyFoldModal() {
   setTimeout(() => {
     showResultModal.value = false
     modalType.value = ''
+
+    // Auto-close after delay and only then process the next turn
+    if (gameStore.isMultiplayer && gameStore.gameStarted && !gameStore.gameOver) {
+      setTimeout(() => {
+        gameStore.startTurnTimer()
+      }, 500)
+    }
   }, MODAL_DISPLAY_TIME)
 }
