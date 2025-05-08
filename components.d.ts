@@ -36,6 +36,7 @@ declare module 'vue' {
     GameCta: typeof import('./src/components/gameplay-actions/GameCta.vue')['default']
     GameOverModal: typeof import('./src/components/dialog/GameOverModal.vue')['default']
     HowToPlayDialog: typeof import('./src/components/dialog/HowToPlayDialog.vue')['default']
+    LandscapeOrientation: typeof import('./src/components/LandscapeOrientation.vue')['default']
     MainMenuDialog: typeof import('./src/components/dialog/MainMenuDialog.vue')['default']
     NotEnoughPlayers: typeof import('./src/components/dialog/NotEnoughPlayers.vue')['default']
     PlayerForm: typeof import('./src/components/forms/PlayerForm.vue')['default']

@@ -1,4 +1,5 @@
 <template>
+  <LandscapeOrientation v-if="!isLandscape" />
   <div
     class="game-zone-container"
     :class="{
@@ -7,6 +8,7 @@
       'modal-lose': modalType === 'lose',
       'modal-fold': modalType === 'fold',
     }"
+    v-else
   >
     <!-- Main game table background -->
     <el-image
@@ -282,6 +284,7 @@ import CardCount from '@/components/utilities/CardCount.vue'
 import EventsHistory from '@/components/utilities/EventsHistory.vue'
 import router from '@/router'
 import { INITIAL_TURN_TIME } from '@/const/game-constants'
+import LandscapeOrientation from '@/components/LandscapeOrientation.vue'
 // Add game over modal state
 const showGameOverModal = ref(false)
 
@@ -745,6 +748,18 @@ const handleCashOutAndQuit = () => {
     console.error('Error removing player:', error)
   }
 }
+
+const isLandscape = ref(window.innerWidth > window.innerHeight)
+
+const handleOrientationChange = () => {
+  isLandscape.value = window.innerWidth > window.innerHeight
+}
+
+window.addEventListener('resize', handleOrientationChange)
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleOrientationChange)
+})
 </script>
 
 <style lang="css" scoped>
