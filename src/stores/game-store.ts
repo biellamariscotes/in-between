@@ -323,6 +323,9 @@ export const useGameStore = defineStore('game', {
         const playerPenalty = (playerCredit ?? 0) - penaltyAmount
         this.players[playerPosition].credits = playerPenalty
         this.communalPot = this.communalPot + penaltyAmount
+
+        // Set a message that includes "penalty" for modal detection
+        this.message = `${this.players[playerPosition].name} auto-folded and received a penalty of ${penaltyAmount} credits.`
       }
     },
 

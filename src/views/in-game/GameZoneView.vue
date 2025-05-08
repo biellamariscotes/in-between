@@ -272,6 +272,8 @@ import {
   showLoseModal,
   showFoldModal,
   modalType, // Import the new modalType ref
+  // Add the following import:
+  showPenaltyFoldModal,
 } from '@/utils/gameplay/pop-ups/modalUtil'
 import {
   isCurrentPlayer,
@@ -594,7 +596,6 @@ watch(showTour, (tourFinished) => {
 watch(
   () => gameStore.message,
   (newMessage, oldMessage) => {
-    // Only trigger on message changes that are results
     if (oldMessage !== newMessage) {
       // Stop timer when showing results
       if (newMessage.includes('Win!')) {
@@ -603,7 +604,15 @@ watch(
       } else if (newMessage.includes('Lose')) {
         gameStore.stopTurnTimer()
         showLoseModal()
+      } else if (
+        // Show penalty fold modal for auto-fold with penalty
+        (newMessage.includes('folded and skipped') && newMessage.includes('penalty')) ||
+        newMessage.includes('auto-fold')
+      ) {
+        gameStore.stopTurnTimer()
+        showPenaltyFoldModal()
       } else if (newMessage.includes('Fold') || newMessage.includes('folded')) {
+        // Only show regular fold modal for manual fold
         gameStore.stopTurnTimer()
         showFoldModal()
       }
