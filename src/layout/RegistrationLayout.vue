@@ -24,23 +24,27 @@ useDynamicStyle()
 </script>
 
 <style lang="css" scoped>
-.landing-container {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  padding: 2rem 2.5rem;
-}
+@media screen and (orientation: landscape) {
+  .landing-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: auto;
+    padding: 2rem 2.5rem;
+  }
 
-.overlay {
-  position: absolute;
-  top: 0;
-  left: -30%;
-  width: 160%;
-  height: 140%;
-  background-image: url('../assets/img/landing-assets/BG-Menu.png');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.07;
+  .overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centers the element */
+    background-image: url('../assets/img/landing-assets/BG-Menu.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.07;
+    background-size: contain;
+  }
 }
 </style>

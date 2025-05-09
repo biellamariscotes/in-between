@@ -262,6 +262,7 @@ import GameOverModal from '@/components/dialog/GameOverModal.vue'
 import eventBus from '@/eventBus'
 import { useGameHistory } from '@/composables/game/useGameHistory'
 import { useNotification } from '@/composables/game/useNotification'
+import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/gameplay/deck/cardUtil'
@@ -289,6 +290,7 @@ const gameStore = useGameStore()
 // const { startNewGame } = useGameLifeCycle()
 const playerStoreRegistration = usePlayerRegistration()
 const { showNotification } = useNotification()
+const lifegame = useGameLifeCycle()
 
 // Credit management flags
 const addCredit = ref(false)
@@ -545,6 +547,15 @@ watch(
         updateCreditStatus()
         console.log('Credit status after game start:', addCredit.value)
       }, 200) // Delay to ensure player pots are updated
+    }
+  },
+)
+
+watch(
+  () => gameStore.getCardsLeft,
+  (newVal) => {
+    if (newVal === 0) {
+      lifegame.reshuffleDeck()
     }
   },
 )

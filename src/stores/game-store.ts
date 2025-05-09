@@ -83,10 +83,10 @@ export const useGameStore = defineStore('game', {
       return state.players[state.currentPlayerIndex]?.name || 'Player'
     },
     getCommunalPot: (state) => state.communalPot,
-    getCardsLeft: (state) => state.deck.length, // Returns the number of cards left in the deck
+    getCardsLeft: (state) => state.deck.length,
   },
 
-  actions: {
+  actions: {  
     // ─────────────────────────────
     // CARD UTILITY FUNCTIONS
     // ─────────────────────────────

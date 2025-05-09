@@ -20,7 +20,7 @@
     <Button
       btnType="submit"
       variant="secondary"
-      style="margin-top: 2rem"
+      style="margin-top: 0rem"
       @click="onSubmit"
       :disabled="!playerStore.playerCount"
     >
