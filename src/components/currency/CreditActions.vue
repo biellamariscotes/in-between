@@ -44,9 +44,13 @@ const noIllAdd = () => {
 
 <style scoped>
 .insufficient {
-  width: 130px;
-  height: 50px;
   cursor: pointer;
+  width: 230px;
+  height: 100px;
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 130px;
+    height: 50px;
+  }
 }
 
 .back-cta {
