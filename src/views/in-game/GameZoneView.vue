@@ -281,7 +281,7 @@ import {
 import CardCount from '@/components/utilities/CardCount.vue'
 import EventsHistory from '@/components/utilities/EventsHistory.vue'
 import router from '@/router'
-
+import { INITIAL_TURN_TIME } from '@/const/game-constants'
 // Add game over modal state
 const showGameOverModal = ref(false)
 
@@ -736,6 +736,10 @@ const handleCashOutAndQuit = () => {
 
       isCashOutDialog.value = false
       cashOutCredit.value = false
+      // Reset timer for next player
+      gameStore.turnTimeRemaining = INITIAL_TURN_TIME
+      gameStore.stopTurnTimer()
+      gameStore.startTurnTimer()
     }
   } catch (error) {
     console.error('Error removing player:', error)
@@ -757,6 +761,19 @@ const handleCashOutAndQuit = () => {
 .input-credits-text {
   width: 250px;
   height: 30px;
+  /* add media query for mobile landscape orientation */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 140px;
+    height: 20px;
+  }
+  @media screen and (max-width: 480px) {
+    width: 140px;
+    height: 20px;
+  }
+  @media screen and (max-width: 768px) {
+    width: 150px;
+    height: 30px;
+  }
 }
 
 .back-cta {
@@ -766,6 +783,11 @@ const handleCashOutAndQuit = () => {
   width: 30px;
   height: 30px;
   cursor: pointer;
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    left: 2%;
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .add-credits-cta {
@@ -775,6 +797,11 @@ const handleCashOutAndQuit = () => {
   width: 190px;
   height: 65px;
   cursor: pointer;
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    right: -75%;
+    width: 120px;
+    height: 40px;
+  }
 }
 
 .dialog-title {
@@ -811,6 +838,10 @@ const handleCashOutAndQuit = () => {
 
 :deep(.el-input) {
   width: 170px;
+  @media (max-width: 932px) and (max-height: 430px) {
+    width: 80px;
+    height: 30px;
+  }
 }
 
 :deep(.el-input__wrapper) {
