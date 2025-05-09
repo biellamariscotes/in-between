@@ -42,7 +42,6 @@ defineProps<{
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 1rem;
 
   &__img {
     width: 100%;
@@ -64,6 +63,9 @@ defineProps<{
     &--total {
       color: #ffcc00;
       width: 100%;
+      @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+        font-size: 0.6rem;
+      }
     }
   }
 }

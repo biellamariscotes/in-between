@@ -27,8 +27,6 @@
   z-index: 100;
 }
 .timer-container {
-  width: 13%;
-  height: 13%;
   position: absolute;
   top: 7%;
   right: 7%;
@@ -36,6 +34,34 @@
   justify-content: center;
   align-items: center;
   z-index: 100;
+
+  /* Responsive positioning for different screen sizes */
+  @media screen and (max-width: 1024px) {
+    top: 6%;
+    right: 6%;
+  }
+
+  @media screen and (max-width: 768px) {
+    top: 5%;
+    right: 5%;
+  }
+
+  @media screen and (max-width: 480px) {
+    top: 4%;
+    right: 4%;
+  }
+
+  /* Landscape orientation adjustments */
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    top: 10%;
+    right: 5%;
+  }
+
+  /* iPhone specific landscape adjustments */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    top: 12%;
+    right: 4%;
+  }
 }
 .actions-container {
   width: 30%;
@@ -62,6 +88,34 @@
   background-color: rgb(0, 0, 0, 0.3);
   padding: 20px;
   border-radius: 16px;
+  font-size: 14px; /* Default font size */
+
+  /* Responsive font sizing for different screen sizes */
+  @media screen and (max-width: 1200px) {
+    font-size: 13px;
+  }
+
+  @media screen and (max-width: 992px) {
+    font-size: 12px;
+  }
+
+  @media screen and (max-width: 768px) {
+    font-size: 11px;
+  }
+
+  @media screen and (max-width: 576px) {
+    font-size: 10px;
+  }
+
+  /* Landscape orientation for mobile devices */
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    font-size: 10px;
+  }
+
+  /* iPhone specific landscape adjustments */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    font-size: 9px;
+  }
 }
 
 .history-title {
@@ -83,6 +137,7 @@
   position: absolute;
   left: 7%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 100;
@@ -99,7 +154,7 @@
   pointer-events: none;
 }
 .turn-container h1 {
-  font-size: 70px;
+  font-size: 4vw;
   color: white;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
@@ -145,7 +200,6 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  height: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -155,7 +209,6 @@
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  height: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -295,6 +348,52 @@
   left: 50%;
   transform: translateX(-50%);
   top: -24px;
+
+  /* Responsive sizing for different screen sizes */
+  @media screen and (max-width: 1024px) {
+    border-left: 13px solid transparent;
+    border-right: 13px solid transparent;
+    border-top: 18px solid gold;
+    top: -22px;
+  }
+
+  @media screen and (max-width: 768px) {
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-top: 16px solid gold;
+    top: -20px;
+  }
+
+  @media screen and (max-width: 480px) {
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 14px solid gold;
+    top: -18px;
+  }
+
+  /* Very small devices */
+  @media screen and (max-width: 360px) {
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 12px solid gold;
+    top: -16px;
+  }
+
+  /* Landscape orientation */
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 13px solid gold;
+    top: -17px;
+  }
+
+  /* iPhone specific landscape adjustments */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid gold;
+    top: -14px;
+  }
 }
 
 .arrow-bottom {
@@ -304,6 +403,31 @@
   animation:
     pulse 1s infinite alternate,
     bounce-reverse 1.5s infinite;
+
+  /* Responsive positioning for bottom arrow */
+  @media screen and (max-width: 1024px) {
+    bottom: -22px;
+  }
+
+  @media screen and (max-width: 768px) {
+    bottom: -20px;
+  }
+
+  @media screen and (max-width: 480px) {
+    bottom: -18px;
+  }
+
+  @media screen and (max-width: 360px) {
+    bottom: -16px;
+  }
+
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    bottom: -17px;
+  }
+
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    bottom: -14px;
+  }
 }
 
 .arrow-right {
@@ -318,6 +442,49 @@
   animation:
     pulse 1s infinite alternate,
     bounce-horizontal 1.5s infinite;
+
+  /* Responsive sizing for right arrow */
+  @media screen and (max-width: 1024px) {
+    border-top: 13px solid transparent;
+    border-bottom: 13px solid transparent;
+    border-left: 18px solid gold;
+    left: -18%;
+  }
+
+  @media screen and (max-width: 768px) {
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent;
+    border-left: 16px solid gold;
+    left: -16%;
+  }
+
+  @media screen and (max-width: 480px) {
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 14px solid gold;
+    left: -14%;
+  }
+
+  @media screen and (max-width: 360px) {
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 12px solid gold;
+    left: -12%;
+  }
+
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 13px solid gold;
+    left: -13%;
+  }
+
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 10px solid gold;
+    left: -11%;
+  }
 }
 
 .arrow-left {
@@ -332,27 +499,81 @@
   animation:
     pulse 1s infinite alternate,
     bounce-horizontal 1.5s infinite;
+
+  /* Responsive sizing for left arrow */
+  @media screen and (max-width: 1024px) {
+    border-top: 13px solid transparent;
+    border-bottom: 13px solid transparent;
+    border-right: 18px solid gold;
+    right: -18%;
+  }
+
+  @media screen and (max-width: 768px) {
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent;
+    border-right: 16px solid gold;
+    right: -16%;
+  }
+
+  @media screen and (max-width: 480px) {
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-right: 14px solid gold;
+    right: -14%;
+  }
+
+  @media screen and (max-width: 360px) {
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 12px solid gold;
+    right: -12%;
+  }
+
+  @media screen and (orientation: landscape) and (max-height: 600px) {
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-right: 13px solid gold;
+    right: -13%;
+  }
+
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-right: 10px solid gold;
+    right: -11%;
+  }
 }
 
-/* Update the horizontal player containers to properly show cards */
-.player-5 .player-hand,
-.player-6 .player-hand {
-  width: 100%;
-  height: 50%;
-  margin-top: 0;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Player text styling */
 .player-name {
   color: white;
-  font-size: 18px; /* Slightly larger font size for player name */
+  font-size: 17px; /* Slightly larger font size for player name */
   text-align: center;
   margin: 2px 0;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
   display: inline-block; /* Allows width to adjust based on content */
   white-space: nowrap; /* Prevents text from wrapping */
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    font-size: 9px; /* Adjust font size for smaller screens */
+  }
+
+  /* Mobile responsive text sizes */
+  @media screen and (max-width: 768px) {
+    font-size: 15px;
+  }
+
+  @media screen and (max-width: 480px) {
+    font-size: 13px;
+  }
+
+  /* Tablet landscape mode */
+  @media screen and (orientation: landscape) and (max-width: 1024px) and (max-height: 768px) {
+    font-size: 12px;
+  }
+
+  /* Very small devices */
+  @media screen and (max-width: 360px) {
+    font-size: 11px;
+  }
 }
 
 .player-points {
@@ -363,6 +584,30 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
   display: inline-block; /* Allows width to adjust based on content */
   white-space: nowrap; /* Prevents text from wrapping */
+
+  //landscape orientation media screen for mobile devices such as iphone 14 pro max 932 width and 430 height
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    font-size: 7px; /* Adjust font size for smaller screens */
+  }
+
+  /* Mobile responsive text sizes */
+  @media screen and (max-width: 768px) {
+    font-size: 13px;
+  }
+
+  @media screen and (max-width: 480px) {
+    font-size: 11px;
+  }
+
+  /* Tablet landscape mode */
+  @media screen and (orientation: landscape) and (max-width: 1024px) and (max-height: 768px) {
+    font-size: 10px;
+  }
+
+  /* Very small devices */
+  @media screen and (max-width: 360px) {
+    font-size: 9px;
+  }
 }
 
 .player-info {
@@ -393,35 +638,28 @@
 /* Table card styling */
 .face-up-card,
 .current-card {
-  width: 100px;
-  height: 140px;
-  background-color: rgba(0, 0, 0, 0.2);
+  width: 55%;
+  height: 55%;
   border-radius: 10px;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
+  /* background-color: rgba(0, 0, 0, 0.2); */
+
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+.mystery-card {
+  width: 100%;
+  height: 100%;
+}
+
 .card-placeholder {
   display: flex;
-  width: 100px;
-  height: 140px;
+  width: 55%;
+  height: 55%;
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   border: 2px dashed rgba(255, 255, 255, 0.3);
-}
-
-/* Credit display styling */
-.credit-display {
-  color: white;
-  text-align: center;
-  margin-top: 15px;
-  // background-color: rgba(0, 0, 0, 0.7);
-  padding: 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 /* Card table container */
@@ -497,6 +735,12 @@
   width: 100%;
   height: 100%;
   padding: 1.5rem 2rem;
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    padding: 1rem 1rem;
+  }
+  @media screen and (max-width: 480px) {
+    padding: 1rem 1rem;
+  }
 }
 
 /* Modal animations */
@@ -518,21 +762,11 @@
   }
 }
 
-.game-cards {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  height: 100%;
-  padding: 10px;
-}
-
 /* Adjust styling for table cards to match player hands */
 .face-up-card,
 .current-card {
-  width: 140px;
-  height: 220px;
+  width: 55%;
+  height: 55%;
   border-radius: 10px;
   /* background-color: rgba(0, 0, 0, 0.2); */
 
@@ -542,14 +776,14 @@
 }
 
 .mystery-card {
-  width: 1000px;
-  height: 250px;
+  width: 100%;
+  height: 100%;
 }
 
 .card-placeholder {
   display: flex;
-  width: 100px;
-  height: 140px;
+  width: 55%;
+  height: 55%;
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   border: 2px dashed rgba(255, 255, 255, 0.3);
@@ -564,17 +798,6 @@
   height: 100%;
   width: 100%;
 }
-
-/* .timer {
-  color: white;
-  font-size: 1.5rem;
-  transition: color 0.3s ease;
-}
-
-.timer.warning {
-  color: #ff5252;
-  animation: pulse 1s infinite;
-} */
 
 @keyframes pulse {
   0% {

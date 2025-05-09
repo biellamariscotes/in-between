@@ -22,5 +22,8 @@ const gameStore = useGameStore()
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    font-size: 7px;
+  }
 }
 </style>

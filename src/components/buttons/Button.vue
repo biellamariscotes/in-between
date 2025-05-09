@@ -84,8 +84,7 @@ function handleClick(event: MouseEvent) {
   }
 }
 </script>
-
-<style lang="css" scoped>
+<style scoped>
 .my-button {
   padding: 0.8rem 1.8rem;
   border: none;
@@ -114,5 +113,13 @@ function handleClick(event: MouseEvent) {
 
   /* Clip to match rounded border */
   clip-path: inset(0 round 10px);
+}
+
+/* Add media queries for iPhone 14 Pro Max landscape format */
+@media (max-width: 932px) and (max-height: 430px) {
+  .my-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.7rem;
+  }
 }
 </style>
