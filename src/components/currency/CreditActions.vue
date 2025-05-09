@@ -44,8 +44,8 @@ const noIllAdd = () => {
 
 <style scoped>
 .insufficient {
-  width: 280px;
-  height: 80px;
+  width: 130px;
+  height: 50px;
   cursor: pointer;
 }
 
@@ -56,5 +56,9 @@ const noIllAdd = () => {
   width: 30px;
   height: 30px;
   cursor: pointer;
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    width: 20px;
+    height: 20px;
+  }
 }
 </style>

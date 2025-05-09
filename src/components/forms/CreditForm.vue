@@ -126,7 +126,6 @@ const handleSubmitCredit = () => {
   }
 }
 </script>
-
 <style scoped>
 .el-form {
   position: relative;
@@ -212,5 +211,41 @@ const handleSubmitCredit = () => {
 :deep(.el-input__inner) {
   color: white;
   font-family: 'Baumans';
+}
+
+/* Add media queries for iPhone 14 landscape format */
+@media (max-width: 932px) and (max-height: 430px) {
+  .input-credits-text {
+    width: 130px;
+    height: 20px;
+  }
+
+  .add-credits-cta {
+    width: 100px;
+    height: 40px;
+    right: -60%;
+  }
+
+  .back-cta {
+    width: 25px;
+    height: 25px;
+  }
+
+  .insufficient-wrapper {
+    padding: 0.5rem 1rem;
+  }
+
+  .insufficient {
+    width: 130px;
+    height: 50px;
+  }
+
+  .credits {
+    font-size: 1.5rem;
+  }
+
+  :deep(.el-input) {
+    width: 120px;
+  }
 }
 </style>

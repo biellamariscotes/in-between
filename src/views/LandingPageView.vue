@@ -26,3 +26,9 @@ function redirectToRoute() {
   router.push('/choose-player')
 }
 </script>
+
+<style>
+.overlay {
+  z-index: 1;
+}
+</style>
