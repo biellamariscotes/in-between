@@ -87,7 +87,10 @@ const handStyle = computed(() => ({
   padding: 0 2px; /* Add some spacing between cards */
   display: flex;
   justify-content: center;
-  min-width: 32px;
+  min-width: 60px;
+  @media screen and (orientation: landscape) and (max-width: 932px) and (max-height: 430px) {
+    min-width: 30px;
+  }
 }
 
 /* Rotate the entire hand container instead of individual cards */
