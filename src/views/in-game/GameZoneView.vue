@@ -268,10 +268,7 @@ import { cardToDisplayId } from '@/utils/gameplay/deck/cardUtil'
 import {
   showResultModal,
   resultModalImage,
-  showWinModal,
-  showLoseModal,
-  showFoldModal,
-  modalType, // Import the new modalType ref
+  modalType, 
 } from '@/utils/gameplay/pop-ups/modalUtil'
 import {
   isCurrentPlayer,
@@ -590,26 +587,6 @@ watch(showTour, (tourFinished) => {
   }
 })
 
-// Watch: Game messages to display appropriate modals
-watch(
-  () => gameStore.message,
-  (newMessage, oldMessage) => {
-    // Only trigger on message changes that are results
-    if (oldMessage !== newMessage) {
-      // Stop timer when showing results
-      if (newMessage.includes('Win!')) {
-        gameStore.stopTurnTimer()
-        showWinModal()
-      } else if (newMessage.includes('Lose')) {
-        gameStore.stopTurnTimer()
-        showLoseModal()
-      } else if (newMessage.includes('Fold') || newMessage.includes('folded')) {
-        gameStore.stopTurnTimer()
-        showFoldModal()
-      }
-    }
-  },
-)
 
 // Watch: Reset game when player count changes
 watch(playerCount, () => {

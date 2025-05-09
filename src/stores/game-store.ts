@@ -20,6 +20,12 @@ import {
   TRANSITION_DELAY,
   RANK_ORDER,
 } from '@/const/game-constants'
+import {
+  showWinModal,
+  showLoseModal,
+  showFoldModal,
+  showPenaltyFoldModal,
+} from '@/utils/gameplay/pop-ups/modalUtil'
 
 // ─────────────────────────────
 // Initial State Factory
@@ -291,6 +297,9 @@ export const useGameStore = defineStore('game', {
       this.stopTurnTimer()
       this.message = `${this.players[this.currentPlayerIndex].name} folded and skipped their turn.`
 
+      // Show fold modal
+      showFoldModal()
+
       // Game history entry: FOLD
       const gameHistory = useGameHistory()
       const { logFold } = gameHistory.getPlayerLogger(this.players[this.currentPlayerIndex])
@@ -309,7 +318,9 @@ export const useGameStore = defineStore('game', {
     autoFold() {
       if (this.gameStarted && !this.gameOver) {
         console.log('Time ran out - auto-folding')
-        this.fold()
+
+        // Don't call the regular fold here, we handle it specially
+        this.stopTurnTimer()
 
         const penaltyAmount = 20
         const playerPosition = this.currentPlayerIndex
@@ -323,6 +334,25 @@ export const useGameStore = defineStore('game', {
         const playerPenalty = (playerCredit ?? 0) - penaltyAmount
         this.players[playerPosition].credits = playerPenalty
         this.communalPot = this.communalPot + penaltyAmount
+
+        // Set a message that includes "penalty" for any logging purposes
+        this.message = `${this.players[playerPosition].name} auto-folded and received a penalty of ${penaltyAmount} credits.`
+
+        // Show penalty fold modal
+        showPenaltyFoldModal()
+
+        // Game history entry: AUTO-FOLD with PENALTY
+        const gameHistory = useGameHistory()
+        const { logFold } = gameHistory.getPlayerLogger(this.players[this.currentPlayerIndex])
+        logFold() // Add a parameter to indicate penalty fold if needed
+
+        this.roundsPlayed++
+
+        // Move to next player's turn after delay
+        setTimeout(() => {
+          this.nextPlayerTurn()
+          this.drawNewFaceUpCards()
+        }, TRANSITION_DELAY)
       }
     },
 
@@ -515,6 +545,13 @@ export const useGameStore = defineStore('game', {
       // Update player credits and game state
       this.updatePlayerCredits(winAmount)
       this.message = `${playerName}: ${resultMessage}`
+
+      // Show appropriate modal based on outcome
+      if (winAmount > 0) {
+        showWinModal()
+      } else {
+        showLoseModal()
+      }
 
       // Get the player logger for the current player
       const gameHistory = useGameHistory()
