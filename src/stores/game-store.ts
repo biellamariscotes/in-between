@@ -84,9 +84,10 @@ export const useGameStore = defineStore('game', {
     },
     getCommunalPot: (state) => state.communalPot,
     getCardsLeft: (state) => state.deck.length,
+    createDeck: (state) => state.deck.length,
   },
 
-  actions: {  
+  actions: {
     // ─────────────────────────────
     // CARD UTILITY FUNCTIONS
     // ─────────────────────────────
