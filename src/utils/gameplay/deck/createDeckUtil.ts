@@ -15,5 +15,6 @@ export function createDeck(): Card[] {
       }
     }
   }
+
   return deck
 }

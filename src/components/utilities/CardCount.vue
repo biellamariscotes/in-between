@@ -1,14 +1,14 @@
 <template>
   <div id="btn10" class="CardCount">
-    <h1>{{ gameStore.getCardsLeft }} / 208</h1>
-    <h1>CARDS</h1>
+    <!-- <h1>{{ gameStore.getCardsLeft }} /208</h1>
+    <h1>CARDS</h1> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { useGameStore } from '@/stores/game-store'
+// import { useGameStore } from '@/stores/game-store'
 
-const gameStore = useGameStore()
+// const gameStore = useGameStore()
 </script>
 
 <style>

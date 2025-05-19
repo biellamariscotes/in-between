@@ -46,8 +46,8 @@
       <div class="dialog-footer"></div>
     </template>
   </el-dialog>
-  <HowToPlayDialog :is-open="showTour" />
-  <GameRules :is-open="showRules" />
+  <HowToPlayDialog v-model="showTour" />
+  <GameRules v-model="showRules" />
 
   <!-- Additional 'How to Play' Dialog -->
 </template>
@@ -57,6 +57,8 @@ import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 import eventBus from '@/eventBus'
 import { useGameStore } from '@/stores/game-store'
+import GameRules from './GameRules.vue'
+import HowToPlayDialog from './HowToPlayDialog.vue'
 // import GameRules from '@/components/dialog/GameRules.vue'
 
 const gameStore = useGameStore()
@@ -73,7 +75,7 @@ const closeMainMenu = () => {
 
 const toggleRules = () => {
   showRules.value = !showRules.value
-  console.log('clicked, showRules:', showRules.value)
+  console.log(showRules.value)
 }
 
 onMounted(() => {
@@ -95,7 +97,7 @@ const showTour = ref(false)
 console.log('First state: ', showTour.value)
 
 const toggleTour = () => {
-  console.log('🖱️ How To Play button clicked')
+  // console.log('🖱️ How To Play button clicked')
   showTour.value = !showTour.value
   eventBus.emit('toggle-tour', showTour.value)
   mainMenuVisible.value = false // CAUSE OF BUG
@@ -106,23 +108,6 @@ const toggleTour = () => {
     gameStore.resumeTurnTimer()
   }
 }
-
-// const props = defineProps({
-//   isOpen: {
-//     type: Boolean,
-//     default: true,
-//   },
-// })
-
-// const open = ref(false)
-
-// watch(
-//   () => props.isOpen,
-//   (newValue) => {
-//     open.value = newValue
-//   },
-//   { immediate: true },
-// )
 </script>
 
 <style scoped>
