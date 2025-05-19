@@ -131,7 +131,7 @@ const handleAllIn = () => {
  * Handle opening the bet form
  */
 const handleBetOption = () => {
-  if (playerCredits.value > 0) {
+  if (playerCredits.value > 200) {
     chooseBet.value = true
   }
 }

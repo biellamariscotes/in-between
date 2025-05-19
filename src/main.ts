@@ -18,18 +18,18 @@ app.use(pinia)
 app.use(router)
 
 // Navigation Guard
-router.beforeEach((to, from, next) => {
-  if (to.path === '/game-zone' && !('players' in localStorage)) {
-    return next('/')
-  } else if (
-    to.path === '/' ||
-    to.path === '/choose-player' ||
-    (to.path === '/registration' && 'players' in localStorage)
-  ) {
-    return next('/game-zone')
-  }
-  next()
-})
+// router.beforeEach((to, from, next) => {
+//   if (to.path === '/game-zone' && !('players' in localStorage)) {
+//     return next('/')
+//   } else if (
+//     to.path === '/' ||
+//     to.path === '/choose-player' ||
+//     (to.path === '/registration' && 'players' in localStorage)
+//   ) {
+//     return next('/game-zone')
+//   }
+//   next()
+// })
 
 app.use(ElementPlus)
 
