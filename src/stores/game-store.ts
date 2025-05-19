@@ -631,10 +631,6 @@ export const useGameStore = defineStore('game', {
       // Reset the all-in flag
       this.isAllInBet = false
 
-      // If player won, start new round with rake
-      if (winAmount > 0 && !this.gameOver) {
-        setTimeout(() => this.collectRake(), TRANSITION_DELAY)
-      }
 
       this.saveStateToLocalStorage()
     },
