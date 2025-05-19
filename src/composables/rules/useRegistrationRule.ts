@@ -18,16 +18,19 @@ type ValidatorRule = FormItemRule & {
 
 export const useRegistrationRule = reactive<FormRules>({
   name: [
-    { required: true, message: 'Please input Activity name', trigger: 'change' },
-    { min: 3, message: 'Length should be 3 and above', trigger: 'change' },
+    { required: true, message: 'Please input username', trigger: 'change' },
+    { min: 4, message: 'Length should be 4 and above', trigger: 'change' },
+    { max: 16, message: 'Length should be only 16 characters long', trigger: 'change' },
   ],
   credits: [
     { required: true, message: 'Please input Credit Score', trigger: 'change' },
     { type: 'number', message: 'Credit must be a number' },
     {
       validator: (rule: FormItemRule, value: number, callback: ValidatorCallback) => {
-        if (value === null || value < 100) {
-          callback(new Error('Credit should be 100 and above'))
+        if (value === null || value < 200) {
+          callback(new Error('Credit should be 200 and above'))
+        } else if (value > 100000000 || !Number.isFinite(value)) {
+          callback(new Error('Credit should be a finite number and less than 1,000,000,000'))
         } else {
           callback()
         }
@@ -36,3 +39,5 @@ export const useRegistrationRule = reactive<FormRules>({
     } as ValidatorRule,
   ],
 })
+
+

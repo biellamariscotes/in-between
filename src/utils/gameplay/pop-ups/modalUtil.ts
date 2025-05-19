@@ -6,7 +6,6 @@ import YouFoldImage from '@/assets/img/outcomes/you-fold.png'
 import YouWinSound from '@/assets/sfx/voices/you-win.wav'
 import YouLoseSound from '@/assets/sfx/voices/you-lose.wav'
 import YouFoldSound from '@/assets/sfx/outcomes/lose_1.wav'
-import PenaltyFoldImage from '@/assets/img/OUTCOMES/penalty-fold.png'
 
 const youWinSound = new Audio(YouWinSound)
 const youLoseSound = new Audio(YouLoseSound)
@@ -14,7 +13,7 @@ const youFoldSound = new Audio(YouFoldSound)
 
 export const showResultModal = ref(false)
 export const resultModalImage = ref('')
-export const modalType = ref<'win' | 'lose' | 'fold' | 'penalty-fold' | ''>('')
+export const modalType = ref<'win' | 'lose' | 'fold' | ''>('')
 
 // Time to display modal before hiding it
 const MODAL_DISPLAY_TIME = 2000 // 2 seconds
@@ -24,7 +23,7 @@ const MODAL_DISPLAY_TIME = 2000 // 2 seconds
  * @param image The image to display in the modal
  * @param type The type of modal ('win', 'lose', 'fold', or 'penalty-fold')
  */
-function showModal(image: string, type: 'win' | 'lose' | 'fold' | 'penalty-fold') {
+function showModal(image: string, type: 'win' | 'lose' | 'fold') {
   resultModalImage.value = image
   modalType.value = type
   showResultModal.value = true
@@ -101,28 +100,6 @@ export function showFoldModal() {
       // Wait a bit more before moving to next player
       setTimeout(() => {
         // Ensure the next player's turn timer doesn't start until modal is gone
-        gameStore.startTurnTimer()
-      }, 500)
-    }
-  }, MODAL_DISPLAY_TIME)
-}
-
-export function showPenaltyFoldModal() {
-  const gameStore = useGameStore()
-
-  gameStore.stopTurnTimer()
-
-  resultModalImage.value = PenaltyFoldImage
-  modalType.value = 'penalty-fold'
-  showResultModal.value = true
-
-  setTimeout(() => {
-    showResultModal.value = false
-    modalType.value = ''
-
-    // Auto-close after delay and only then process the next turn
-    if (gameStore.isMultiplayer && gameStore.gameStarted && !gameStore.gameOver) {
-      setTimeout(() => {
         gameStore.startTurnTimer()
       }, 500)
     }
