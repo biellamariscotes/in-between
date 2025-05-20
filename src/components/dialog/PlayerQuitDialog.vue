@@ -79,6 +79,7 @@ const isQuitPlayer = () => {
       })
 
       handleBackToMainCta()
+      gameStore.Timeout()
     }
   } catch (error) {
     console.error('Error removing player:', error)
