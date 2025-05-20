@@ -279,7 +279,6 @@ export const useGameStore = defineStore('game', {
       localStorage.setItem('players', JSON.stringify(playerStore.players))
 
       this.message = `Full round completed! Rake of ${this.rakeAmount} collected from all players.`
-      this.saveStateToLocalStorage()
 
       // Reset the round completion flag
       this.completedFullRound = false
