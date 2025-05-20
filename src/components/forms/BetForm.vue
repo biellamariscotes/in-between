@@ -1,6 +1,6 @@
 <!-- BetDialog Component
   Displays a betting interface with slider and quick bet options.
-  
+
   Emits:
     - update:chooseBet: boolean — Controls the visibility of the betting dialog.
     - close-bet: void — Triggered when dialog should be closed.
@@ -24,7 +24,7 @@
         v-model="betAmount"
         :min="minBet"
         :max="maxAllowedBet"
-        show-input="true"
+         show-input="true"
         :show-input-controls="false"
         :step="100"
       />

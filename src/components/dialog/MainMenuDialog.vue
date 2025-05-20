@@ -27,9 +27,9 @@
       />
 
       <img
-        src="../../assets/img/buttons/main-menu/how-to-play.png"
-        alt="GameRules"
-        class="main-menu-btns"
+        src="../../assets/img/buttons/main-menu/game-rules.png"
+        alt="game-rules-btn"
+        class="main-menu-rules-btns"
         @click="toggleRules"
       />
 
@@ -114,9 +114,11 @@ const toggleTour = () => {
 .main-menu-btns {
   width: 70%;
   cursor: pointer;
-  padding-bottom: 16px;
 }
-
+.main-menu-rules-btns {
+  width: 81%;
+  cursor: pointer;
+}
 .title-main-menu {
   margin-bottom: 0;
   font-size: 4rem;
