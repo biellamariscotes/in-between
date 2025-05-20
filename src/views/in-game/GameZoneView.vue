@@ -293,7 +293,7 @@ const lifegame = useGameLifeCycle()
 const addCredit = ref(false)
 const cashOutCredit = ref(false)
 const cashInCredit = ref(false)
-const cashOutAmout = ref()
+const cashOutAmout = ref<string | null>(null)
 const isCashOutDialog = ref(false)
 const notificationShown = ref(false)
 
@@ -618,9 +618,30 @@ const handleBackCashOut = () => {
 }
 
 const handleSubmitCashOut = () => {
-  if (cashOutAmout.value <= 0) return
+  // if (cashOutAmout.value === null || Number(cashOutAmout.value) <= 0) return
+
   try {
     const index = gameStore.currentPlayerIndex
+
+    // Check if cash-out amount is empty if empty then return warning notification
+    if (!cashOutAmout.value || cashOutAmout.value.trim() === '') {
+      showNotification({
+        title: 'Invalid Cash-out',
+        message: 'Cash-out amount cannot be empty',
+        type: 'warning',
+      })
+      return
+    }
+
+    // Check if cash-out amount not a number then return warning notification
+    if (isNaN(Number(cashOutAmout.value))) {
+      showNotification({
+        title: 'Invalid Cash-out',
+        message: 'Cash-out amount must be a number',
+        type: 'warning',
+      })
+      return
+    }
 
     // Ensure the player object exists
     if (!gameStore.players[index]) {
@@ -640,13 +661,12 @@ const handleSubmitCashOut = () => {
       return
     }
 
-    if (cashOutAmout.value > (player.credits ?? 0)) {
+    if (Number(cashOutAmout.value) > (player.credits ?? 0)) {
       showNotification({
         title: 'Invalid Cash-out',
         message: 'Cash-out amount exceeds available credits',
         type: 'warning',
       })
-      console.log('Cash-out amount exceeds available credits') // make this alert latur
       return
     }
 
@@ -696,7 +716,7 @@ const handleCashOutAndQuit = () => {
       return
     }
 
-    if (cashOutAmout.value > (player.credits ?? 0)) {
+    if (cashOutAmout.value === null || Number(cashOutAmout.value) > (player.credits ?? 0)) {
       console.log('Cash-out amount exceeds available credits') // make this alert latur
       return
     }

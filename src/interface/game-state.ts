@@ -82,4 +82,9 @@ export interface GameState {
   insufficientPlayers: boolean
 
   isAllInBet?: boolean
+  /** Index of the player who started the current round */
+  roundStartPlayerIndex: number
+
+  /** Tracks if we've gone through all players in a round */
+  completedFullRound: boolean
 }
