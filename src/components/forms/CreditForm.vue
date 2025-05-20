@@ -75,17 +75,24 @@ const ruleFormRef = ref<FormInstance>()
 
 const rules = reactive<FormRules>({
   creditValue: [
-    { required: true, message: 'Please input credits', trigger: 'change' },
     {
-      type: 'number',
-      min: 200,
-      message: 'Credit should be 200 and above',
+      required: true,
+      message: 'Credit is required',
       trigger: 'change',
     },
     {
       type: 'number',
-      max: 1000000,
-      message: 'Credit should be 1,000,000 and below',
+      message: 'Credit must be a number',
+      trigger: 'change',
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (value > 1000000) {
+          callback(new Error('Credit must be less than 1,000,000'))
+        } else {
+          callback()
+        }
+      },
       trigger: 'change',
     },
   ],
@@ -169,6 +176,7 @@ const handleSubmitCredit = async () => {
   })
 }
 </script>
+
 <style scoped>
 .el-form {
   position: relative;
@@ -240,6 +248,10 @@ const handleSubmitCredit = async () => {
   text-transform: uppercase;
   color: white;
   letter-spacing: 2px;
+}
+
+:deep(.el-form-item__error) {
+  font-size: 16px;
 }
 
 :deep(.el-input) {
