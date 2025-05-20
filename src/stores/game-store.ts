@@ -55,6 +55,8 @@ const createInitialState = (): GameState => ({
   isMultiplayer: true,
   isAllInBet: false,
   insufficientPlayers: false,
+  roundStartPlayerIndex: 0,
+  completedFullRound: false,
 })
 
 export const useGameStore = defineStore('game', {
@@ -153,7 +155,8 @@ export const useGameStore = defineStore('game', {
       // Load players
       const playerStore = usePlayerRegistration()
       playerStore.loadPlayersFromStorage()
-
+      this.roundStartPlayerIndex = 0
+      this.completedFullRound = false
       // Check deck has enough cards
       if (this.deck.length < 3) {
         this.message = 'Error initializing deck. Please refresh.'
@@ -247,13 +250,71 @@ export const useGameStore = defineStore('game', {
       // Save final state
       this.saveStateToLocalStorage()
     },
+    collectRakeAfterFullRound() {
+      // Only collect if we have a communal pot and players
+      if (this.communalPot <= 0 || this.players.length === 0) return
 
+      const playerStore = usePlayerRegistration()
+
+      // For multiplayer mode, collect rake from each registered player
+      for (let i = 0; i < this.players.length; i++) {
+        const playerId = this.players[i]?.id
+        if (!playerId) continue
+
+        const registeredPlayerIndex = playerStore.players.findIndex((p) => p.id === playerId)
+        if (registeredPlayerIndex === -1) continue
+
+        const registeredPlayer = playerStore.players[registeredPlayerIndex]
+        const playerCredits = registeredPlayer.credits || 0
+
+        // Collect rake or what player has if less
+        const collectedAmount = Math.min(playerCredits, this.rakeAmount)
+        registeredPlayer.credits = playerCredits - collectedAmount
+        this.communalPot += collectedAmount
+
+        // Update player's pot in the game
+        this.players[i].credits = registeredPlayer.credits
+      }
+
+      // Save updated player data
+      localStorage.setItem('players', JSON.stringify(playerStore.players))
+
+      this.message = `Full round completed! Rake of ${this.rakeAmount} collected from all players.`
+
+      // Reset the round completion flag
+      this.completedFullRound = false
+    },
     // ─────────────────────────────
     // PLAYER TURN FUNCTIONS
     // ─────────────────────────────
-
     nextPlayerTurn() {
-      this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length
+      // Calculate the next player index
+      const nextPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length
+
+      // Check if we've completed a full round
+      // (if the next player would be the one who started the round)
+      if (nextPlayerIndex === this.roundStartPlayerIndex) {
+        // We've gone through all players in the round
+        this.completedFullRound = true
+
+        // Collect rake if there's money in the pot
+        if (this.communalPot > 0) {
+          this.collectRakeAfterFullRound()
+        }
+
+        // Update starting player for next round (skip the previous first player)
+        this.roundStartPlayerIndex = (this.roundStartPlayerIndex + 1) % this.players.length
+
+        // Skip directly to the new starting player
+        this.currentPlayerIndex = this.roundStartPlayerIndex
+
+        console.log(
+          `New round starting with Player: ${this.players[this.currentPlayerIndex]?.name}`,
+        )
+      } else {
+        // Normal progression to next player
+        this.currentPlayerIndex = nextPlayerIndex
+      }
 
       // Reset current player's state
       this.currentCard = null
@@ -263,7 +324,6 @@ export const useGameStore = defineStore('game', {
       this.startTurnTimer()
       this.saveStateToLocalStorage()
     },
-
     placeBet(betAmount: number) {
       const currentPot = this.players[this.currentPlayerIndex].credits || 0
 
@@ -538,10 +598,6 @@ export const useGameStore = defineStore('game', {
       // Reset the all-in flag
       this.isAllInBet = false
 
-      // If player won, start new round with rake
-      if (winAmount > 0 && !this.gameOver) {
-        setTimeout(() => this.collectRake(), TRANSITION_DELAY)
-      }
 
       this.saveStateToLocalStorage()
     },

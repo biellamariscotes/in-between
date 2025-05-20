@@ -183,30 +183,42 @@
   right: 25%;
   width: 20%;
 }
+// Update all player positions to create proper counter-clockwise flow
+
+// Player 1 and 2 remain at bottom left and right (unchanged)
+// These are fine as they are
+
+// Player 3 - Move to middle right position (previously player 6 position)
 .player-3 {
   position: absolute;
-  top: 0;
-  left: 25%;
-  width: 20%;
-}
-.player-4 {
-  position: absolute;
-  top: 0;
-  right: 25%;
-  width: 20%;
-}
-.player-5 {
-  position: absolute;
-  left: 0;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
+// Player 4 - Move to top right position
+.player-4 {
+  position: absolute;
+  top: 0;
+  right: 25%;
+  width: 20%;
+}
+
+// Player 5 - Move to top left position
+.player-5 {
+  position: absolute;
+  top: 0;
+  left: 25%;
+  width: 20%;
+}
+
+// Player 6 - Move to middle left position
 .player-6 {
   position: absolute;
-  right: 0;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
@@ -245,7 +257,6 @@
 
 .player-info-reverse {
   width: 100%;
-
   flex-direction: column-reverse;
 }
 
