@@ -20,11 +20,10 @@ import {
   TRANSITION_DELAY,
   RANK_ORDER,
 } from '@/const/game-constants'
-import {
-  showWinModal,
-  showLoseModal,
-  showFoldModal,
-} from '@/utils/gameplay/pop-ups/modalUtil'
+import { showWinModal, showLoseModal, showFoldModal } from '@/utils/gameplay/pop-ups/modalUtil'
+import { useNotification } from '@/composables/game/useNotification'
+
+const { showNotification } = useNotification()
 
 // ─────────────────────────────
 // Initial State Factory
@@ -256,6 +255,7 @@ export const useGameStore = defineStore('game', {
       if (this.communalPot <= 0 || this.players.length === 0) return
 
       const playerStore = usePlayerRegistration()
+      let totalRakeCollected = 0
 
       // For multiplayer mode, collect rake from each registered player
       for (let i = 0; i < this.players.length; i++) {
@@ -272,6 +272,7 @@ export const useGameStore = defineStore('game', {
         const collectedAmount = Math.min(playerCredits, this.rakeAmount)
         registeredPlayer.credits = playerCredits - collectedAmount
         this.communalPot += collectedAmount
+        totalRakeCollected += collectedAmount
 
         // Update player's pot in the game
         this.players[i].credits = registeredPlayer.credits
@@ -279,6 +280,13 @@ export const useGameStore = defineStore('game', {
 
       // Save updated player data
       localStorage.setItem('players', JSON.stringify(playerStore.players))
+
+      // Show notification about rake collection
+      showNotification({
+        title: 'Rake Collected',
+        message: `Full round completed! Rake of ${totalRakeCollected} credits has been added to the pot.`,
+        type: 'info',
+      })
 
       this.message = `Full round completed! Rake of ${this.rakeAmount} collected from all players.`
 
@@ -375,6 +383,12 @@ export const useGameStore = defineStore('game', {
         this.drawNewFaceUpCards()
       }, TRANSITION_DELAY)
     },
+ 
+    Timeout() {
+      this.nextPlayerTurn()
+      this.drawNewFaceUpCards()
+    },
+    TRANSITION_DELAY,
 
     autoFold() {
       if (this.gameStarted && !this.gameOver) {
@@ -599,6 +613,7 @@ export const useGameStore = defineStore('game', {
       // Reset the all-in flag
       this.isAllInBet = false
 
+
     if (this.communalPot <= 0.01 && winAmount > 0) {
   // Update starting player for next round (skip the previous first player)
   this.roundStartPlayerIndex = (this.roundStartPlayerIndex + 1) % this.players.length
@@ -622,9 +637,11 @@ export const useGameStore = defineStore('game', {
   setTimeout(() => {
     this.drawNewFaceUpCards()
   }, TRANSITION_DELAY)
+
         
         return // Exit early to prevent the regular next turn handling
       }
+
 
       this.saveStateToLocalStorage()
     },
