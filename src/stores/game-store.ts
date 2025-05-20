@@ -57,6 +57,7 @@ const createInitialState = (): GameState => ({
   insufficientPlayers: false,
   roundStartPlayerIndex: 0,
   completedFullRound: false,
+  isPotWin: false,
 })
 
 export const useGameStore = defineStore('game', {
@@ -597,28 +598,30 @@ export const useGameStore = defineStore('game', {
 
       // Reset the all-in flag
       this.isAllInBet = false
-  // Check if the communal pot is now empty (or very small due to floating point precision)
-      // This indicates a player has won all or most of the pot, so we should start a new round
-      if (this.communalPot <= 0.01 && winAmount > 0) {
-        // Update starting player for next round (skip the previous first player)
-        this.roundStartPlayerIndex = (this.roundStartPlayerIndex + 1) % this.players.length
-        
-        // Reset to the new starting player instead of moving to next player
-        this.currentPlayerIndex = this.roundStartPlayerIndex
-        
-        // Add message indicating new round
-        this.message += ' Pot won! Starting new round.'
-        
-        // Collect rake for the new round
-        this.collectRake()
-        
-        // Save state before transition
-        this.saveStateToLocalStorage()
-        
-        // Handle next round with a slight delay
-        setTimeout(() => {
-          this.drawNewFaceUpCards()
-        }, TRANSITION_DELAY)
+
+    if (this.communalPot <= 0.01 && winAmount > 0) {
+  // Update starting player for next round (skip the previous first player)
+  this.roundStartPlayerIndex = (this.roundStartPlayerIndex + 1) % this.players.length
+  
+  // Reset to the new starting player instead of moving to next player
+  this.currentPlayerIndex = this.roundStartPlayerIndex
+  
+  // Add message indicating new round
+  this.message += ' Pot won! Starting new round.'
+  
+  // Collect rake for the new round
+  this.collectRake()
+  
+  // Flag that we're handling a pot win (new flag)
+  this.isPotWin = true
+  
+  // Save state before transition
+  this.saveStateToLocalStorage()
+  
+  // Handle next round with a slight delay
+  setTimeout(() => {
+    this.drawNewFaceUpCards()
+  }, TRANSITION_DELAY)
         
         return // Exit early to prevent the regular next turn handling
       }
@@ -697,13 +700,23 @@ export const useGameStore = defineStore('game', {
       localStorage.setItem('players', JSON.stringify(playerStore.players))
     },
 
-       handleNextRound() {
-      setTimeout(() => {
-        // Regular case - move to next player
-        this.nextPlayerTurn()
-        this.drawNewFaceUpCards()
-      }, TRANSITION_DELAY)
-    },
+      handleNextRound() {
+  // Check if we're handling a pot win scenario
+  if (this.isPotWin) {
+    // Just draw new cards without changing the player
+    setTimeout(() => {
+      this.drawNewFaceUpCards()
+      this.isPotWin = false // Reset the flag
+    }, TRANSITION_DELAY)
+    return
+  }
+
+  // Regular case - move to next player
+  setTimeout(() => {
+    this.nextPlayerTurn()
+    this.drawNewFaceUpCards()
+  }, TRANSITION_DELAY)
+},
 
     // ─────────────────────────────
     // MONETARY FUNCTIONS

@@ -87,4 +87,8 @@ export interface GameState {
 
   /** Tracks if we've gone through all players in a round */
   completedFullRound: boolean
+
+
+  isPotWin: boolean
+
 }
