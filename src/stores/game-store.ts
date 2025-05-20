@@ -315,6 +315,12 @@ export const useGameStore = defineStore('game', {
         this.drawNewFaceUpCards()
       }, TRANSITION_DELAY)
     },
+ 
+    Timeout() {
+      this.nextPlayerTurn()
+      this.drawNewFaceUpCards()
+    },
+    TRANSITION_DELAY,
 
     autoFold() {
       if (this.gameStarted && !this.gameOver) {
