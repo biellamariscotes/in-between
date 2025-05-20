@@ -1,21 +1,3 @@
-<!-- Player Slot Component
-  Displays a player's slot in the game table UI, including:
-    - Turn indicator if it's their turn
-    - Player name and points
-    - Player's hand of cards
-
-  Props:
-    - position: number — Slot position on the game table
-    - isActive: boolean — Whether this player slot is active
-    - isCurrentPlayer: boolean — Whether this player is the current turn holder
-    - playerName: string — Name displayed in the slot
-    - playerPoints: number — Player's current score
-    - cards: string[] — Array of card IDs in player's hand
-
-  Uses:
-    - PlayerHand component for displaying card hands
--->
-
 <template>
   <div
     :class="[
@@ -26,9 +8,9 @@
     <div
       :class="[
         'player-indicator-container',
-        { 'player-info-left': position === 6 },
-        { 'player-info-right': position === 5 },
-        { 'player-info-reverse': position === 3 || position === 4 },
+        { 'player-info-left': position === 3 },
+        { 'player-info-right': position === 6 },
+        { 'player-info-reverse': position === 5 || position === 4 },
       ]"
       id="btn3"
     >
@@ -37,9 +19,9 @@
         <div
           :class="[
             'arrow-animation',
-            { 'arrow-bottom': position === 3 || position === 4 },
-            { 'arrow-left': position === 5 },
-            { 'arrow-right': position === 6 },
+            { 'arrow-bottom': position === 4 || position === 5 },
+            { 'arrow-left': position === 6 },
+            { 'arrow-right': position === 3 },
           ]"
         ></div>
       </div>
@@ -61,7 +43,7 @@
       <PlayerHand
         :cards="cards"
         :show-cards="isCurrentPlayer"
-        :orientation="position === 5 ? 'left' : position === 6 ? 'right' : 'normal'"
+        :orientation="getHandOrientation(position)"
       />
     </div>
   </div>
@@ -74,7 +56,6 @@ import PlayerHand from '../game-table/PlayerHand.vue'
 /**
  * Props
  */
-
 defineProps<{
   position: number
   isActive: boolean
@@ -83,4 +64,18 @@ defineProps<{
   playerPoints: number
   cards: string[]
 }>()
+
+// Function to return the proper hand orientation based on position
+function getHandOrientation(position: number): string {
+  switch (position) {
+    case 3: // Middle right - needs vertical orientation like player 6
+      return 'right'
+    case 5: // Top left - needs vertical orientation like player 4
+      return 'normal'
+    case 6: // Middle left
+      return 'right'
+    default:
+      return 'normal'
+  }
+}
 </script>
