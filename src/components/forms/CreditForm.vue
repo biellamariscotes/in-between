@@ -1,14 +1,27 @@
 <template>
   <!-- credit form -->
   <div v-if="creditForm" class="credit-form-wrapper">
-    <el-form @submit.prevent="handleSubmitCredit">
+    <el-form
+      :model="formModel"
+      :rules="rules"
+      ref="ruleFormRef"
+      @submit.prevent="handleSubmitCredit"
+    >
       <img
         src="../../assets/img/buttons/credits/input-credits.png"
         alt="input-text"
         class="input-credits-text"
       />
 
-      <el-input size="large" placeholder="Input Credits..." v-model="creditValue" />
+      <el-form-item prop="creditValue">
+        <el-input
+          size="large"
+          placeholder="Input Credits..."
+          v-model.number="formModel.creditValue"
+        />
+      </el-form-item>
+
+      <!-- <el-input size="large" placeholder="Input Credits..." v-model="creditValue" /> -->
 
       <img
         src="../../assets/img/buttons/credits/add-credits.png"
@@ -45,7 +58,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
+import type { FormInstance, FormRules } from 'element-plus'
 import { useGameStore } from '@/stores/game-store'
 import { usePlayerRegistration } from '@/stores/player'
 import CreditActions from '../currency/CreditActions.vue'
@@ -56,6 +70,31 @@ const creditValue = ref()
 const gameStore = useGameStore()
 const playerStore = usePlayerRegistration()
 const isEmptyPot = ref(false)
+
+const ruleFormRef = ref<FormInstance>()
+
+const rules = reactive<FormRules>({
+  creditValue: [
+    { required: true, message: 'Please input credits', trigger: 'change' },
+    {
+      type: 'number',
+      min: 200,
+      message: 'Credit should be 200 and above',
+      trigger: 'change',
+    },
+    {
+      type: 'number',
+      max: 1000000,
+      message: 'Credit should be 1,000,000 and below',
+      trigger: 'change',
+    },
+  ],
+})
+
+// Wrap creditValue in an object for validation
+const formModel = reactive({
+  creditValue,
+})
 
 const creditForm = ref(false)
 const { showNotification } = useNotification()
@@ -74,56 +113,60 @@ if (getPot > 0) {
   isEmptyPot.value = true
 }
 
-const handleSubmitCredit = () => {
-  // Ensure a valid amount is entered
-  if (creditValue.value <= 0) return
+const handleSubmitCredit = async () => {
+  if (!ruleFormRef.value) return
+  await ruleFormRef.value.validate((valid) => {
+    if (!valid) return
 
-  try {
-    const index = gameStore.currentPlayerIndex
+    try {
+      // const isValid = ruleFormRef.value?.validate()
 
-    if (!gameStore.players[index]) {
-      gameStore.players[index] = {
-        id: '',
-        name: '',
-        credits: 0,
-        randomizedPosition: 0,
-        isTurn: false,
-        isTurnComplete: false,
+      const index = gameStore.currentPlayerIndex
+
+      if (!gameStore.players[index]) {
+        gameStore.players[index] = {
+          id: '',
+          name: '',
+          credits: 0,
+          randomizedPosition: 0,
+          isTurn: false,
+          isTurnComplete: false,
+        }
       }
-    }
 
-    // Update in-game credits
+      // Update in-game credits
 
-    gameStore.players[index].credits =
-      (gameStore.players[index].credits ?? 0) + Number(creditValue.value)
+      gameStore.players[index].credits =
+        (gameStore.players[index].credits ?? 0) + Number(creditValue.value)
 
-    // Update player registration store
-    const playerId = gameStore.players[index]?.id
-    if (playerId) {
-      const playerIndex = playerStore.players.findIndex((p) => p.id === playerId)
-      if (playerIndex !== -1) {
-        const currentCredits = playerStore.players[playerIndex].credits || 0
-        playerStore.players[playerIndex].credits = currentCredits + Number(creditValue.value)
+      // Update player registration store
+      const playerId = gameStore.players[index]?.id
+      if (playerId) {
+        const playerIndex = playerStore.players.findIndex((p) => p.id === playerId)
+        if (playerIndex !== -1) {
+          const currentCredits = playerStore.players[playerIndex].credits || 0
+          playerStore.players[playerIndex].credits = currentCredits + Number(creditValue.value)
+        }
       }
+
+      // Save updated player data to localStorage
+      localStorage.setItem('players', JSON.stringify(playerStore.players))
+
+      // Update game state in localStorage
+      gameStore.saveStateToLocalStorage()
+
+      showNotification({
+        title: 'Player Cash-In',
+        message: `Player Cash-in ${creditValue.value}`,
+        type: 'success',
+      })
+
+      creditValue.value = null
+      creditForm.value = false
+    } catch (error) {
+      console.error('Error adding credits:', error)
     }
-
-    // Save updated player data to localStorage
-    localStorage.setItem('players', JSON.stringify(playerStore.players))
-
-    // Update game state in localStorage
-    gameStore.saveStateToLocalStorage()
-
-    showNotification({
-      title: 'Player Cash-In',
-      message: `Player Cash-in ${creditValue.value}`,
-      type: 'success',
-    })
-
-    creditValue.value = null
-    creditForm.value = false
-  } catch (error) {
-    console.error('Error adding credits:', error)
-  }
+  })
 }
 </script>
 <style scoped>
