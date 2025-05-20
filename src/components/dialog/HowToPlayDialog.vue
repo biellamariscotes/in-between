@@ -1,5 +1,5 @@
 <template>
-  <el-tour v-model="open" :show-close="false" @finish="finishHowToPlay">
+  <el-tour v-model="showTour" :show-close="false" @finish="finishHowToPlay">
     <!-- START GAME -->
     <template v-if="isElementVisible('#btn1')">
       <el-tour-step
@@ -102,35 +102,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import eventBus from '@/eventBus'
-
-const props = defineProps({
-  isOpen: {
-    type: Boolean,
-    default: false,
-  },
-})
+import { useGameStore } from '@/stores/game-store'
 
 const isElementVisible = (selector: string): boolean => {
   return !!document.querySelector(selector)
 }
-
-const open = ref(false)
-
-watch(
-  () => props.isOpen,
-  (newValue) => {
-    open.value = newValue
-  },
-  { immediate: true },
-)
-
-const showTour = ref(false)
+const gameStore = useGameStore()
+const showTour = defineModel<boolean>()
 
 const finishHowToPlay = () => {
-  console.log('📢 Tour finished — ending How To Play mode.')
-  showTour.value = false
-  eventBus.emit('toggle-tour', false)
+  if (showTour.value) {
+    gameStore.resumeTurnTimer()
+  }
 }
 </script>

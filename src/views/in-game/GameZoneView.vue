@@ -266,11 +266,7 @@ import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 
 // Import utility functions
 import { cardToDisplayId } from '@/utils/gameplay/deck/cardUtil'
-import {
-  showResultModal,
-  resultModalImage,
-  modalType, 
-} from '@/utils/gameplay/pop-ups/modalUtil'
+import { showResultModal, resultModalImage, modalType } from '@/utils/gameplay/pop-ups/modalUtil'
 import {
   isCurrentPlayer,
   getActivePlayers,
@@ -280,6 +276,7 @@ import CardCount from '@/components/utilities/CardCount.vue'
 import EventsHistory from '@/components/utilities/EventsHistory.vue'
 import router from '@/router'
 import { INITIAL_TURN_TIME } from '@/const/game-constants'
+
 // Add game over modal state
 const showGameOverModal = ref(false)
 
@@ -597,7 +594,6 @@ watch(showTour, (tourFinished) => {
     gameStore.resumeTurnTimer()
   }
 })
-
 
 // Watch: Reset game when player count changes
 watch(playerCount, () => {
