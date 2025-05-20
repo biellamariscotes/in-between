@@ -699,14 +699,29 @@ export const useGameStore = defineStore('game', {
       // Save updated player data
       localStorage.setItem('players', JSON.stringify(playerStore.players))
     },
-
-      handleNextRound() {
+handleNextRound() {
   // Check if we're handling a pot win scenario
   if (this.isPotWin) {
-    // Just draw new cards without changing the player
+    // Draw new face-up cards and properly reset the player's state for new round
     setTimeout(() => {
+      // Reset the current card (third card)
+      this.currentCard = null
+      
+      // Draw new face-up cards
       this.drawNewFaceUpCards()
-      this.isPotWin = false // Reset the flag
+      
+      // Reset current player's state for the new round
+      this.currentBet = 0
+      this.message = `${this.activePlayerName}'s turn. Place your bet.`
+      
+      // Start the turn timer for the new player
+      this.startTurnTimer()
+      
+      // Reset the pot win flag
+      this.isPotWin = false
+      
+      // Save the updated state
+      this.saveStateToLocalStorage()
     }, TRANSITION_DELAY)
     return
   }
