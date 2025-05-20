@@ -7,6 +7,7 @@
     class="demo-ruleForm"
     :label-position="labelPosition"
     :size="formSize"
+    :max="100000000"
     status-icon
     @submit.prevent="onSubmit"
   >

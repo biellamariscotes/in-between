@@ -24,7 +24,6 @@ import {
   showWinModal,
   showLoseModal,
   showFoldModal,
-  showPenaltyFoldModal,
 } from '@/utils/gameplay/pop-ups/modalUtil'
 
 // ─────────────────────────────
@@ -381,39 +380,7 @@ export const useGameStore = defineStore('game', {
         console.log('Time ran out - auto-folding')
 
         // Don't call the regular fold here, we handle it specially
-        this.stopTurnTimer()
-
-        const penaltyAmount = 20
-        const playerPosition = this.currentPlayerIndex
-        const playerCredit = this.players[playerPosition].credits
-        const player = this.players[playerPosition].id
-
-        if (!player) {
-          console.log('No player found')
-        }
-
-        const playerPenalty = (playerCredit ?? 0) - penaltyAmount
-        this.players[playerPosition].credits = playerPenalty
-        this.communalPot = this.communalPot + penaltyAmount
-
-        // Set a message that includes "penalty" for any logging purposes
-        this.message = `${this.players[playerPosition].name} auto-folded and received a penalty of ${penaltyAmount} credits.`
-
-        // Show penalty fold modal
-        showPenaltyFoldModal()
-
-        // Game history entry: AUTO-FOLD with PENALTY
-        const gameHistory = useGameHistory()
-        const { logFold } = gameHistory.getPlayerLogger(this.players[this.currentPlayerIndex])
-        logFold() // Add a parameter to indicate penalty fold if needed
-
-        this.roundsPlayed++
-
-        // Move to next player's turn after delay
-        setTimeout(() => {
-          this.nextPlayerTurn()
-          this.drawNewFaceUpCards()
-        }, TRANSITION_DELAY)
+        this.fold()
       }
     },
 
