@@ -27,6 +27,13 @@
       />
 
       <img
+        src="../../assets/img/buttons/main-menu/how-to-play.png"
+        alt="GameRules"
+        class="main-menu-btns"
+        @click="toggleRules"
+      />
+
+      <img
         src="../../assets/img/buttons/main-menu/restart-game.png"
         alt="restart-game-btn"
         class="main-menu-btns"
@@ -39,7 +46,8 @@
       <div class="dialog-footer"></div>
     </template>
   </el-dialog>
-  <HowToPlayDialog :is-open="showTour" />
+  <HowToPlayDialog v-model="showTour" />
+  <GameRules v-model="showRules" />
 
   <!-- Additional 'How to Play' Dialog -->
 </template>
@@ -49,32 +57,26 @@ import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useGameLifeCycle } from '@/composables/game/useGameLifeCycle'
 import eventBus from '@/eventBus'
 import { useGameStore } from '@/stores/game-store'
+import GameRules from './GameRules.vue'
+import HowToPlayDialog from './HowToPlayDialog.vue'
+// import GameRules from '@/components/dialog/GameRules.vue'
 
 const gameStore = useGameStore()
+const showRules = ref(false)
 
 const mainMenuVisible = ref(false)
+// const activeNames = ref(false)
+
 const { startNewGame } = useGameLifeCycle()
 
 const closeMainMenu = () => {
   mainMenuVisible.value = false
 }
 
-const props = defineProps({
-  isOpen: {
-    type: Boolean,
-    default: true,
-  },
-})
-
-const open = ref(false)
-
-watch(
-  () => props.isOpen,
-  (newValue) => {
-    open.value = newValue
-  },
-  { immediate: true },
-)
+const toggleRules = () => {
+  showRules.value = !showRules.value
+  console.log(showRules.value)
+}
 
 onMounted(() => {
   eventBus.on('toggle-main-menu', () => {
@@ -95,7 +97,7 @@ const showTour = ref(false)
 console.log('First state: ', showTour.value)
 
 const toggleTour = () => {
-  console.log('🖱️ How To Play button clicked')
+  // console.log('🖱️ How To Play button clicked')
   showTour.value = !showTour.value
   eventBus.emit('toggle-tour', showTour.value)
   mainMenuVisible.value = false // CAUSE OF BUG
