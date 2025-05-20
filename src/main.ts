@@ -18,18 +18,31 @@ app.use(pinia)
 app.use(router)
 
 // Navigation Guard
-// router.beforeEach((to, from, next) => {
-//   if (to.path === '/game-zone' && !('players' in localStorage)) {
-//     return next('/')
-//   } else if (
-//     to.path === '/' ||
-//     to.path === '/choose-player' ||
-//     (to.path === '/registration' && 'players' in localStorage)
-//   ) {
-//     return next('/game-zone')
-//   }
-//   next()
-// })
+router.beforeEach((to, from, next) => {
+  const hasPlayers = 'players' in localStorage
+
+  const publicPaths = ['/', '/choose-player', '/registration']
+  const isPublic = publicPaths.includes(to.path)
+  const isProtected = to.path === '/game-zone'
+
+  // Block access to protected route
+  if (isProtected && !hasPlayers) {
+    if (to.path !== '/') {
+      return next('/')
+    } else {
+      return next() // Already at '/', let it load
+    }
+  }
+
+  if (isPublic && hasPlayers) {
+    if (to.path !== '/game-zone') {
+      return next('/game-zone')
+    }
+    return next()
+  }
+
+  return next()
+})
 
 app.use(ElementPlus)
 
