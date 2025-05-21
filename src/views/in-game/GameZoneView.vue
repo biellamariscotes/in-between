@@ -280,7 +280,7 @@ import {
 import CardCount from '@/components/utilities/CardCount.vue'
 import EventsHistory from '@/components/utilities/EventsHistory.vue'
 import router from '@/router'
-import { INITIAL_TURN_TIME, RAKE_AMOUNT } from '@/const/game-constants'
+import { RAKE_AMOUNT } from '@/const/game-constants'
 import CollectRake from '@/components/CollectRake.vue'
 
 // Add game over modal state
