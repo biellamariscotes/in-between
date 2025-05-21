@@ -34,7 +34,8 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['hidden'])
+
+const emit = defineEmits(['hidden', 'shown'])
 const isVisible = ref(props.show)
 let timer: ReturnType<typeof setTimeout> | null = null 
 
@@ -49,9 +50,10 @@ watch(() => props.show, (newVal) => {
 
 function showModal() {
   isVisible.value = true
+  emit('shown') // Add this line to emit when modal shows
   
   // Auto-hide after TRANSITION_DELAY
-  clearTimeout(timer as  number)
+  clearTimeout(timer as number)
   timer = setTimeout(() => {
     isVisible.value = false
     emit('hidden')

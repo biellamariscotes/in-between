@@ -253,6 +253,7 @@ export const useGameStore = defineStore('game', {
    collectRakeAfterFullRound() {
   // Only collect if we have a communal pot and players
   if (this.communalPot <= 0 || this.players.length === 0) return
+  this.haltTurnTimer() 
 
   // Set the flag to true to trigger the modal
   this.completedFullRound = true
@@ -769,6 +770,8 @@ handleNextRound() {
     // ─────────────────────────────
 
     collectRake() {
+        this.haltTurnTimer()
+
   const playerStore = usePlayerRegistration()
 
   // For multiplayer mode, collect rake from each registered player

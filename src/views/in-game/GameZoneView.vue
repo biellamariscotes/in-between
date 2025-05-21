@@ -282,6 +282,7 @@ import EventsHistory from '@/components/utilities/EventsHistory.vue'
 import router from '@/router'
 import { INITIAL_TURN_TIME, RAKE_AMOUNT } from '@/const/game-constants'
 import CollectRake from '@/components/CollectRake.vue'
+
 // Add game over modal state
 const showGameOverModal = ref(false)
 
@@ -772,6 +773,13 @@ watch(() => gameStore.completedFullRound, (newVal) => {
 })
 
 // Watch for pot win scenario which triggers new round
+watch(() => gameStore.isPotWin, (newVal) => {
+  if (newVal) {
+    showRakeCollectionModal.value = true
+    rakeCollectionAmount.value = gameStore.rakeAmount
+  }
+})
+
 watch(() => gameStore.isPotWin, (newVal) => {
   if (newVal) {
     showRakeCollectionModal.value = true
