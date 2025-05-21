@@ -304,7 +304,7 @@ export const useGameStore = defineStore('game', {
     
     // Save state again after collection
     this.saveStateToLocalStorage()
-  }, TRANSITION_DELAY / 2)  // Use half the transition delay to ensure modal shows but game keeps moving
+  }, MODAL_DISPLAY_DELAY)  // Use half the transition delay to ensure modal shows but game keeps moving
 },
     // ─────────────────────────────
     // PLAYER TURN FUNCTIONS
