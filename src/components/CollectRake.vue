@@ -51,7 +51,7 @@ function showModal() {
   isVisible.value = true
   
   // Auto-hide after TRANSITION_DELAY
-  clearTimeout(timer)
+  clearTimeout(timer as  number)
   timer = setTimeout(() => {
     isVisible.value = false
     emit('hidden')
@@ -60,7 +60,7 @@ function showModal() {
 
 // Clean up timer when component is unmounted
 onUnmounted(() => {
-  clearTimeout(timer )
+  clearTimeout(timer as number)
 })
 </script>
 
@@ -75,7 +75,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 16000;
 }
 
 .rake-modal {

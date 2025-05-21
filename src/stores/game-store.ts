@@ -770,7 +770,6 @@ handleNextRound() {
 
     collectRake() {
   const playerStore = usePlayerRegistration()
-  let totalRakeCollected = 0
 
   // For multiplayer mode, collect rake from each registered player
   for (let i = 0; i < this.players.length; i++) {
@@ -798,7 +797,6 @@ handleNextRound() {
     const collectedAmount = Math.min(playerCredits, this.rakeAmount)
     registeredPlayer.credits = playerCredits - collectedAmount
     this.communalPot += collectedAmount
-    totalRakeCollected += collectedAmount
 
     // Update player's pot in the game
     this.players[i].credits = registeredPlayer.credits
