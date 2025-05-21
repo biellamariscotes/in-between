@@ -14,6 +14,8 @@ import { usePlayerRegistration } from '@/stores/player'
 import { usePlayerStore } from '@/stores/player-count'
 import { useGameHistory } from '@/composables/game/useGameHistory'
 import { useTaxation } from '@/composables/tax/useTaxation'
+import { inject } from 'vue'
+import { defineEmits } from 'vue'
 import {
   INITIAL_TURN_TIME,
   RAKE_AMOUNT,
@@ -383,7 +385,7 @@ export const useGameStore = defineStore('game', {
         this.drawNewFaceUpCards()
       }, TRANSITION_DELAY)
     },
- 
+
     Timeout() {
       this.nextPlayerTurn()
       this.drawNewFaceUpCards()
@@ -393,9 +395,43 @@ export const useGameStore = defineStore('game', {
     autoFold() {
       if (this.gameStarted && !this.gameOver) {
         console.log('Time ran out - auto-folding')
-
-        // Don't call the regular fold here, we handle it specially
         this.fold()
+        // Don't call the regular fold here, we handle it specially
+      }
+      if (this.getCurrentPlayerPot === 0) {
+        console.log('the pot is 0')
+        this.quitPlayer()
+      }
+    },
+
+    quitPlayer() {
+      const playerStore = usePlayerRegistration()
+      const emit = defineEmits(['update:isCancelDialog'])
+      const handleBackToMainCta = inject('addCredit') as () => void
+
+      try {
+        const index = this.currentPlayerIndex
+        const playerId = this.players[index]?.id
+        const playerName = this.players[index]?.name
+
+        if (playerId) {
+          playerStore.players = playerStore.players.filter((p) => p.id !== playerId)
+          localStorage.setItem('players', JSON.stringify(playerStore.players))
+          this.players.splice(index, 1)
+          this.saveStateToLocalStorage()
+
+          emit('update:isCancelDialog', false)
+
+          showNotification({
+            title: 'Player Left',
+            message: `${playerName} has quit the game`,
+            type: 'success',
+          })
+          handleBackToMainCta()
+          this.Timeout()
+        }
+      } catch (error) {
+        console.error('Error removing player:', error)
       }
     },
 
@@ -613,35 +649,32 @@ export const useGameStore = defineStore('game', {
       // Reset the all-in flag
       this.isAllInBet = false
 
+      if (this.communalPot <= 0.01 && winAmount > 0) {
+        // Update starting player for next round (skip the previous first player)
+        this.roundStartPlayerIndex = (this.roundStartPlayerIndex + 1) % this.players.length
 
-    if (this.communalPot <= 0.01 && winAmount > 0) {
-  // Update starting player for next round (skip the previous first player)
-  this.roundStartPlayerIndex = (this.roundStartPlayerIndex + 1) % this.players.length
-  
-  // Reset to the new starting player instead of moving to next player
-  this.currentPlayerIndex = this.roundStartPlayerIndex
-  
-  // Add message indicating new round
-  this.message += ' Pot won! Starting new round.'
-  
-  // Collect rake for the new round
-  this.collectRake()
-  
-  // Flag that we're handling a pot win (new flag)
-  this.isPotWin = true
-  
-  // Save state before transition
-  this.saveStateToLocalStorage()
-  
-  // Handle next round with a slight delay
-  setTimeout(() => {
-    this.drawNewFaceUpCards()
-  }, TRANSITION_DELAY)
+        // Reset to the new starting player instead of moving to next player
+        this.currentPlayerIndex = this.roundStartPlayerIndex
 
-        
+        // Add message indicating new round
+        this.message += ' Pot won! Starting new round.'
+
+        // Collect rake for the new round
+        this.collectRake()
+
+        // Flag that we're handling a pot win (new flag)
+        this.isPotWin = true
+
+        // Save state before transition
+        this.saveStateToLocalStorage()
+
+        // Handle next round with a slight delay
+        setTimeout(() => {
+          this.drawNewFaceUpCards()
+        }, TRANSITION_DELAY)
+
         return // Exit early to prevent the regular next turn handling
       }
-
 
       this.saveStateToLocalStorage()
     },
@@ -716,39 +749,39 @@ export const useGameStore = defineStore('game', {
       // Save updated player data
       localStorage.setItem('players', JSON.stringify(playerStore.players))
     },
-handleNextRound() {
-  // Check if we're handling a pot win scenario
-  if (this.isPotWin) {
-    // Draw new face-up cards and properly reset the player's state for new round
-    setTimeout(() => {
-      // Reset the current card (third card)
-      this.currentCard = null
-      
-      // Draw new face-up cards
-      this.drawNewFaceUpCards()
-      
-      // Reset current player's state for the new round
-      this.currentBet = 0
-      this.message = `${this.activePlayerName}'s turn. Place your bet.`
-      
-      // Start the turn timer for the new player
-      this.startTurnTimer()
-      
-      // Reset the pot win flag
-      this.isPotWin = false
-      
-      // Save the updated state
-      this.saveStateToLocalStorage()
-    }, TRANSITION_DELAY)
-    return
-  }
+    handleNextRound() {
+      // Check if we're handling a pot win scenario
+      if (this.isPotWin) {
+        // Draw new face-up cards and properly reset the player's state for new round
+        setTimeout(() => {
+          // Reset the current card (third card)
+          this.currentCard = null
 
-  // Regular case - move to next player
-  setTimeout(() => {
-    this.nextPlayerTurn()
-    this.drawNewFaceUpCards()
-  }, TRANSITION_DELAY)
-},
+          // Draw new face-up cards
+          this.drawNewFaceUpCards()
+
+          // Reset current player's state for the new round
+          this.currentBet = 0
+          this.message = `${this.activePlayerName}'s turn. Place your bet.`
+
+          // Start the turn timer for the new player
+          this.startTurnTimer()
+
+          // Reset the pot win flag
+          this.isPotWin = false
+
+          // Save the updated state
+          this.saveStateToLocalStorage()
+        }, TRANSITION_DELAY)
+        return
+      }
+
+      // Regular case - move to next player
+      setTimeout(() => {
+        this.nextPlayerTurn()
+        this.drawNewFaceUpCards()
+      }, TRANSITION_DELAY)
+    },
 
     // ─────────────────────────────
     // MONETARY FUNCTIONS
