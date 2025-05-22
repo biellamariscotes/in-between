@@ -13,6 +13,7 @@ declare module 'vue' {
     Button: typeof import('./src/components/buttons/Button.vue')['default']
     CardCount: typeof import('./src/components/utilities/CardCount.vue')['default']
     CashFlow: typeof import('./src/components/currency/CashFlow.vue')['default']
+    CollectRake: typeof import('./src/components/CollectRake.vue')['default']
     CommunalPot: typeof import('./src/components/currency/CommunalPot.vue')['default']
     CountdownTimer: typeof import('./src/components/utilities/CountdownTimer.vue')['default']
     CreditActions: typeof import('./src/components/currency/CreditActions.vue')['default']
