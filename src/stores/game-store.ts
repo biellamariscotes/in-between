@@ -250,49 +250,62 @@ export const useGameStore = defineStore('game', {
       // Save final state
       this.saveStateToLocalStorage()
     },
-    collectRakeAfterFullRound() {
-      // Only collect if we have a communal pot and players
-      if (this.communalPot <= 0 || this.players.length === 0) return
+   collectRakeAfterFullRound() {
+  // Only collect if we have a communal pot and players
+  if (this.communalPot <= 0 || this.players.length === 0) return
+  this.haltTurnTimer() 
 
-      const playerStore = usePlayerRegistration()
-      let totalRakeCollected = 0
+  // Set the flag to true to trigger the modal
+  this.completedFullRound = true
+  
+  // Save state first so the watcher in GameZoneView can detect the change
+  this.saveStateToLocalStorage()
+  
+  // Delay the actual collection to give time for the modal to show
+  setTimeout(() => {
+    const playerStore = usePlayerRegistration()
+    let totalRakeCollected = 0
 
-      // For multiplayer mode, collect rake from each registered player
-      for (let i = 0; i < this.players.length; i++) {
-        const playerId = this.players[i]?.id
-        if (!playerId) continue
+    // For multiplayer mode, collect rake from each registered player
+    for (let i = 0; i < this.players.length; i++) {
+      const playerId = this.players[i]?.id
+      if (!playerId) continue
 
-        const registeredPlayerIndex = playerStore.players.findIndex((p) => p.id === playerId)
-        if (registeredPlayerIndex === -1) continue
+      const registeredPlayerIndex = playerStore.players.findIndex((p) => p.id === playerId)
+      if (registeredPlayerIndex === -1) continue
 
-        const registeredPlayer = playerStore.players[registeredPlayerIndex]
-        const playerCredits = registeredPlayer.credits || 0
+      const registeredPlayer = playerStore.players[registeredPlayerIndex]
+      const playerCredits = registeredPlayer.credits || 0
 
-        // Collect rake or what player has if less
-        const collectedAmount = Math.min(playerCredits, this.rakeAmount)
-        registeredPlayer.credits = playerCredits - collectedAmount
-        this.communalPot += collectedAmount
-        totalRakeCollected += collectedAmount
+      // Collect rake or what player has if less
+      const collectedAmount = Math.min(playerCredits, this.rakeAmount)
+      registeredPlayer.credits = playerCredits - collectedAmount
+      this.communalPot += collectedAmount
+      totalRakeCollected += collectedAmount
 
-        // Update player's pot in the game
-        this.players[i].credits = registeredPlayer.credits
-      }
+      // Update player's pot in the game
+      this.players[i].credits = registeredPlayer.credits
+    }
 
-      // Save updated player data
-      localStorage.setItem('players', JSON.stringify(playerStore.players))
+    // Save updated player data
+    localStorage.setItem('players', JSON.stringify(playerStore.players))
 
-      // Show notification about rake collection
-      showNotification({
-        title: 'Rake Collected',
-        message: `Full round completed! Rake of ${totalRakeCollected} credits has been added to the pot.`,
-        type: 'info',
-      })
+    // Show notification about rake collection
+    showNotification({
+      title: 'Rake Collected',
+      message: `Full round completed! Rake of ${totalRakeCollected} credits has been added to the pot.`,
+      type: 'info',
+    })
 
-      this.message = `Full round completed! Rake of ${this.rakeAmount} collected from all players.`
+    this.message = `Full round completed! Rake of ${this.rakeAmount} collected from all players.`
 
-      // Reset the round completion flag
-      this.completedFullRound = false
-    },
+    // Reset the round completion flag
+    this.completedFullRound = false
+    
+    // Save state again after collection
+    this.saveStateToLocalStorage()
+  }, MODAL_DISPLAY_DELAY)  // Use half the transition delay to ensure modal shows but game keeps moving
+},
     // ─────────────────────────────
     // PLAYER TURN FUNCTIONS
     // ─────────────────────────────
@@ -614,7 +627,7 @@ export const useGameStore = defineStore('game', {
       this.isAllInBet = false
 
 
-    if (this.communalPot <= 0.01 && winAmount > 0) {
+if (this.communalPot <= 0.01 && winAmount > 0) {
   // Update starting player for next round (skip the previous first player)
   this.roundStartPlayerIndex = (this.roundStartPlayerIndex + 1) % this.players.length
   
@@ -624,23 +637,25 @@ export const useGameStore = defineStore('game', {
   // Add message indicating new round
   this.message += ' Pot won! Starting new round.'
   
-  // Collect rake for the new round
-  this.collectRake()
-  
-  // Flag that we're handling a pot win (new flag)
+  // Flag that we're handling a pot win (new flag) - set this BEFORE collecting rake
+  // This will trigger the modal to appear
   this.isPotWin = true
   
-  // Save state before transition
+  // Save state before transition to ensure watchers pick up flag change
   this.saveStateToLocalStorage()
   
-  // Handle next round with a slight delay
+  // Collect rake for the new round after a slight delay so modal appears first
   setTimeout(() => {
-    this.drawNewFaceUpCards()
-  }, TRANSITION_DELAY)
-
-        
-        return // Exit early to prevent the regular next turn handling
-      }
+    this.collectRake()
+    
+    // Handle next round with a slight delay
+    setTimeout(() => {
+      this.drawNewFaceUpCards()
+    }, TRANSITION_DELAY / 2)
+  }, TRANSITION_DELAY / 2)
+  
+  return // Exit early to prevent the regular next turn handling
+}
 
 
       this.saveStateToLocalStorage()
@@ -755,46 +770,50 @@ handleNextRound() {
     // ─────────────────────────────
 
     collectRake() {
-      const playerStore = usePlayerRegistration()
+        this.haltTurnTimer()
 
-      // For multiplayer mode, collect rake from each registered player
-      for (let i = 0; i < this.players.length; i++) {
-        const playerId = this.players[i]?.id
-        if (!playerId) continue
+  const playerStore = usePlayerRegistration()
 
-        const registeredPlayerIndex = playerStore.players.findIndex((p) => p.id === playerId)
-        if (registeredPlayerIndex === -1) {
-          // Ensure the player object exists and has the required properties
-          this.players[i] = {
-            id: '',
-            name: '',
-            credits: 0,
-            randomizedPosition: 0,
-            isTurn: false,
-            isTurnComplete: false,
-          }
-          continue
-        }
+  // For multiplayer mode, collect rake from each registered player
+  for (let i = 0; i < this.players.length; i++) {
+    const playerId = this.players[i]?.id
+    if (!playerId) continue
 
-        const registeredPlayer = playerStore.players[registeredPlayerIndex]
-        const playerCredits = registeredPlayer.credits || 0
-
-        // Collect rake or what player has if less
-        const collectedAmount = Math.min(playerCredits, this.rakeAmount)
-        registeredPlayer.credits = playerCredits - collectedAmount
-        this.communalPot += collectedAmount
-
-        // Update player's pot in the game
-
-        this.players[i].credits = registeredPlayer.credits
+    const registeredPlayerIndex = playerStore.players.findIndex((p) => p.id === playerId)
+    if (registeredPlayerIndex === -1) {
+      // Ensure the player object exists and has the required properties
+      this.players[i] = {
+        id: '',
+        name: '',
+        credits: 0,
+        randomizedPosition: 0,
+        isTurn: false,
+        isTurnComplete: false,
       }
+      continue
+    }
 
-      // Save updated player data
-      localStorage.setItem('players', JSON.stringify(playerStore.players))
+    const registeredPlayer = playerStore.players[registeredPlayerIndex]
+    const playerCredits = registeredPlayer.credits || 0
 
-      this.message = `New round started! Rake of ${this.rakeAmount} collected from players.`
-      this.saveStateToLocalStorage()
-    },
+    // Collect rake or what player has if less
+    const collectedAmount = Math.min(playerCredits, this.rakeAmount)
+    registeredPlayer.credits = playerCredits - collectedAmount
+    this.communalPot += collectedAmount
+
+    // Update player's pot in the game
+    this.players[i].credits = registeredPlayer.credits
+  }
+
+  // Save updated player data
+  localStorage.setItem('players', JSON.stringify(playerStore.players))
+
+  this.message = `New round started! Rake of ${this.rakeAmount} collected from players.`
+  this.saveStateToLocalStorage()
+  
+  // Reset the pot win flag after collecting rake
+  this.isPotWin = false
+},
 
     // ─────────────────────────────
     // TIMER FUNCTIONS
