@@ -15,7 +15,7 @@ import { usePlayerStore } from '@/stores/player-count'
 import { useGameHistory } from '@/composables/game/useGameHistory'
 import { useTaxation } from '@/composables/tax/useTaxation'
 import { inject } from 'vue'
-import { defineEmits } from 'vue'
+// import { defineEmits } from 'vue'
 import {
   INITIAL_TURN_TIME,
   RAKE_AMOUNT,
@@ -406,7 +406,7 @@ export const useGameStore = defineStore('game', {
 
     quitPlayer() {
       const playerStore = usePlayerRegistration()
-      const emit = defineEmits(['update:isCancelDialog'])
+      // const emit = defineEmits(['update:isCancelDialog'])
       const handleBackToMainCta = inject('addCredit') as () => void
 
       try {
@@ -420,7 +420,7 @@ export const useGameStore = defineStore('game', {
           this.players.splice(index, 1)
           this.saveStateToLocalStorage()
 
-          emit('update:isCancelDialog', false)
+          // emit('update:isCancelDialog', false)
 
           showNotification({
             title: 'Player Left',
